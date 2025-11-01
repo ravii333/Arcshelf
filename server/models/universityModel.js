@@ -1,0 +1,26 @@
+import mongoose from "mongoose";
+
+const universitySchema = mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    slug: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    location: {
+      type: String,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+const University = mongoose.model('University', universitySchema);
+
+export default University;
