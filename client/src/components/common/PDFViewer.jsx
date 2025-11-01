@@ -1,52 +1,64 @@
-// client/src/components/common/PDFViewer.jsx
 import React, { useState } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
-
-// Fix for CSS imports in Vite
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 
-// Fix for worker path
+// Fix for worker path (for Vite or CRA)
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 function PDFViewer({ fileUrl }) {
   const [numPages, setNumPages] = useState(null);
   const [pageNumber, setPageNumber] = useState(1);
-  const [loadError, setLoadError] = useState(null); // <-- NEW state for errors
+  const [loadError, setLoadError] = useState(null);
 
-  function onDocumentLoadSuccess({ numPages }) {
+  const onDocumentLoadSuccess = ({ numPages }) => {
     setNumPages(numPages);
-    setLoadError(null); // Clear any previous errors on success
-  }
+    setLoadError(null);
+  };
 
-  function onDocumentLoadError(error) {
+  const onDocumentLoadError = (error) => {
     console.error('PDF Load Error:', error);
-    // Set a user-friendly error message
-    if (error.message.includes('CORS')) {
-      setLoadError("Failed to load PDF due to security (CORS) policy. The direct download link should still work.");
+    if (error.message?.includes('CORS')) {
+      setLoadError("⚠️ Unable to preview PDF due to CORS restrictions. Please try downloading the file instead.");
     } else {
-      setLoadError(`Error loading PDF: ${error.message}`);
+      setLoadError(`❌ Failed to load PDF: ${error.message}`);
     }
-  }
+  };
 
-  const goToPrevPage = () => setPageNumber(prev => Math.max(prev - 1, 1));
-  const goToNextPage = () => setPageNumber(prev => Math.min(prev + 1, numPages));
+  const goToPrevPage = () => setPageNumber((p) => Math.max(p - 1, 1));
+  const goToNextPage = () => setPageNumber((p) => Math.min(p + 1, numPages));
 
   return (
-    <div className="pdf-container">
-      {/* The navigation is only shown if the document loaded successfully */}
+    <div className="pdf-container w-full flex flex-col items-center">
+      {/* Navigation */}
       {!loadError && numPages && (
-        <nav className="flex items-center justify-center p-2 bg-gray-100 rounded-md mb-4">
-          <button onClick={goToPrevPage} disabled={pageNumber <= 1} className="px-4 py-2 bg-gray-300 rounded-md disabled:opacity-50">Prev</button>
-          <p className="mx-4 font-semibold">Page {pageNumber} of {numPages}</p>
-          <button onClick={goToNextPage} disabled={pageNumber >= numPages} className="px-4 py-2 bg-gray-300 rounded-md disabled:opacity-50">Next</button>
+        <nav className="flex items-center justify-center gap-3 p-3 bg-gradient-to-r from-gray-100 to-gray-200 rounded-xl shadow-sm mb-4">
+          <button
+            onClick={goToPrevPage}
+            disabled={pageNumber <= 1}
+            className="px-4 py-2 bg-blue-600 text-white rounded-md disabled:opacity-50 hover:bg-blue-700 transition"
+          >
+            Prev
+          </button>
+          <p className="mx-4 text-gray-800 font-semibold">
+            Page {pageNumber} of {numPages}
+          </p>
+          <button
+            onClick={goToNextPage}
+            disabled={pageNumber >= numPages}
+            className="px-4 py-2 bg-blue-600 text-white rounded-md disabled:opacity-50 hover:bg-blue-700 transition"
+          >
+            Next
+          </button>
         </nav>
       )}
-      
-      <div className="flex justify-center border rounded-md overflow-hidden bg-gray-200">
-        {/* If there's an error, display it */}
+
+      {/* PDF Display */}
+      <div className="w-full max-w-4xl flex justify-center border rounded-lg overflow-hidden bg-gray-50 shadow-inner">
         {loadError ? (
-          <div className="p-8 text-red-600 bg-red-50">{loadError}</div>
+          <div className="p-8 text-center text-red-600 bg-red-50 w-full">
+            {loadError}
+          </div>
         ) : (
           <Document
             file={fileUrl}
@@ -55,7 +67,12 @@ function PDFViewer({ fileUrl }) {
             loading={<div className="p-8 text-gray-600">Loading PDF preview...</div>}
             error={<div className="p-8 text-red-600">Failed to load PDF file.</div>}
           >
-            <Page pageNumber={pageNumber} />
+            <Page
+              pageNumber={pageNumber}
+              scale={1.4} // 👈 better readability
+              renderAnnotationLayer={false}
+              renderTextLayer={false}
+            />
           </Document>
         )}
       </div>

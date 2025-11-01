@@ -29,7 +29,7 @@ function Navbar({ onMenuClick }) {
   return (
     <header className="sticky top-0 z-30 backdrop-blur-md bg-white/80 border-b border-gray-200/50 shadow-sm">
       <div className="w-full mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+        <div className="flex justify-between items-center h-14">
           {/* Left Side */}
           <div className="flex items-center space-x-4">
             <button
@@ -41,7 +41,7 @@ function Navbar({ onMenuClick }) {
             </button>
             <Link
               to="/"
-              className="text-xl font-bold gradient-text tracking-tight"
+              className="text-xl font-bold tracking-tight bg-gradient-to-br from-[#0b1f17] via-[#15322d] to-[#128c43] text-transparent bg-clip-text"
             >
               ArcShelf
             </Link>
@@ -51,9 +51,10 @@ function Navbar({ onMenuClick }) {
           <div className="flex items-center space-x-3">
             {user ? (
               <>
+                {/* Contribute Button */}
                 <Link
                   to="/submit"
-                  className="hidden sm:inline-flex items-center px-3 py-2 text-sm font-normal text-white bg-[#029456] rounded-sm shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                  className="hidden sm:inline-flex items-center px-3 py-2 text-sm font-normal text-white bg-[#16a34a] rounded-sm shadow-lg hover:bg-[#128c43] hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                 >
                   <svg
                     className="w-4 h-4 mr-2"
@@ -70,9 +71,11 @@ function Navbar({ onMenuClick }) {
                   </svg>
                   Contribute
                 </Link>
+
+                {/* User Profile Dropdown */}
                 <div className="relative group">
                   <button className="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-xl transition-all duration-200">
-                    <div className="w-8 h-8 bg-[#029456] rounded-full flex items-center justify-center text-white text-xs font-medium">
+                    <div className="w-8 h-8 bg-[#16a34a] rounded-full flex items-center justify-center text-white text-xs font-medium">
                       {user.result.name.charAt(0).toUpperCase()}
                     </div>
                     <span className="hidden sm:block">{user.result.name}</span>
@@ -100,15 +103,18 @@ function Navbar({ onMenuClick }) {
               </>
             ) : (
               <>
+                {/* Login Button */}
                 <Link
                   to="/login"
-                  className="text-sm font-normal text-gray-600 hover:text-gray-900 px-3 py-2 rounded-sm hover:bg-green-100 transition-all duration-200"
+                  className="text-sm font-normal text-gray-600 hover:text-gray-900 px-3 py-2 rounded-sm hover:bg-[#dcfce7] transition-all duration-200"
                 >
                   Login
                 </Link>
+
+                {/* Get Started Button */}
                 <Link
                   to="/register"
-                  className="hidden sm:inline-flex items-center px-4 py-2 text-sm font-normal text-white bg-[#029456] rounded-sm shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                  className="hidden sm:inline-flex items-center px-4 py-2 text-sm font-normal text-white bg-[#16a34a] rounded-sm shadow-lg hover:bg-[#128c43] hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                 >
                   Get Started
                 </Link>

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import * as api from "../api";
-import { Input } from '../components/forms/Input'; // Import the reusable Input component
+import { Input } from '../components/forms/Input';
 
 function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -27,14 +27,9 @@ function RegisterPage() {
     setLoading(true);
     setError("");
     try {
-      console.log("Attempting registration with:", formData);
       await api.register(formData);
-      console.log("Registration successful");
-      // On successful registration, redirect to login with a success message
       navigate("/login", { state: { message: "Registration successful! Please sign in." } });
     } catch (err) {
-      console.error("Registration error:", err);
-      console.error("Error response:", err.response?.data);
       setError(err.response?.data?.message || "Registration failed. Please try again.");
     } finally {
       setLoading(false);
@@ -42,16 +37,14 @@ function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-green-50 via-white to-green-100">
       <div className="max-w-md w-full space-y-8">
         {/* Header */}
         <div className="text-center">
-          <div className="mx-auto h-16 w-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center mb-6">
+          <div className="mx-auto h-16 w-16 bg-gradient-to-br from-[#0b1f17] via-[#15322d] to-[#128c43] rounded-2xl flex items-center justify-center mb-6 shadow-lg">
             <span className="text-2xl font-bold text-white">A</span>
           </div>
-          <h2 className="text-3xl font-bold text-gray-900">
-            Join ArcShelf
-          </h2>
+          <h2 className="text-3xl font-bold text-gray-900">Join ArcShelf</h2>
           <p className="mt-2 text-gray-600">
             Create your free account and start contributing
           </p>
@@ -80,7 +73,7 @@ function RegisterPage() {
               autoComplete="name"
               required
             />
-            
+
             <Input
               label="Email address"
               name="email"
@@ -117,15 +110,15 @@ function RegisterPage() {
                 name="terms"
                 type="checkbox"
                 required
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                className="h-4 w-4 text-[#16a34a] focus:ring-[#16a34a] border-gray-300 rounded"
               />
               <label htmlFor="terms" className="ml-2 block text-sm text-gray-700">
-                I agree to the{' '}
-                <a href="#" className="text-blue-600 hover:text-blue-500 font-medium">
+                I agree to the{" "}
+                <a href="#" className="text-[#128c43] hover:text-[#16a34a] font-medium">
                   Terms of Service
-                </a>{' '}
-                and{' '}
-                <a href="#" className="text-blue-600 hover:text-blue-500 font-medium">
+                </a>{" "}
+                and{" "}
+                <a href="#" className="text-[#128c43] hover:text-[#16a34a] font-medium">
                   Privacy Policy
                 </a>
               </label>
@@ -135,7 +128,7 @@ function RegisterPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="group relative w-full flex justify-center py-4 px-4 border border-transparent text-sm font-bold rounded-xl text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-4 focus:ring-blue-500/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-105"
+                className="group relative w-full flex justify-center py-4 px-4 border border-transparent text-sm font-bold rounded-xl text-white bg-gradient-to-r from-[#16a34a] to-[#128c43] hover:from-[#128c43] hover:to-[#0f7a38] focus:outline-none focus:ring-4 focus:ring-green-500/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-105 shadow-lg"
               >
                 {loading ? (
                   <div className="flex items-center">
@@ -146,7 +139,7 @@ function RegisterPage() {
                     Creating account...
                   </div>
                 ) : (
-                  'Create Account'
+                  "Create Account"
                 )}
               </button>
             </div>
@@ -158,14 +151,16 @@ function RegisterPage() {
                 <div className="w-full border-t border-gray-300" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">Already have an account?</span>
+                <span className="px-2 bg-white text-gray-500">
+                  Already have an account?
+                </span>
               </div>
             </div>
 
             <div className="mt-6">
-              <Link 
-                to="/login" 
-                className="w-full flex justify-center py-3 px-4 border-2 border-gray-300 rounded-xl text-sm font-semibold text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-gray-500/20 transition-all duration-300"
+              <Link
+                to="/login"
+                className="w-full flex justify-center py-3 px-4 border-2 border-gray-300 rounded-xl text-sm font-semibold text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-green-500/20 transition-all duration-300"
               >
                 Sign in to your account
               </Link>

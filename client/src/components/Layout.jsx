@@ -7,7 +7,7 @@ function Layout({ children }) {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-green-100">
       <Sidebar isOpen={isSidebarOpen} setIsOpen={setSidebarOpen} />
       
       <div className="flex flex-col min-h-screen">
