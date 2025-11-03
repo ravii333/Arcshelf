@@ -54,22 +54,9 @@ function Navbar({ onMenuClick }) {
                 {/* Contribute Button */}
                 <Link
                   to="/submit"
-                  className="hidden sm:inline-flex items-center px-3 py-2 text-sm font-normal text-white bg-[#16a34a] rounded-sm shadow-lg hover:bg-[#128c43] hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                  className="hidden sm:inline-flex items-center gap-x-2 px-3 py-2 text-sm font-normal text-white bg-[#16a34a] rounded-sm shadow-lg hover:bg-[#128c43] hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                 >
-                  <svg
-                    className="w-4 h-4 mr-2"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 4v16m8-8H4"
-                    />
-                  </svg>
-                  Contribute
+                ❤️  Contribute
                 </Link>
 
                 {/* User Profile Dropdown */}
