@@ -10,8 +10,8 @@ export const Input = ({ label, name, error, ...props }) => (
       <input
         id={name}
         name={name}
-        className={`block w-full px-4 py-3 bg-white border-2 rounded-xl text-gray-900 placeholder-gray-500 
-          focus:outline-none focus:ring-4 focus:ring-[#16a34a]/20 focus:border-[#16a34a] 
+        className={`block w-full px-4 py-3 bg-white border-1 rounded-xl text-gray-900 placeholder-gray-500 
+          focus:outline-none focus:ring-2 focus:ring-[#16a34a]/20 focus:border-[#16a34a] 
           transition-all duration-300 sm:text-sm 
           ${
             error

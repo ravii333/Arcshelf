@@ -12,8 +12,8 @@ export const Textarea = ({ label, name, error, ...props }) => (
         id={name}
         name={name}
         rows={4}
-        className={`block w-full px-4 py-3 bg-white border-2 rounded-xl text-gray-900 placeholder-gray-500 
-          focus:outline-none focus:ring-4 transition-all duration-300 sm:text-sm resize-none
+        className={`block w-full px-4 py-3 bg-white border-1 rounded-xl text-gray-900 placeholder-gray-500 
+          focus:outline-none focus:ring-2 transition-all duration-300 sm:text-sm resize-none
           ${
             error
               ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20'

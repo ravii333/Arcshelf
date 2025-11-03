@@ -7,8 +7,8 @@ export const Select = ({ label, name, children, error, ...props }) => (
       <select
         id={name}
         name={name}
-        className={`block w-full px-4 py-3 bg-white border-2 rounded-xl text-gray-900 
-          focus:outline-none focus:ring-4 transition-all duration-300 sm:text-sm appearance-none
+        className={`block w-full px-4 py-3 bg-white border-1 rounded-xl text-gray-900 
+          focus:outline-none focus:ring-2 transition-all duration-300 sm:text-sm appearance-none
           ${
             error
               ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20'
