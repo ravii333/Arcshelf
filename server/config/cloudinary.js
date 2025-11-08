@@ -1,4 +1,3 @@
-// server/config/cloudinary.js
 import { v2 as cloudinary } from 'cloudinary';
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
 import dotenv from 'dotenv';
@@ -11,14 +10,19 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
-
-// Configure storage for our question papers
 const storage = new CloudinaryStorage({
-  cloudinary: cloudinary,
-  params: {
-    folder: 'ArcShelf/papers', // A folder in Cloudinary to keep things organized
-    allowed_formats: ['pdf', 'jpg', 'jpeg', 'png'],
-    // You can add transformations here if you want
+  cloudinary,
+  params: async (req, file) => {
+    const ext = file.originalname.split('.').pop().toLowerCase();
+    const isPdf = ext === 'pdf';
+
+    return {
+      folder: 'ArcShelf/papers',
+      resource_type: isPdf ? 'raw' : 'image',
+      access_mode: 'public',
+      allowed_formats: ['pdf', 'jpg', 'jpeg', 'png'],
+      public_id: `${Date.now()}-${file.originalname.replace(/\s+/g, '-').toLowerCase()}`,
+    };
   },
 });
 

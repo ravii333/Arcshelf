@@ -26,6 +26,12 @@ function Navbar({ onMenuClick }) {
     }
   }, [location, user, navigate]);
 
+  const navLinks = [
+  { name: "Features", href: "#features" },
+  { name: "Resources", href: "#resources" },
+  { name: "Community", href: "#community" },
+];
+
   return (
     <header className="sticky top-0 z-30 backdrop-blur-md bg-white/80 border-b border-gray-200/50 shadow-sm">
       <div className="w-full mx-auto px-4 sm:px-6 lg:px-8">
@@ -45,6 +51,18 @@ function Navbar({ onMenuClick }) {
             >
               ArcShelf
             </Link>
+          </div>
+
+          <div className="hidden md:flex items-center gap-8">
+            {navLinks.map((link) => (
+              <a
+               key={link.name}
+               href={link.href}
+               className="text-sm font-medium text-gray-500 hover:text-[#128c43] transition-colors"
+              >
+                {link.name}
+              </a>
+            ))}
           </div>
 
           {/* Right Side */}

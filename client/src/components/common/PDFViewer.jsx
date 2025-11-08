@@ -3,7 +3,6 @@ import { Document, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 
-// Fix for worker path (for Vite or CRA)
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 function PDFViewer({ fileUrl }) {
@@ -19,9 +18,9 @@ function PDFViewer({ fileUrl }) {
   const onDocumentLoadError = (error) => {
     console.error('PDF Load Error:', error);
     if (error.message?.includes('CORS')) {
-      setLoadError("⚠️ Unable to preview PDF due to CORS restrictions. Please try downloading the file instead.");
+      setLoadError("Unable to preview PDF due to CORS restrictions. Please try downloading the file instead.");
     } else {
-      setLoadError(`❌ Failed to load PDF: ${error.message}`);
+      setLoadError(`Failed to load PDF: ${error.message}`);
     }
   };
 
@@ -32,11 +31,11 @@ function PDFViewer({ fileUrl }) {
     <div className="pdf-container w-full flex flex-col items-center">
       {/* Navigation */}
       {!loadError && numPages && (
-        <nav className="flex items-center justify-center gap-3 p-3 bg-gradient-to-r from-gray-100 to-gray-200 rounded-xl shadow-sm mb-4">
+        <nav className="flex items-center justify-center gap-3 p-1 bg-gradient-to-r from-gray-100 to-gray-200 rounded-xl shadow-sm mb-4">
           <button
             onClick={goToPrevPage}
             disabled={pageNumber <= 1}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md disabled:opacity-50 hover:bg-blue-700 transition"
+            className="px-4 py-2 bg-[#16a34a] text-white rounded-md disabled:opacity-50 hover:bg-bg-[#128c43] transition"
           >
             Prev
           </button>
@@ -46,7 +45,7 @@ function PDFViewer({ fileUrl }) {
           <button
             onClick={goToNextPage}
             disabled={pageNumber >= numPages}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md disabled:opacity-50 hover:bg-blue-700 transition"
+            className="px-4 py-2 bg-[#16a34a] text-white rounded-md disabled:opacity-50 hover:bg-[#128c43] transition"
           >
             Next
           </button>
@@ -69,7 +68,7 @@ function PDFViewer({ fileUrl }) {
           >
             <Page
               pageNumber={pageNumber}
-              scale={1.4} // 👈 better readability
+              scale={1.2}
               renderAnnotationLayer={false}
               renderTextLayer={false}
             />

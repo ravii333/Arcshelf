@@ -7,6 +7,7 @@ import questionRoutes from './routes/questions.js';
 import collegeRoutes from './routes/collegeRoutes.js'
 import connectDB from './config/db.js';
 import universityRoutes from './routes/universityRoutes.js'
+import pdfRoutes from './routes/pdfRoutes.js'
 
 dotenv.config();
 
@@ -22,6 +23,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/questions', questionRoutes);
 app.use('/api/colleges', collegeRoutes);
 app.use('/api/universities', universityRoutes);
+app.use("/api/pdf", pdfRoutes);
 
 app.get('/', (req, res) => {
   res.send('ArcShelf API is running!');

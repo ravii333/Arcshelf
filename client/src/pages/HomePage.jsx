@@ -10,24 +10,28 @@ import {
 import Card from "../components/common/Card";
 import ContributionCard from "../components/common/ContributionCard";
 import FeatureCard from "../components/common/FeatureCard";
+import { SparklesIcon } from "@heroicons/react/24/outline";
 
 // --- Section 1: The Hero Section ---
 const HeroSection = () => (
-  <section className="relative text-center pt-16 md:pt-24 pb-20">
+  <section className="relative text-center pt-5 md:pt-8 pb-20">
     {/* Background decoration */}
-    <div className="absolute inset-0 overflow-hidden">
-      <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-green-400/20 to-purple-600/20 rounded-full blur-3xl animate-float"></div>
+    <div className="absolute inset-0 overflow-hidden rounded-full">
+      <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-green-400/100 to-purple-500/30 rounded-full blur-3xl animate-float"></div>
       <div
         className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-tr from-green-400/20 to-blue-600/20 rounded-full blur-3xl animate-float"
-        style={{ animationDelay: "1s" }}
+        style={{ animationDelay: "2s" }}
       ></div>
     </div>
-
+  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-br from-[#41eaa7] via-[#224e46] to-[#0d9e47] text-white border border-primary/20 animate-fade-in mb-10">
+            <SparklesIcon className="w-4 h-4" />
+            <span className="text-sm font-medium">Empowering Student Success</span>
+          </div>
     <div className="relative z-10">
       <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight">
-        <span className="gradient-text">Unlock Your</span>
+        <span className="gradient-text">Learn, Grow, and</span>
         <br />
-        <span className="text-gray-900">Exam Success</span>
+        <span className="text-gray-900">Achieve Your Goals</span>
       </h1>
       <p className="mt-6 max-w-3xl mx-auto text-xl md:text-2xl text-gray-600 leading-relaxed">
         ArcShelf is a collaborative, open-source archive of previous years'
@@ -72,6 +76,24 @@ const HeroSection = () => (
         </p>
       </div>
     </div>
+
+   <div className="grid grid-cols-3 gap-8 pt-12 max-w-2xl mx-auto text-center">
+  <div className="space-y-2 animate-float">
+    <div className="text-3xl md:text-4xl font-bold text-blue-600 dark:text-blue-500">10K+</div>
+    <div className="text-sm text-gray-500 dark:text-gray-400">Active Students</div>
+  </div>
+
+  <div className="space-y-2 animate-float [animation-delay:0.3s]">
+    <div className="text-3xl md:text-4xl font-bold text-purple-600 dark:text-purple-500">500+</div>
+    <div className="text-sm text-gray-500 dark:text-gray-400">Resources</div>
+  </div>
+
+  <div className="space-y-2 animate-float [animation-delay:0.6s]">
+   <div className="text-3xl md:text-4xl font-bold text-rose-500 dark:text-rose-500">98%</div>
+    <div className="text-sm text-gray-500 dark:text-gray-400">Satisfaction</div>
+  </div>
+</div>
+
   </section>
 );
 
