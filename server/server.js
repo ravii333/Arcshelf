@@ -19,11 +19,11 @@ app.use(express.urlencoded({ limit: '30mb', extended: true }));
 app.use(cors());
 
 // --- API Routes ---
-app.use('/api/auth', authRoutes);
-app.use('/api/questions', questionRoutes);
-app.use('/api/colleges', collegeRoutes);
-app.use('/api/universities', universityRoutes);
-app.use("/api/pdf", pdfRoutes);
+app.use('/auth', authRoutes);
+app.use('/questions', questionRoutes);
+app.use('/colleges', collegeRoutes);
+app.use('/universities', universityRoutes);
+app.use("/pdf", pdfRoutes);
 
 app.get('/', (req, res) => {
   res.send('ArcShelf API is running!');
