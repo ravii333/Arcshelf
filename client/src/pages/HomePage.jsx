@@ -79,12 +79,12 @@ const HeroSection = () => (
 
    <div className="grid grid-cols-3 gap-8 pt-12 max-w-2xl mx-auto text-center">
   <div className="space-y-2 animate-float">
-    <div className="text-3xl md:text-4xl font-bold text-blue-600 dark:text-blue-500">10K+</div>
+    <div className="text-3xl md:text-4xl font-bold text-blue-600 dark:text-blue-500">1K+</div>
     <div className="text-sm text-gray-500 dark:text-gray-400">Active Students</div>
   </div>
 
   <div className="space-y-2 animate-float [animation-delay:0.3s]">
-    <div className="text-3xl md:text-4xl font-bold text-purple-600 dark:text-purple-500">500+</div>
+    <div className="text-3xl md:text-4xl font-bold text-purple-600 dark:text-purple-500">50+</div>
     <div className="text-sm text-gray-500 dark:text-gray-400">Resources</div>
   </div>
 
