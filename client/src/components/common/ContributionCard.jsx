@@ -4,10 +4,11 @@ import { styled } from '@mui/material/styles';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import DescriptionIcon from '@mui/icons-material/Description';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
+import PaperBadge from './PaperBadge';
 
 const GRADIENTS = [
   'linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%)',
-  'linear-gradient(135deg, #16a34a 0%, #0d9488 100%)',
+  'linear-gradient(135deg, #10b981 0%, #059669 100%)', // Option B emerald
   'linear-gradient(135deg, #f59e0b 0%, #ef4444 100%)',
   'linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)',
   'linear-gradient(135deg, #0ea5e9 0%, #10b981 100%)',
@@ -28,14 +29,17 @@ const StyledCard = styled(Card)(({ theme }) => ({
   height: '100%',
   display: 'flex',
   flexDirection: 'column',
-  borderRadius: theme.spacing(2),
-  border: `1px solid ${theme.palette.grey[200]}`,
-  transition: 'all 0.3s ease',
+  borderRadius: theme.spacing(2), // 16px
+  borderColor: theme.palette.divider,
+  transition: 'all 250ms cubic-bezier(0.22, 1, 0.36, 1)',
   textDecoration: 'none',
+  backgroundColor: '#ffffff',
+  overflow: 'hidden',
   '&:hover': {
-    boxShadow: theme.shadows[8],
-    transform: 'translateY(-4px)',
-    '& .card-title': { color: '#128c43' },
+    transform: 'translateY(-6px)',
+    boxShadow: '0 12px 40px rgba(0,0,0,0.12)',
+    borderColor: theme.palette.primary[200],
+    '& .card-title': { color: theme.palette.primary[700] },
     '& .card-arrow': { transform: 'translateX(4px)' },
     '& .card-overlay': { opacity: 1 },
   },
@@ -44,22 +48,22 @@ const StyledCard = styled(Card)(({ theme }) => ({
 const Overlay = styled(Box)({
   position: 'absolute',
   inset: 0,
-  background: 'linear-gradient(to top, rgba(0,0,0,0.45), transparent)',
+  background: 'rgba(0, 0, 0, 0.3)',
   opacity: 0,
-  transition: 'opacity 0.3s',
-  borderRadius: 'inherit',
+  transition: 'opacity 200ms ease',
+  zIndex: 1,
 });
 
 const ContributionCard = ({ question }) => {
   const gradient = getGradient(question._id || question.subject);
 
   return (
-    <StyledCard component={Link} to={`/questions/${question._id}`} sx={{ color: 'inherit' }}>
+    <StyledCard component={Link} to={`/questions/${question._id}`}>
       {/* Thumbnail */}
       <Box
         sx={{
           position: 'relative',
-          height: 140,
+          height: 150,
           background: gradient,
           display: 'flex',
           flexDirection: 'column',
@@ -72,14 +76,14 @@ const ContributionCard = ({ question }) => {
       >
         <Overlay className="card-overlay" />
 
-        <DescriptionIcon sx={{ color: 'rgba(255,255,255,0.65)', fontSize: 40 }} />
+        <DescriptionIcon sx={{ color: 'rgba(255,255,255,0.5)', fontSize: 48, position: 'relative', zIndex: 2 }} />
         <Typography
-          variant="caption"
+          variant="body2"
           sx={{
-            color: 'rgba(255,255,255,0.9)',
+            color: 'rgba(255,255,255,0.85)',
             fontWeight: 600,
             textAlign: 'center',
-            fontSize: '0.75rem',
+            fontSize: '13px',
             lineHeight: 1.3,
             overflow: 'hidden',
             textOverflow: 'ellipsis',
@@ -87,61 +91,75 @@ const ContributionCard = ({ question }) => {
             WebkitLineClamp: 2,
             WebkitBoxOrient: 'vertical',
             maxWidth: '90%',
+            fontFamily: '"Inter", sans-serif',
+            position: 'relative',
+            zIndex: 2,
           }}
         >
           {question.subject}
         </Typography>
 
-        {/* Chips */}
-        <Chip
-          label={question.year}
-          size="small"
+        {/* Year Chip (top-right) */}
+        <Box
           sx={{
             position: 'absolute',
-            top: 10,
-            right: 10,
+            top: 12,
+            right: 12,
             bgcolor: 'rgba(255,255,255,0.9)',
-            backdropFilter: 'blur(8px)',
-            fontSize: '0.625rem',
+            color: 'neutral.900',
+            fontSize: '11px',
             fontWeight: 700,
-            height: 20,
+            px: 1,
+            py: 0.25,
+            borderRadius: '6px',
+            zIndex: 2,
+            lineHeight: 1.5,
           }}
-        />
-        <Chip
-          label={question.course}
-          size="small"
+        >
+          {question.year}
+        </Box>
+
+        {/* Course Chip (top-left) */}
+        <Box
           sx={{
             position: 'absolute',
-            top: 10,
-            left: 10,
+            top: 12,
+            left: 12,
             bgcolor: 'rgba(0,0,0,0.35)',
-            color: 'white',
-            fontSize: '0.625rem',
+            color: '#ffffff',
+            fontSize: '11px',
             fontWeight: 700,
-            height: 20,
+            px: 1.2,
+            py: 0.25,
+            borderRadius: '6px',
             maxWidth: '55%',
-            '& .MuiChip-label': {
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-            },
+            zIndex: 2,
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            lineHeight: 1.5,
           }}
-        />
+        >
+          {question.course}
+        </Box>
       </Box>
 
-      <CardContent sx={{ flex: 1, display: 'flex', flexDirection: 'column', p: 2 }}>
+      {/* Card Content */}
+      <CardContent sx={{ p: '14px', flex: 1, display: 'flex', flexDirection: 'column' }}>
         <Typography
           variant="body2"
           className="card-title"
           sx={{
             fontWeight: 600,
+            fontSize: '14px',
+            color: 'neutral.800',
             mb: 0.75,
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             display: '-webkit-box',
             WebkitLineClamp: 2,
             WebkitBoxOrient: 'vertical',
-            transition: 'color 0.25s',
+            transition: 'color 200ms ease',
             lineHeight: 1.4,
           }}
         >
@@ -150,45 +168,47 @@ const ContributionCard = ({ question }) => {
 
         <Typography
           variant="caption"
-          color="text.secondary"
           sx={{
-            flex: 1,
+            color: 'neutral.400',
+            fontSize: '12px',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             display: '-webkit-box',
             WebkitLineClamp: 1,
             WebkitBoxOrient: 'vertical',
+            mb: 2,
           }}
         >
           {question.college?.name}
-          {question.college?.university?.name && `, ${question.college.university.name}`}
+          {question.college?.university?.name && ` · ${question.college.university.name}`}
         </Typography>
 
+        {/* Card Footer Row */}
         <Box
           sx={{
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
+            mt: 'auto',
             pt: 1.25,
-            mt: 1,
             borderTop: '1px solid',
-            borderColor: 'divider',
+            borderColor: 'neutral.100',
           }}
         >
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-            <FiberManualRecordIcon sx={{ fontSize: 7, color: '#16a34a' }} />
-            <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>
+            <FiberManualRecordIcon sx={{ fontSize: 7, color: 'primary.500' }} />
+            <Typography variant="caption" sx={{ fontSize: '11px', color: 'neutral.500', fontWeight: 500 }}>
               {question.examType}
             </Typography>
           </Box>
 
-          <Box sx={{ display: 'flex', alignItems: 'center', color: '#16a34a' }}>
-            <Typography variant="caption" sx={{ fontWeight: 600, mr: 0.4, fontSize: '0.7rem' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', color: 'primary.600', transition: 'color 200ms' }}>
+            <Typography variant="caption" sx={{ fontWeight: 600, mr: 0.4, fontSize: '11px' }}>
               View
             </Typography>
             <ArrowForwardIcon
               className="card-arrow"
-              sx={{ fontSize: 13, transition: 'transform 0.25s' }}
+              sx={{ fontSize: 13, transition: 'transform 250ms var(--ease-out-quint)' }}
             />
           </Box>
         </Box>

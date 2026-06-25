@@ -31,3 +31,8 @@ export const fetchUniversities = () => API.get('/universities');
 export const createUniversity = (newUniversity) => API.post('/universities', newUniversity);
 
 export const fetchCollegesByUniversity = (universityId) => API.get(`/colleges/by-university/${universityId}`);
+
+// User Dashboard & Profile routes
+export const fetchMyQuestions = () => API.get('/questions/my');
+export const deleteQuestion = (id) => API.delete(`/questions/${id}`);
+export const updateProfile = (formData) => API.patch('/auth/update-profile', formData);

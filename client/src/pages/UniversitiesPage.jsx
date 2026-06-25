@@ -1,6 +1,29 @@
 import React, { useState, useEffect } from 'react';
+import {
+  Box,
+  Container,
+  Grid,
+  Typography,
+  Paper,
+  Button,
+  TextField,
+  Card,
+  CardContent,
+  Chip,
+  IconButton,
+  CircularProgress,
+  Alert,
+  Avatar,
+  Divider,
+} from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import SchoolIcon from '@mui/icons-material/School';
+import PlaceIcon from '@mui/icons-material/Place';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import * as api from '../api';
-import { Input } from '../components/forms/Input';
+import EmptyState from '../components/common/EmptyState';
 
 const UniversitiesPage = () => {
   const [universities, setUniversities] = useState([]);
@@ -49,80 +72,193 @@ const UniversitiesPage = () => {
   };
 
   return (
-    <div className="p-4 lg:p-6">
-      <h1 className="text-2xl font-bold text-gray-900">Manage Universities</h1>
-      <p className="mt-1 text-sm text-gray-600">Add, edit, or remove universities from the platform.</p>
+    <Container maxWidth="xl" sx={{ px: { xs: 2, sm: 3, md: 4, lg: 5 }, py: 4 }}>
+      {/* Header */}
+      <Box sx={{ mb: 4 }}>
+        <Typography
+          variant="h4"
+          sx={{
+            fontWeight: 700,
+            fontSize: { xs: "1.75rem", md: "2.25rem" },
+            fontFamily: '"Plus Jakarta Sans", sans-serif',
+            color: "neutral.900",
+            mb: 0.5,
+          }}
+        >
+          Manage Universities
+        </Typography>
+        <Typography variant="body2" color="neutral.500" sx={{ fontWeight: 500 }}>
+          Add, edit, or remove universities from the platform.
+        </Typography>
+      </Box>
 
-      <div className="mt-8 grid grid-cols-1 gap-10 lg:grid-cols-3">
-        {/* --- Form Section --- */}
-        <div className="lg:col-span-1">
-          <form
-            onSubmit={handleSubmit}
-            className="space-y-6 bg-white p-6 rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-300"
+      {error && (
+        <Alert severity="error" sx={{ mb: 3, borderRadius: "10px" }}>
+          {error}
+        </Alert>
+      )}
+
+      <Grid container spacing={4}>
+        {/* --- Left Column: Add Form --- */}
+        <Grid item xs={12} lg={4}>
+          <Paper
+            elevation={0}
+            sx={{
+              p: "28px",
+              border: "1px solid",
+              borderColor: "neutral.200",
+              borderRadius: 5,
+              bgcolor: "neutral.0",
+            }}
           >
-            <h2 className="text-lg font-semibold text-gray-900">Add New University</h2>
-            {error && <p className="text-sm text-red-600">{error}</p>}
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 3 }}>
+              <Avatar sx={{ width: 36, height: 36, bgcolor: "primary.50" }}>
+                <SchoolIcon sx={{ color: "primary.700", fontSize: 20 }} />
+              </Avatar>
+              <Typography variant="h6" sx={{ fontWeight: 700, color: "neutral.800" }}>
+                Add New University
+              </Typography>
+            </Box>
 
-            <Input
-              label="University Name"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              placeholder="e.g., Stanford University"
-              required
-            />
-            <Input
-              label="URL Slug"
-              name="slug"
-              value={formData.slug}
-              onChange={handleChange}
-              placeholder="e.g., stanford"
-              required
-            />
-            <Input
-              label="Location (Optional)"
-              name="location"
-              value={formData.location}
-              onChange={handleChange}
-              placeholder="e.g., Stanford, CA"
-            />
+            <Box component="form" onSubmit={handleSubmit} sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+              <TextField
+                label="University Name"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                placeholder="e.g., Stanford University"
+                required
+                fullWidth
+              />
 
-            {/* ✅ Updated Add Button (green gradient) */}
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full rounded-xl bg-gradient-to-r from-emerald-500 to-green-600 text-white py-3 font-semibold shadow-md hover:from-emerald-600 hover:to-green-700 hover:shadow-lg transition-all duration-300 disabled:opacity-60"
-            >
-              {isSubmitting ? 'Adding...' : 'Add University'}
-            </button>
-          </form>
-        </div>
+              <TextField
+                label="URL Slug"
+                name="slug"
+                value={formData.slug}
+                onChange={handleChange}
+                placeholder="e.g., stanford"
+                required
+                fullWidth
+                helperText="Auto-generated from name"
+              />
 
-        {/* --- List Section --- */}
-        <div className="lg:col-span-2">
-          <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-300">
-            <h2 className="text-lg font-semibold text-gray-900">Existing Universities</h2>
+              <TextField
+                label="Location (Optional)"
+                name="location"
+                value={formData.location}
+                onChange={handleChange}
+                placeholder="e.g., Stanford, CA"
+                fullWidth
+              />
+
+              <Button
+                type="submit"
+                variant="contained"
+                disabled={isSubmitting}
+                startIcon={isSubmitting ? <CircularProgress size={18} sx={{ color: "white" }} /> : <AddIcon />}
+                sx={{
+                  height: 44,
+                  backgroundImage: "linear-gradient(135deg, #059669 0%, #047857 100%)",
+                  "&:hover": {
+                    backgroundImage: "linear-gradient(135deg, #047857 0%, #064e3b 100%)",
+                    boxShadow: "var(--shadow-brand)",
+                  },
+                }}
+              >
+                {isSubmitting ? 'Adding...' : 'Add University'}
+              </Button>
+            </Box>
+          </Paper>
+        </Grid>
+
+        {/* --- Right Column: List Section --- */}
+        <Grid item xs={12} lg={8}>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 2.5 }}>
+            <Typography variant="h6" sx={{ fontWeight: 700, color: "neutral.800", mb: 0.5 }}>
+              All Universities ({universities.length})
+            </Typography>
+
             {loading ? (
-              <p className="mt-4 text-gray-500">Loading...</p>
+              <Box sx={{ display: "flex", justifyContent: "center", py: 6 }}>
+                <CircularProgress sx={{ color: "primary.main" }} />
+              </Box>
+            ) : universities.length === 0 ? (
+              <EmptyState
+                icon={<SchoolIcon />}
+                title="No universities added yet"
+                description="Use the form on the left to add the first university to the platform."
+              />
             ) : (
-              <ul className="mt-4 space-y-3">
+              <Grid container spacing={2.5}>
                 {universities.map((uni) => (
-                  <li
-                    key={uni._id}
-                    className="p-4 bg-gray-50 rounded-xl border border-gray-200 hover:border-emerald-300 hover:bg-emerald-50/40 transition-all duration-200"
-                  >
-                    <p className="font-semibold text-gray-900">{uni.name}</p>
-                    <p className="text-sm text-gray-600 font-medium">
-                      {uni.slug} — {uni.location || 'No location'}
-                    </p>
-                  </li>
+                  <Grid item xs={12} sm={6} key={uni._id}>
+                    <Card
+                      elevation={0}
+                      sx={{
+                        border: "1px solid",
+                        borderColor: "neutral.200",
+                        borderRadius: 3.5,
+                        bgcolor: "neutral.0",
+                        height: "100%",
+                        '&:hover': {
+                          transform: "translateY(-2px)",
+                          boxShadow: "0 6px 16px rgba(0,0,0,0.04)",
+                        }
+                      }}
+                    >
+                      <CardContent sx={{ p: 2.5, display: "flex", flexDirection: "column", height: "100%" }}>
+                        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 1, mb: 1.5 }}>
+                          <Typography variant="body1" sx={{ fontWeight: 700, color: "neutral.800", lineHeight: 1.3 }}>
+                            {uni.name}
+                          </Typography>
+                          <Box sx={{ display: "flex", gap: 0.5, flexShrink: 0 }}>
+                            <IconButton size="small" disabled sx={{ color: "neutral.300" }}>
+                              <EditIcon fontSize="small" />
+                            </IconButton>
+                            <IconButton size="small" disabled sx={{ color: "neutral.300" }}>
+                              <DeleteIcon fontSize="small" />
+                            </IconButton>
+                          </Box>
+                        </Box>
+
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1, color: "neutral.500" }}>
+                          <PlaceIcon sx={{ fontSize: 16 }} />
+                          <Typography variant="body2" sx={{ fontSize: "13px" }}>
+                            {uni.location || "No location specified"}
+                          </Typography>
+                        </Box>
+
+                        {uni.createdAt && (
+                          <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2, color: "neutral.400" }}>
+                            <CalendarTodayIcon sx={{ fontSize: 14 }} />
+                            <Typography variant="caption" sx={{ fontSize: "11px" }}>
+                              Added: {new Date(uni.createdAt).toLocaleDateString()}
+                            </Typography>
+                          </Box>
+                        )}
+
+                        <Box sx={{ mt: "auto", pt: 1.5 }}>
+                          <Chip
+                            label={`slug: ${uni.slug}`}
+                            size="small"
+                            sx={{
+                              bgcolor: "neutral.100",
+                              color: "neutral.600",
+                              fontWeight: 600,
+                              fontSize: "11px",
+                            }}
+                          />
+                        </Box>
+                      </CardContent>
+                    </Card>
+                  </Grid>
                 ))}
-              </ul>
+              </Grid>
             )}
-          </div>
-        </div>
-      </div>
-    </div>
+          </Box>
+        </Grid>
+      </Grid>
+    </Container>
   );
 };
 

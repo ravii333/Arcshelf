@@ -23,7 +23,7 @@ const QuestionSchema = new mongoose.Schema(
     examType: { 
       type: String, 
       required: true, 
-      enum: ["Mid Sem", "Final Sem"] 
+      enum: ["Mid Sem", "Final Sem", "Quiz", "Assignment"] 
     },
     year: { 
       type: Number, 

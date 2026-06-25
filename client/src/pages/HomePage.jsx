@@ -8,39 +8,23 @@ import {
   InputAdornment,
   Button,
   Grid,
-  Chip,
   CircularProgress,
-  Paper,
-  Avatar,
 } from "@mui/material";
-import { styled, keyframes } from "@mui/material/styles";
 import SearchIcon from "@mui/icons-material/Search";
 import BookIcon from "@mui/icons-material/Book";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import PeopleIcon from "@mui/icons-material/People";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
-import InfoIcon from "@mui/icons-material/Info";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import * as api from "../api";
 import ContributionCard from "../components/common/ContributionCard";
 import FeatureCard from "../components/common/FeatureCard";
+import StatCard from "../components/common/StatCard";
+import SectionHeader from "../components/common/SectionHeader";
+import EmptyState from "../components/common/EmptyState";
+import DashboardPage from "./DashboardPage";
 
-const floatAnimation = keyframes`
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-20px); }
-`;
-
-const FloatingBox = styled(Box)(() => ({
-  animation: `${floatAnimation} 6s ease-in-out infinite`,
-}));
-
-const FloatingBoxDelayed = styled(Box)(() => ({
-  animation: `${floatAnimation} 6s ease-in-out infinite`,
-  animationDelay: "2s",
-}));
-
-// --- Section 1: The Hero Section ---
+// --- Hero Section ---
 function HeroSection({ searchQuery, onSearchChange, onSearch }) {
   return (
     <Box
@@ -48,358 +32,513 @@ function HeroSection({ searchQuery, onSearchChange, onSearch }) {
       sx={{
         position: "relative",
         textAlign: "center",
-        pt: { xs: 3, md: 5 },
-        pb: 10,
+        pt: { xs: 8, md: 12 },
+        pb: { xs: 8, md: 12 },
         overflow: "hidden",
+        background: "linear-gradient(160deg, #ecfdf5 0%, #f8fafc 45%, #eff6ff 100%)",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        width: "100%",
       }}
     >
-      {/* Background decoration */}
-      <Box sx={{ position: "absolute", inset: 0, overflow: "hidden", zIndex: 0 }}>
-        <FloatingBox
-          sx={{
-            position: "absolute",
-            top: -160,
-            right: -160,
-            width: 320,
-            height: 320,
-            background: "linear-gradient(135deg, rgba(34, 197, 94, 1) 0%, rgba(168, 85, 247, 0.3) 100%)",
-            borderRadius: "50%",
-            filter: "blur(60px)",
-          }}
-        />
-        <FloatingBoxDelayed
-          sx={{
-            position: "absolute",
-            bottom: -160,
-            left: -160,
-            width: 320,
-            height: 320,
-            background: "linear-gradient(135deg, rgba(34, 197, 94, 0.2) 0%, rgba(37, 99, 235, 0.2) 100%)",
-            borderRadius: "50%",
-            filter: "blur(60px)",
-          }}
-        />
-      </Box>
-
-      <Chip
-        icon={<AutoAwesomeIcon />}
-        label="Empowering Student Success"
+      {/* Decorative Blobs */}
+      <Box
         sx={{
-          mb: 5,
-          background: "linear-gradient(135deg, #41eaa7 0%, #224e46 50%, #0d9e47 100%)",
-          color: "white",
-          fontWeight: 600,
-          border: "1px solid rgba(22, 163, 74, 0.2)",
+          position: "absolute",
+          top: -100,
+          right: -100,
+          width: 500,
+          height: 500,
+          background: "rgba(16, 185, 129, 0.12)",
+          borderRadius: "50%",
+          filter: "blur(120px)",
+          pointerEvents: "none",
+          zIndex: 0,
         }}
+        className="animate-float-1"
+      />
+      <Box
+        sx={{
+          position: "absolute",
+          bottom: -100,
+          left: -100,
+          width: 400,
+          height: 400,
+          background: "rgba(99, 102, 241, 0.08)",
+          borderRadius: "50%",
+          filter: "blur(100px)",
+          pointerEvents: "none",
+          zIndex: 0,
+        }}
+        className="animate-float-2"
       />
 
-      <Box sx={{ position: "relative", zIndex: 1 }}>
-        <Typography
-          variant="h2"
-          sx={{
-            fontSize: { xs: "3rem", md: "5rem" },
-            fontWeight: 800,
-            mb: 3,
-            background: "linear-gradient(135deg, #0b1f17 0%, #15322d 50%, #128c43 100%)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-          }}
-        >
-          Learn, Grow, and
-          <br />
-          <Typography
-            component="span"
-            variant="h2"
-            sx={{ fontSize: { xs: "3rem", md: "5rem" }, fontWeight: 800, color: "text.primary" }}
+      <Container maxWidth="xl" sx={{ px: { xs: 2, sm: 3, md: 4, lg: 5 }, position: "relative", zIndex: 1 }}>
+        <Box sx={{ maxWidth: 780, mx: "auto", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", width: "100%" }}>
+          {/* Announcement Chip */}
+          <Box
+            sx={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 1.25,
+              px: 2,
+              py: 0.75,
+              mb: 4,
+              background: "linear-gradient(135deg, rgba(5, 150, 105, 0.1) 0%, rgba(99, 102, 241, 0.08) 100%)",
+              border: "1px solid rgba(5, 150, 105, 0.2)",
+              borderRadius: "9999px",
+              color: "primary.700",
+              boxShadow: "0 2px 8px rgba(5, 150, 105, 0.05)",
+            }}
           >
-            Achieve Your Goals
+            <Box
+              sx={{
+                width: 6,
+                height: 6,
+                borderRadius: "50%",
+                bgcolor: "primary.600",
+              }}
+              className="animate-pulse-dot"
+            />
+            <AutoAwesomeIcon sx={{ fontSize: 14 }} />
+            <Typography variant="caption" sx={{ fontWeight: 700, letterSpacing: "0.02em" }}>
+              Empowering 1000+ Students
+            </Typography>
+          </Box>
+
+          {/* H1 Title */}
+          <Typography
+            variant="h1"
+            align="center"
+            sx={{
+              fontSize: { xs: "2.5rem", sm: "3.5rem", md: "4rem" },
+              fontWeight: 800,
+              mb: 2.5,
+              lineHeight: 1.1,
+              letterSpacing: "-0.03em",
+              textAlign: "center",
+              width: "100%",
+            }}
+          >
+            <Box
+              component="span"
+              sx={{
+                background: "linear-gradient(135deg, #064e3b 0%, #059669 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                display: "block",
+                mb: 0.5,
+                animation: "fadeInUp 500ms var(--ease-out-quint) forwards",
+                textAlign: "center",
+              }}
+            >
+              Learn, Grow, and
+            </Box>
+            <Box
+              component="span"
+              sx={{
+                color: "neutral.900",
+                animation: "fadeInUp 700ms var(--ease-out-quint) forwards",
+                display: "block",
+                textAlign: "center",
+              }}
+            >
+              Achieve Your Goals
+            </Box>
           </Typography>
-        </Typography>
 
-        <Typography
-          variant="h6"
-          sx={{ maxWidth: "48rem", mx: "auto", mb: 6, color: "text.secondary", lineHeight: 1.8 }}
-        >
-          ArcShelf is a collaborative, open-source archive of previous years&apos; university exam papers.{" "}
-          <Typography component="span" sx={{ fontWeight: 600, color: "text.primary" }}>
-            Search, prepare, and contribute
-          </Typography>{" "}
-          to help students excel.
-        </Typography>
+          {/* Subtitle */}
+          <Typography
+            variant="body1"
+            align="center"
+            sx={{
+              maxWidth: 520,
+              mx: "auto",
+              mb: 5,
+              color: "neutral.500",
+              fontSize: { xs: "0.9375rem", md: "1rem" },
+              lineHeight: 1.65,
+              textAlign: "center",
+              width: "100%",
+            }}
+          >
+            ArcShelf is a collaborative open-source archive of previous years' university exam papers.{" "}
+            <Box component="span" sx={{ fontWeight: 600, color: "neutral.800" }}>
+              Search, prepare, and contribute
+            </Box>{" "}
+            to help students excel.
+          </Typography>
 
-        <Box sx={{ maxWidth: "42rem", mx: "auto", mt: 6 }}>
-          <Box sx={{ display: "flex", gap: 1 }}>
+          {/* Search Input Container */}
+          <Box
+            sx={{
+              width: "100%",
+              maxWidth: 600,
+              mx: "auto",
+              mb: 3,
+              display: "flex",
+              flexDirection: { xs: "column", sm: "row" },
+              gap: 1.5,
+            }}
+          >
             <TextField
               fullWidth
-              placeholder="Search for a subject, course, or college..."
-              variant="outlined"
+              placeholder="Search subjects, courses, colleges..."
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && onSearch()}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  height: 52,
+                  bgcolor: "neutral.0",
+                  borderRadius: "12px",
+                  boxShadow: "0 1px 3px rgba(0,0,0,0.06), 0 2px 6px rgba(0,0,0,0.08)",
+                  transition: "all 200ms ease",
+                  '& fieldset': { borderColor: "neutral.200", borderWidth: "1.5px" },
+                  '&:hover fieldset': { borderColor: "neutral.300" },
+                  '&.Mui-focused': {
+                    boxShadow: "0 0 0 4px rgba(5,150,105,0.15)",
+                    '& fieldset': { borderColor: "primary.500", borderWidth: "2px" },
+                  }
+                }
+              }}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <SearchIcon sx={{ color: "text.secondary" }} />
+                    <SearchIcon sx={{ color: "neutral.400", ml: 0.5 }} />
                   </InputAdornment>
                 ),
-                sx: {
-                  bgcolor: "rgba(255, 255, 255, 0.8)",
-                  backdropFilter: "blur(10px)",
-                  "&:hover": { boxShadow: 3 },
-                  "&.Mui-focused": {
-                    borderColor: "#16a34a",
-                    boxShadow: "0 0 0 4px rgba(22, 163, 74, 0.2)",
-                  },
-                },
+                endAdornment: (
+                  <InputAdornment position="end" sx={{ display: { xs: "none", sm: "flex" } }}>
+                    <Box
+                      sx={{
+                        border: "1px solid",
+                        borderColor: "neutral.200",
+                        bgcolor: "neutral.50",
+                        borderRadius: "6px",
+                        px: 1,
+                        py: 0.25,
+                        color: "neutral.400",
+                        fontSize: "11px",
+                        fontWeight: 700,
+                        userSelect: "none",
+                      }}
+                    >
+                      ⏎
+                    </Box>
+                  </InputAdornment>
+                ),
               }}
             />
             <Button
               variant="contained"
               onClick={onSearch}
               sx={{
-                bgcolor: "#16a34a",
-                "&:hover": { bgcolor: "#128c43", transform: "scale(1.05)" },
-                minWidth: 120,
-                px: 3,
+                height: 52,
+                px: 4,
+                borderRadius: "12px",
+                bgcolor: "primary.600",
+                fontWeight: 600,
+                fontSize: "0.9375rem",
+                backgroundImage: "linear-gradient(135deg, #059669 0%, #047857 100%)",
+                flexShrink: 0,
+                "&:hover": {
+                  backgroundImage: "linear-gradient(135deg, #047857 0%, #064e3b 100%)",
+                  transform: "translateY(-1px) scale(1.02)",
+                  boxShadow: "var(--shadow-brand)",
+                },
               }}
-              startIcon={<SearchIcon />}
+              endIcon={<ArrowForwardIcon />}
             >
               Search
             </Button>
           </Box>
-          <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", mt: 2, gap: 1 }}>
-            <InfoIcon sx={{ fontSize: 16, color: "text.secondary" }} />
-            <Typography variant="caption" color="text.secondary">
-              Or, browse the full archive in the sidebar
+
+          <Box sx={{ display: "flex", justifyContent: "center", gap: 0.75, alignItems: "center", width: "100%" }}>
+            <Typography variant="body2" color="neutral.500" sx={{ fontSize: "13px" }}>
+              or
             </Typography>
+            <Link
+              to="/browse"
+              style={{
+                color: "#047857",
+                fontWeight: 600,
+                fontSize: "13px",
+                textDecoration: "none",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 2,
+              }}
+            >
+              Browse all papers
+              <ArrowForwardIcon sx={{ fontSize: 13 }} />
+            </Link>
           </Box>
         </Box>
-
-        <Grid container spacing={4} sx={{ maxWidth: "42rem", mx: "auto", mt: 6, pt: 6 }}>
-          <Grid item xs={12} sm={4}>
-            <FloatingBox>
-              <Box sx={{ textAlign: "center" }}>
-                <Typography variant="h3" sx={{ fontWeight: 700, color: "#2563eb", mb: 1 }}>
-                  1K+
-                </Typography>
-                <Typography variant="caption" color="text.secondary" sx={{ display: "block" }}>
-                  Active Students
-                </Typography>
-              </Box>
-            </FloatingBox>
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <Box sx={{ animation: `${floatAnimation} 6s ease-in-out infinite`, animationDelay: "0.3s" }}>
-              <Box sx={{ textAlign: "center" }}>
-                <Typography variant="h3" sx={{ fontWeight: 700, color: "#9333ea", mb: 1 }}>
-                  50+
-                </Typography>
-                <Typography variant="caption" color="text.secondary" sx={{ display: "block" }}>
-                  Resources
-                </Typography>
-              </Box>
-            </Box>
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <Box sx={{ animation: `${floatAnimation} 6s ease-in-out infinite`, animationDelay: "0.6s" }}>
-              <Box sx={{ textAlign: "center" }}>
-                <Typography variant="h3" sx={{ fontWeight: 700, color: "#e91e63", mb: 1 }}>
-                  98%
-                </Typography>
-                <Typography variant="caption" color="text.secondary" sx={{ display: "block" }}>
-                  Satisfaction
-                </Typography>
-              </Box>
-            </Box>
-          </Grid>
-        </Grid>
-      </Box>
-    </Box>
-  );
-}
-
-// --- Section 2: How It Works ---
-function HowItWorksSection() {
-  const features = [
-    {
-      icon: <BookIcon sx={{ fontSize: 40, color: "#2563eb" }} />,
-      title: "Prepare & Practice",
-      description:
-        "Browse a vast collection of papers to understand exam patterns, important topics, and question styles for your specific course.",
-      badgeText: "Step 1",
-      iconBgColor: "linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)",
-      gradient: "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)",
-    },
-    {
-      icon: <CloudUploadIcon sx={{ fontSize: 40, color: "#16a34a" }} />,
-      title: "Contribute & Collaborate",
-      description:
-        "Have a paper we're missing? Upload it in seconds and become a part of a community helping thousands of fellow students.",
-      badgeText: "Step 2",
-      iconBgColor: "linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%)",
-      gradient: "linear-gradient(135deg, #16a34a 0%, #128c43 100%)",
-    },
-    {
-      icon: <PeopleIcon sx={{ fontSize: 40, color: "#9333ea" }} />,
-      title: "Community Powered",
-      description:
-        "ArcShelf is built by students, for students. The more we all contribute, the more powerful this resource becomes.",
-      badgeText: "Step 3",
-      iconBgColor: "linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%)",
-      gradient: "linear-gradient(135deg, #9333ea 0%, #7e22ce 100%)",
-    },
-  ];
-
-  return (
-    <Box component="section" sx={{ py: { xs: 8, md: 12 }, position: "relative" }}>
-      <Container maxWidth="xl">
-        <Box sx={{ textAlign: "center", mb: 8 }}>
-          <Typography
-            variant="h3"
-            sx={{ fontSize: { xs: "2rem", md: "3rem" }, fontWeight: 700, mb: 3 }}
-          >
-            A Simple, Powerful Tool for Students
-          </Typography>
-          <Typography variant="h6" sx={{ maxWidth: "48rem", mx: "auto", color: "text.secondary" }}>
-            Prepare for your exams and help others do the same. Join thousands of students building
-            the future of education.
-          </Typography>
-        </Box>
-
-        <Grid container spacing={4}>
-          {features.map((feature, index) => (
-            <Grid item xs={12} md={4} key={index}>
-              <FeatureCard
-                icon={feature.icon}
-                title={feature.title}
-                description={feature.description}
-                badgeText={feature.badgeText}
-                iconBgColor={feature.iconBgColor}
-                gradient={feature.gradient}
-              />
-            </Grid>
-          ))}
-        </Grid>
       </Container>
     </Box>
   );
 }
 
+// --- Stats Bar Component ---
+function StatsBar() {
+  return (
+    <Box
+      sx={{
+        py: { xs: 3, md: 4 },
+        bgcolor: "neutral.50",
+        borderTop: "1px solid",
+        borderBottom: "1px solid",
+        borderColor: "neutral.200",
+        width: "100%",
+      }}
+    >
+      <Container maxWidth="xl" sx={{ px: { xs: 2, sm: 3, md: 4, lg: 5 } }}>
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: { xs: "repeat(2, 1fr)", md: "repeat(4, 1fr)" },
+            width: "100%",
+            gap: { xs: 3, md: 0 },
+          }}
+        >
+          {/* Stat 1 */}
+          <Box
+            sx={{
+              px: { xs: 2, md: 3, lg: 4 },
+              py: { xs: 2, md: 0.5 },
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <StatCard value="1K+" label="Students Registered" color="#3b82f6" />
+          </Box>
+
+          {/* Stat 2 */}
+          <Box
+            sx={{
+              px: { xs: 2, md: 3, lg: 4 },
+              py: { xs: 2, md: 0.5 },
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <StatCard value="50+" label="Exam Papers" color="#059669" />
+          </Box>
+
+          {/* Stat 3 */}
+          <Box
+            sx={{
+              px: { xs: 2, md: 3, lg: 4 },
+              py: { xs: 2, md: 0.5 },
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <StatCard value="10+" label="Colleges Listed" color="#8b5cf6" />
+          </Box>
+
+          {/* Stat 4 */}
+          <Box
+            sx={{
+              px: { xs: 2, md: 3, lg: 4 },
+              py: { xs: 2, md: 0.5 },
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <StatCard value="98%" label="Satisfaction Rate" color="#14b8a6" />
+          </Box>
+        </Box>
+      </Container>
+    </Box>
+  );
+}
+
+// --- How It Works Section ---
+function HowItWorksSection() {
+  const steps = [
+    {
+      icon: <BookIcon />,
+      title: "Prepare & Practice",
+      description:
+        "Browse a vast collection of papers to understand exam patterns, important topics, and question styles for your specific course.",
+      badgeText: "01",
+      iconBgColor: "rgba(59, 130, 246, 0.08)", // accent.blue tint
+      stepColor: "#3b82f6",
+    },
+    {
+      icon: <CloudUploadIcon />,
+      title: "Contribute & Collaborate",
+      description:
+        "Have a paper we're missing? Upload it in seconds and become a part of a community helping thousands of fellow students.",
+      badgeText: "02",
+      iconBgColor: "rgba(5, 150, 105, 0.08)", // primary.600 tint
+      stepColor: "#059669",
+    },
+    {
+      icon: <PeopleIcon />,
+      title: "Community Powered",
+      description:
+        "ArcShelf is built by students, for students. The more we all contribute, the more powerful this resource becomes.",
+      badgeText: "03",
+      iconBgColor: "rgba(139, 92, 246, 0.08)", // accent.purple tint
+      stepColor: "#8b5cf6",
+    },
+  ];
+
+  return (
+    <Box component="section" sx={{ py: { xs: 8, md: 10 } }}>
+      <Container maxWidth="xl" sx={{ px: { xs: 2, sm: 3, md: 4, lg: 5 } }}>
+        <SectionHeader
+          overline="HOW IT WORKS"
+          title="Simple for students, powerful for everyone"
+          subtitle="Prepare for your exams and help others do the same. Join thousands of students building the future of education."
+          align="center"
+        />
+
+        <Box
+          sx={{
+            display: "flex",
+            gap: { xs: 2.5, md: 4 },
+            flexDirection: "row",
+            justifyContent: { xs: "flex-start", md: "center" },
+            overflowX: { xs: "auto", md: "visible" },
+            scrollbarWidth: "none",
+            "&::-webkit-scrollbar": { display: "none" },
+            pb: { xs: 3, md: 0 },
+            pt: 1,
+            px: { xs: 2, md: 0 },
+            mx: { xs: -2, md: 0 },
+            scrollSnapType: { xs: "x mandatory", md: "none" },
+            WebkitOverflowScrolling: "touch",
+            mt: 4,
+          }}
+        >
+          {steps.map((step, index) => (
+            <Box
+              key={index}
+              sx={{
+                width: { xs: 240, sm: 260, md: 280 },
+                flexShrink: 0,
+                scrollSnapAlign: "start",
+                height: "auto",
+              }}
+            >
+              <FeatureCard
+                icon={step.icon}
+                title={step.title}
+                description={step.description}
+                badgeText={step.badgeText}
+                stepColor={step.stepColor}
+                iconBgColor={step.iconBgColor}
+              />
+            </Box>
+          ))}
+        </Box>
+      </Container>
+    </Box>
+  );
+}
+
+// --- Recent Contributions Section ---
 function RecentContributionsSection({ questions, loading }) {
   return (
-    <Box component="section" sx={{ position: "relative", py: { xs: 4, md: 6 }, overflow: "hidden" }}>
-      <Container maxWidth="xl">
-        <Box sx={{ textAlign: "center", mb: 4 }}>
-          <Typography
-            variant="h3"
-            sx={{ fontSize: { xs: "2rem", md: "2.5rem" }, fontWeight: 700, mb: 1 }}
-          >
-            Latest Uploads
-          </Typography>
-          <Typography variant="body1" sx={{ maxWidth: "42rem", mx: "auto", color: "text.secondary" }}>
-            See what your peers have been sharing and discover new study materials.
-          </Typography>
-        </Box>
+    <Box component="section" sx={{ py: { xs: 8, md: 10 } }}>
+      <Container maxWidth="xl" sx={{ px: { xs: 2, sm: 3, md: 4, lg: 5 } }}>
+        <SectionHeader
+          title="Latest Uploads"
+          subtitle="See what your peers have been sharing and discover new study materials."
+          align="center"
+          action={
+            <Button
+              component={Link}
+              to="/browse"
+              endIcon={<ArrowForwardIcon />}
+              sx={{ color: "primary.700", fontWeight: 600, fontSize: "0.875rem", p: 0 }}
+            >
+              See all papers
+            </Button>
+          }
+        />
 
-        <Box sx={{ mt: 3 }}>
+        <Box sx={{ mt: 1 }}>
           {loading ? (
             <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", py: 8 }}>
-              <CircularProgress sx={{ color: "#16a34a", mb: 2 }} />
-              <Typography variant="body1" color="text.secondary">
+              <CircularProgress sx={{ color: "primary.main", mb: 2 }} />
+              <Typography variant="body2" color="neutral.500">
                 Loading recent papers...
               </Typography>
             </Box>
           ) : questions.length === 0 ? (
-            <Paper
-              elevation={2}
-              sx={{
-                textAlign: "center",
-                p: 4,
-                borderRadius: 2,
-                border: "1px solid",
-                borderColor: "divider",
-                maxWidth: "36rem",
-                mx: "auto",
+            <EmptyState
+              icon={<BookIcon />}
+              title="No papers uploaded yet"
+              description="Be the first to contribute and help build this amazing academic repository!"
+              action={{
+                text: "Upload First Paper",
+                component: Link,
+                to: "/submit",
+                variant: "contained",
               }}
-            >
-              <Avatar sx={{ width: 56, height: 56, bgcolor: "success.light", mx: "auto", mb: 2 }}>
-                <BookIcon sx={{ color: "#16a34a" }} />
-              </Avatar>
-              <Typography variant="h6" sx={{ fontWeight: 700, mb: 1 }}>
-                No papers yet
-              </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                Be the first to contribute and help build this amazing resource!
-              </Typography>
-              <Button
-                component={Link}
-                to="/submit"
-                variant="contained"
-                sx={{ bgcolor: "#16a34a", "&:hover": { bgcolor: "#128c43", transform: "scale(1.05)" } }}
-              >
-                Upload First Paper
-              </Button>
-            </Paper>
+            />
           ) : (
             <Box sx={{ position: "relative" }}>
               <Box
                 sx={{
                   overflowX: "auto",
+                  display: "flex",
+                  gap: "16px",
+                  pb: 3,
+                  pt: 1,
+                  px: 1,
+                  mx: -1,
                   scrollbarWidth: "none",
-                  msOverflowStyle: "none",
                   "&::-webkit-scrollbar": { display: "none" },
-                  pb: 1,
+                  scrollSnapType: "x mandatory",
+                  WebkitOverflowScrolling: "touch",
                 }}
               >
-                <Box sx={{ display: "flex", gap: 2, width: "max-content", mx: "auto" }}>
-                  {questions.map((q) => (
-                    <Box key={q._id} sx={{ flexShrink: 0, width: 288 }}>
-                      <ContributionCard question={q} />
-                    </Box>
-                  ))}
-                </Box>
+                {questions.map((q) => (
+                  <Box
+                    key={q._id}
+                    sx={{
+                      flexShrink: 0,
+                      width: 280,
+                      scrollSnapAlign: "start",
+                    }}
+                  >
+                    <ContributionCard question={q} />
+                  </Box>
+                ))}
+                {/* Visual spacer to suggest horizontal scrollability */}
+                <Box sx={{ flexShrink: 0, width: 40 }} />
               </Box>
 
-              <Box sx={{ display: "flex", justifyContent: "center", gap: 1, mt: 2 }}>
-                <Box sx={{ width: 12, height: 12, borderRadius: "50%", bgcolor: "#16a34a" }} />
-                <Box sx={{ width: 12, height: 12, borderRadius: "50%", bgcolor: "success.light" }} />
-                <Box sx={{ width: 12, height: 12, borderRadius: "50%", bgcolor: "success.light" }} />
-              </Box>
-
-              <Box sx={{ textAlign: "center", mt: 1 }}>
-                <Typography
-                  variant="caption"
-                  color="text.secondary"
-                  sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 0.5 }}
-                >
-                  <ArrowBackIcon sx={{ fontSize: 16 }} />
-                  Scroll horizontally to see more
-                  <ArrowForwardIcon sx={{ fontSize: 16 }} />
-                </Typography>
-              </Box>
-            </Box>
-          )}
-
-          {questions.length > 0 && (
-            <Box sx={{ textAlign: "center", mt: 5 }}>
-              <Button
-                component={Link}
-                to="/submit"
-                variant="contained"
-                size="large"
-                startIcon={<CloudUploadIcon />}
+              <Typography
+                variant="caption"
+                color="neutral.400"
                 sx={{
-                  background: "linear-gradient(135deg, #16a34a 0%, #128c43 100%)",
-                  "&:hover": {
-                    background: "linear-gradient(135deg, #15803d 0%, #166534 100%)",
-                    transform: "scale(1.05)",
-                  },
-                  px: 4,
-                  py: 1.5,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 1,
+                  mt: 1,
+                  fontWeight: 500,
                 }}
               >
-                Have a paper? Contribute now
-              </Button>
+                ← Scroll horizontally to view more →
+              </Typography>
             </Box>
           )}
         </Box>
@@ -408,8 +547,108 @@ function RecentContributionsSection({ questions, loading }) {
   );
 }
 
-// --- Main HomePage Component ---
-function HomePage() {
+// --- CTA Banner Component ---
+function CtaBanner() {
+  return (
+    <Box component="section" sx={{ mb: { xs: 4, md: 8 } }}>
+      <Container maxWidth="xl" sx={{ px: { xs: { xs: 0, sm: 3, md: 4, lg: 5 } } }}>
+        <Box
+          sx={{
+            py: { xs: 8, md: 10 },
+            px: { xs: 3, sm: 6, md: 8 },
+            borderRadius: { xs: 0, md: 6 },
+            background: "linear-gradient(135deg, #064e3b 0%, #059669 50%, #065f46 100%)",
+            color: "white",
+            textAlign: "center",
+            boxShadow: "0 10px 30px rgba(5, 150, 105, 0.15)",
+          }}
+        >
+          <Box sx={{ maxWidth: 640, mx: "auto" }}>
+            <Typography
+              variant="h2"
+              sx={{
+                fontWeight: 700,
+                fontSize: { xs: "2rem", md: "2.75rem" },
+                fontFamily: '"Plus Jakarta Sans", sans-serif',
+                color: "rgba(255, 255, 255, 0.95)",
+                mb: 2,
+                lineHeight: 1.2,
+              }}
+            >
+              Have a paper to share?
+            </Typography>
+            <Typography
+              variant="body1"
+              sx={{
+                color: "rgba(255, 255, 255, 0.75)",
+                fontSize: { xs: "0.9375rem", md: "1.0625rem" },
+                mb: 5,
+                lineHeight: 1.6,
+              }}
+            >
+              Join 1000+ students and grow the archive. Your contribution helps your peers succeed.
+            </Typography>
+
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: { xs: "column", sm: "row" },
+                justifyContent: "center",
+                gap: 2.5,
+              }}
+            >
+              <Button
+                component={Link}
+                to="/submit"
+                variant="contained"
+                sx={{
+                  bgcolor: "#ffffff",
+                  color: "primary.700",
+                  fontWeight: 700,
+                  px: 4,
+                  py: 1.5,
+                  borderRadius: "10px",
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                  "&:hover": {
+                    bgcolor: "neutral.50",
+                    transform: "translateY(-1.5px)",
+                    boxShadow: "0 6px 20px rgba(0,0,0,0.15)",
+                  },
+                }}
+              >
+                Upload a Paper
+              </Button>
+              <Button
+                component={Link}
+                to="/browse"
+                variant="outlined"
+                sx={{
+                  borderColor: "rgba(255, 255, 255, 0.4)",
+                  borderWidth: "1.5px",
+                  color: "#ffffff",
+                  fontWeight: 700,
+                  px: 4,
+                  py: 1.5,
+                  borderRadius: "10px",
+                  "&:hover": {
+                    borderColor: "#ffffff",
+                    bgcolor: "rgba(255,255,255,0.08)",
+                    transform: "translateY(-1.5px)",
+                  },
+                }}
+              >
+                Browse Archive
+              </Button>
+            </Box>
+          </Box>
+        </Box>
+      </Container>
+    </Box>
+  );
+}
+
+// --- Main LandingPage Component (Public) ---
+function LandingPage() {
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -419,7 +658,7 @@ function HomePage() {
     const getRecentQuestions = async () => {
       try {
         const { data } = await api.fetchQuestions();
-        setQuestions(data.slice(0, 5));
+        setQuestions(data.slice(0, 6));
       } catch (error) {
         console.error("Error fetching questions:", error);
       } finally {
@@ -435,16 +674,40 @@ function HomePage() {
   };
 
   return (
-    <Box>
+    <Box sx={{ pb: 4, width: "100%" }}>
       <HeroSection
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         onSearch={handleSearch}
       />
+      <StatsBar />
       <HowItWorksSection />
       <RecentContributionsSection questions={questions} loading={loading} />
+      <CtaBanner />
     </Box>
   );
+}
+
+// --- Main HomePage Wrapper ---
+function HomePage() {
+  const [user, setUser] = useState(() => JSON.parse(localStorage.getItem("profile")));
+
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setUser(JSON.parse(localStorage.getItem("profile")));
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, []);
+
+  if (user) {
+    return <DashboardPage />;
+  }
+
+  return <LandingPage />;
 }
 
 export default HomePage;

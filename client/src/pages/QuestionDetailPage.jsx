@@ -9,13 +9,12 @@ import {
   Button,
   Chip,
   Avatar,
-  CircularProgress,
-  Alert,
   Grid,
   Divider,
   Card,
   CardContent,
   CardActionArea,
+  Skeleton,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import DescriptionIcon from "@mui/icons-material/Description";
@@ -27,19 +26,21 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import * as api from "../api";
 import PDFViewer from "../components/common/PDFViewer";
+import PaperBadge from "../components/common/PaperBadge";
 
 const GradientHeader = styled(Paper)(({ theme }) => ({
-  background: "linear-gradient(135deg, #0b1f17 0%, #15322d 50%, #128c43 100%)",
+  background: 'linear-gradient(135deg, #064e3b 0%, #065f46 50%, #0f172a 100%)',
   color: "white",
-  padding: theme.spacing(3),
-  borderRadius: theme.spacing(2),
-  marginBottom: theme.spacing(3),
-  boxShadow: theme.shadows[8],
+  padding: theme.spacing(4),
+  borderRadius: 20,
+  marginBottom: theme.spacing(4),
+  boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
+  border: 'none',
 }));
 
 const CARD_GRADIENTS = [
   "linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%)",
-  "linear-gradient(135deg, #16a34a 0%, #0d9488 100%)",
+  "linear-gradient(135deg, #10b981 0%, #059669 100%)",
   "linear-gradient(135deg, #f59e0b 0%, #ef4444 100%)",
   "linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)",
   "linear-gradient(135deg, #0ea5e9 0%, #10b981 100%)",
@@ -58,13 +59,38 @@ function cardGradient(str) {
 
 function RelatedPaperCard({ question }) {
   return (
-    <CardActionArea component={Link} to={`/questions/${question._id}`} sx={{ borderRadius: 2 }}>
-      <Card elevation={0} sx={{ border: "1px solid", borderColor: "divider", borderRadius: 2 }}>
+    <CardActionArea
+      component={Link}
+      to={`/questions/${question._id}`}
+      sx={{
+        borderRadius: 2.5,
+        display: "block",
+        mb: 1.5,
+        '&:hover .related-card': {
+          borderColor: "primary.300",
+          bgcolor: "primary.50",
+        }
+      }}
+    >
+      <Card
+        className="related-card"
+        elevation={0}
+        sx={{
+          border: "1px solid",
+          borderColor: "neutral.200",
+          borderRadius: 2.5,
+          transition: "all 200ms ease",
+          bgcolor: "neutral.0",
+          '&:hover': {
+            transform: "none",
+            boxShadow: "none",
+          }
+        }}
+      >
         <Box
           sx={{
-            height: 6,
+            height: 5,
             background: cardGradient(question._id || question.subject),
-            borderRadius: "8px 8px 0 0",
           }}
         />
         <CardContent sx={{ p: 2 }}>
@@ -73,25 +99,33 @@ function RelatedPaperCard({ question }) {
             sx={{
               fontWeight: 600,
               mb: 0.5,
+              color: "neutral.800",
               overflow: "hidden",
               textOverflow: "ellipsis",
               display: "-webkit-box",
               WebkitLineClamp: 2,
               WebkitBoxOrient: "vertical",
+              lineHeight: 1.4,
             }}
           >
             {question.subject}
           </Typography>
-          <Typography variant="caption" color="text.secondary" sx={{ display: "block", mb: 1 }}>
+          <Typography variant="caption" color="neutral.400" sx={{ display: "block", mb: 1, fontWeight: 500 }}>
             {question.course} — {question.year}
           </Typography>
-          <Box sx={{ display: "flex", gap: 0.5, flexWrap: "wrap" }}>
-            <Chip label={question.examType} size="small" sx={{ fontSize: "0.65rem", height: 20 }} />
+          <Box sx={{ display: "flex", gap: 0.75, flexWrap: "wrap", alignItems: "center" }}>
+            <PaperBadge label={question.examType} size="small" />
             {question.semester && (
               <Chip
                 label={`Sem ${question.semester}`}
                 size="small"
-                sx={{ fontSize: "0.65rem", height: 20 }}
+                sx={{
+                  fontSize: "0.6875rem",
+                  height: 20,
+                  bgcolor: "neutral.100",
+                  color: "neutral.600",
+                  fontWeight: 600,
+                }}
               />
             )}
           </Box>
@@ -111,10 +145,11 @@ function QuestionDetailPage() {
 
   useEffect(() => {
     const getQuestion = async () => {
+      setLoading(true);
       try {
         const { data } = await api.fetchQuestion(id);
         setQuestion(data);
-        // Fetch related in parallel after we have the main question
+        // Fetch related questions
         api.fetchRelatedQuestions(id).then(({ data: rel }) => setRelated(rel)).catch(() => {});
       } catch (error) {
         console.error("Error fetching question:", error);
@@ -127,39 +162,77 @@ function QuestionDetailPage() {
 
   if (loading) {
     return (
-      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", py: 16 }}>
-        <Box sx={{ textAlign: "center" }}>
-          <CircularProgress size={60} sx={{ color: "#128c43", mb: 2 }} />
-          <Typography variant="h6" sx={{ fontWeight: 600 }}>
-            Loading Paper...
-          </Typography>
-        </Box>
-      </Box>
+      <Container maxWidth="xl" sx={{ px: { xs: 2, sm: 3, md: 4, lg: 5 }, py: 4 }}>
+        {/* Header Skeleton */}
+        <Skeleton
+          variant="rectangular"
+          height={170}
+          sx={{ borderRadius: "20px", mb: 4, bgcolor: "neutral.200" }}
+          animation="wave"
+        />
+
+        <Grid container spacing={3}>
+          {/* Content Skeleton */}
+          <Grid item xs={12} lg={8}>
+            <Skeleton
+              variant="rectangular"
+              height={300}
+              sx={{ borderRadius: "16px", mb: 3, bgcolor: "neutral.200" }}
+              animation="wave"
+            />
+            <Skeleton
+              variant="rectangular"
+              height={450}
+              sx={{ borderRadius: "16px", bgcolor: "neutral.200" }}
+              animation="wave"
+            />
+          </Grid>
+
+          {/* Sidebar Skeleton */}
+          <Grid item xs={12} lg={4}>
+            <Skeleton
+              variant="rectangular"
+              height={260}
+              sx={{ borderRadius: "16px", mb: 3, bgcolor: "neutral.200" }}
+              animation="wave"
+            />
+            <Skeleton
+              variant="rectangular"
+              height={350}
+              sx={{ borderRadius: "16px", bgcolor: "neutral.200" }}
+              animation="wave"
+            />
+          </Grid>
+        </Grid>
+      </Container>
     );
   }
 
   if (!question) {
     return (
-      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", py: 12 }}>
+      <Container maxWidth="xl" sx={{ px: { xs: 2, sm: 3, md: 4, lg: 5 }, py: 12 }}>
         <Box sx={{ textAlign: "center" }}>
-          <Typography variant="h4" sx={{ fontWeight: 700, mb: 2 }}>
+          <Typography variant="h4" sx={{ fontWeight: 700, mb: 2, fontFamily: '"Plus Jakarta Sans", sans-serif' }}>
             Paper Not Found
           </Typography>
           <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
-            The question paper you&apos;re looking for doesn&apos;t exist or has been removed.
+            The question paper you're looking for doesn't exist or has been removed.
           </Typography>
           <Button
             variant="contained"
             startIcon={<ArrowBackIcon />}
             onClick={() => window.history.back()}
             sx={{
-              background: "linear-gradient(135deg, #16a34a 0%, #128c43 100%)",
+              backgroundImage: "linear-gradient(135deg, #059669 0%, #047857 100%)",
+              "&:hover": {
+                backgroundImage: "linear-gradient(135deg, #047857 0%, #064e3b 100%)",
+              }
             }}
           >
             Go Back
           </Button>
         </Box>
-      </Box>
+      </Container>
     );
   }
 
@@ -170,8 +243,8 @@ function QuestionDetailPage() {
     : question.fileUrl;
 
   return (
-    <Box>
-      {/* Header */}
+    <Container maxWidth="xl" sx={{ px: { xs: 2, sm: 3, md: 4, lg: 5 }, py: 4 }}>
+      {/* Header Card */}
       <GradientHeader>
         <Box
           sx={{
@@ -183,43 +256,72 @@ function QuestionDetailPage() {
           }}
         >
           <Box sx={{ flex: 1 }}>
-            <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-              <Avatar sx={{ width: 52, height: 52, bgcolor: "rgba(255,255,255,0.2)", mr: 2 }}>
-                <DescriptionIcon />
+            <Box sx={{ display: "flex", alignItems: "center", mb: 2.5 }}>
+              <Avatar
+                sx={{
+                  width: 56,
+                  height: 56,
+                  bgcolor: "rgba(255,255,255,0.15)",
+                  mr: 2.5,
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+                }}
+              >
+                <DescriptionIcon sx={{ fontSize: 28, color: "#ffffff" }} />
               </Avatar>
               <Box>
-                <Typography variant="h5" sx={{ fontWeight: 700, lineHeight: 1.2 }}>
+                <Typography
+                  variant="h4"
+                  sx={{
+                    fontWeight: 700,
+                    lineHeight: 1.2,
+                    fontFamily: '"Plus Jakarta Sans", sans-serif',
+                  }}
+                >
                   {question.subject}
                 </Typography>
-                <Typography variant="body2" sx={{ color: "rgba(255,255,255,0.75)", mt: 0.25 }}>
-                  {question.year}
+                <Typography variant="body2" sx={{ color: "rgba(255,255,255,0.65)", mt: 0.25, fontWeight: 500 }}>
+                  Year: {question.year}
                 </Typography>
               </Box>
             </Box>
 
-            <Typography variant="body1" sx={{ color: "rgba(255,255,255,0.85)", mb: 2 }}>
+            <Typography variant="body1" sx={{ color: "rgba(255,255,255,0.85)", mb: 2.5, fontWeight: 500 }}>
               {question.college?.university?.name}
               {question.college?.name && ` — ${question.college.name}`}
             </Typography>
 
             <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
               <Chip
-                icon={<DescriptionIcon />}
                 label={question.examType}
                 size="small"
-                sx={{ bgcolor: "rgba(255,255,255,0.15)", color: "white" }}
+                sx={{
+                  bgcolor: "rgba(255,255,255,0.12)",
+                  color: "rgba(255,255,255,0.9)",
+                  border: "1px solid rgba(255,255,255,0.15)",
+                  fontWeight: 600,
+                }}
               />
               <Chip
-                icon={<PersonIcon />}
+                icon={<PersonIcon style={{ color: "rgba(255,255,255,0.8)" }} />}
                 label={question.createdBy?.name || "Anonymous"}
                 size="small"
-                sx={{ bgcolor: "rgba(255,255,255,0.15)", color: "white" }}
+                sx={{
+                  bgcolor: "rgba(255,255,255,0.12)",
+                  color: "rgba(255,255,255,0.9)",
+                  border: "1px solid rgba(255,255,255,0.15)",
+                  fontWeight: 600,
+                }}
               />
               <Chip
-                icon={<SchoolIcon />}
+                icon={<SchoolIcon style={{ color: "rgba(255,255,255,0.8)" }} />}
                 label={`Semester ${question.semester}`}
                 size="small"
-                sx={{ bgcolor: "rgba(255,255,255,0.15)", color: "white" }}
+                sx={{
+                  bgcolor: "rgba(255,255,255,0.12)",
+                  color: "rgba(255,255,255,0.9)",
+                  border: "1px solid rgba(255,255,255,0.15)",
+                  fontWeight: 600,
+                }}
               />
             </Box>
           </Box>
@@ -233,11 +335,19 @@ function QuestionDetailPage() {
               variant="contained"
               startIcon={<DownloadIcon />}
               sx={{
-                bgcolor: "white",
-                color: "#128c43",
+                bgcolor: "#ffffff",
+                color: "primary.700",
                 fontWeight: 700,
+                borderRadius: "10px",
                 flexShrink: 0,
-                "&:hover": { bgcolor: "grey.50" },
+                px: 3.5,
+                py: 1.25,
+                boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                "&:hover": {
+                  bgcolor: "neutral.50",
+                  transform: "translateY(-1px)",
+                  boxShadow: "0 6px 16px rgba(0,0,0,0.15)",
+                },
               }}
             >
               Download Paper
@@ -246,50 +356,83 @@ function QuestionDetailPage() {
         </Box>
       </GradientHeader>
 
-      <Grid container spacing={3}>
-        {/* Main Content */}
+      <Grid container spacing={4}>
+        {/* Main Content (PDF viewer, Notes) */}
         <Grid item xs={12} lg={8}>
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-            {/* Notes */}
-            <Paper elevation={0} sx={{ p: 3, borderRadius: 2, border: "1px solid", borderColor: "divider" }}>
-              <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-                <Avatar sx={{ width: 36, height: 36, bgcolor: "rgba(22,163,74,0.1)", mr: 1.5 }}>
-                  <DescriptionIcon sx={{ color: "#16a34a", fontSize: 18 }} />
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 4 }}>
+            {/* Notes & Topics */}
+            <Paper
+              elevation={0}
+              sx={{
+                p: 3,
+                borderRadius: 4,
+                border: "1px solid",
+                borderColor: "neutral.200",
+                boxShadow: "none",
+                bgcolor: "neutral.0",
+              }}
+            >
+              <Box sx={{ display: "flex", alignItems: "center", mb: 2.5 }}>
+                <Avatar sx={{ width: 36, height: 36, bgcolor: "primary.50", mr: 1.5 }}>
+                  <DescriptionIcon sx={{ color: "primary.700", fontSize: 18 }} />
                 </Avatar>
-                <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                <Typography variant="h6" sx={{ fontWeight: 700, color: "neutral.800" }}>
                   Notes &amp; Topics
                 </Typography>
               </Box>
+              <Divider sx={{ mb: 2.5, borderColor: "neutral.100" }} />
+
               {question.questionsText ? (
-                <Box sx={{ "& p": { mb: 1.5 }, "& ul": { pl: 3 } }}>
+                <Box
+                  sx={{
+                    color: "neutral.700",
+                    lineHeight: 1.7,
+                    fontSize: "0.9375rem",
+                    "& p": { mb: 1.5 },
+                    "& ul": { pl: 3, mb: 1.5 },
+                    "& li": { mb: 0.5 }
+                  }}
+                >
                   <ReactMarkdown>{question.questionsText}</ReactMarkdown>
                 </Box>
               ) : (
-                <Typography variant="body2" color="text.secondary" sx={{ py: 2 }}>
+                <Typography variant="body2" color="neutral.500" sx={{ py: 1, fontStyle: "italic" }}>
                   No additional notes were provided for this paper.
                 </Typography>
               )}
             </Paper>
 
-            {/* PDF / Image Preview */}
+            {/* Paper Preview */}
             {question.fileUrl && (
-              <Paper elevation={0} sx={{ p: 3, borderRadius: 2, border: "1px solid", borderColor: "divider" }}>
-                <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-                  <Avatar sx={{ width: 36, height: 36, bgcolor: "rgba(22,163,74,0.1)", mr: 1.5 }}>
-                    <VisibilityIcon sx={{ color: "#16a34a", fontSize: 18 }} />
+              <Paper
+                elevation={0}
+                sx={{
+                  p: 3,
+                  borderRadius: 4,
+                  border: "1px solid",
+                  borderColor: "neutral.200",
+                  boxShadow: "none",
+                  bgcolor: "neutral.0",
+                }}
+              >
+                <Box sx={{ display: "flex", alignItems: "center", mb: 2.5 }}>
+                  <Avatar sx={{ width: 36, height: 36, bgcolor: "primary.50", mr: 1.5 }}>
+                    <VisibilityIcon sx={{ color: "primary.700", fontSize: 18 }} />
                   </Avatar>
-                  <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                  <Typography variant="h6" sx={{ fontWeight: 700, color: "neutral.800" }}>
                     Paper Preview
                   </Typography>
                 </Box>
-                <Box sx={{ bgcolor: "grey.50", p: 2, borderRadius: 2 }}>
+                <Divider sx={{ mb: 2.5, borderColor: "neutral.100" }} />
+
+                <Box sx={{ bgcolor: "neutral.50", p: { xs: 1.5, md: 2 }, borderRadius: 2.5, border: "1px solid", borderColor: "neutral.100" }}>
                   {isPdf && <PDFViewer fileUrl={proxyUrl} />}
                   {isImage && (
                     <Box sx={{ textAlign: "center" }}>
                       <img
                         src={question.fileUrl}
                         alt={`${question.subject} ${question.year}`}
-                        style={{ maxWidth: "100%", height: "auto", borderRadius: 8 }}
+                        style={{ maxWidth: "100%", height: "auto", borderRadius: 8, boxShadow: "0 2px 12px rgba(0,0,0,0.05)" }}
                       />
                     </Box>
                   )}
@@ -299,60 +442,107 @@ function QuestionDetailPage() {
           </Box>
         </Grid>
 
-        {/* Sidebar */}
+        {/* Sidebar (Quick Info, Related Papers) */}
         <Grid item xs={12} lg={4}>
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 3, position: { lg: "sticky" }, top: { lg: 80 } }}>
-            {/* Quick Info */}
-            <Card elevation={0} sx={{ border: "1px solid", borderColor: "divider", borderRadius: 2 }}>
-              <CardContent>
-                <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 4,
+              position: { lg: "sticky" },
+              top: { lg: 80 },
+            }}
+          >
+            {/* Quick Info Card */}
+            <Card
+              elevation={0}
+              sx={{
+                border: "1px solid",
+                borderColor: "neutral.200",
+                borderRadius: 4,
+                bgcolor: "neutral.0",
+                boxShadow: "none",
+                '&:hover': {
+                  transform: "none",
+                  boxShadow: "none",
+                }
+              }}
+            >
+              <CardContent sx={{ p: 3 }}>
+                <Typography variant="h6" sx={{ fontWeight: 700, color: "neutral.800", mb: 2 }}>
                   Quick Info
                 </Typography>
-                <Box sx={{ display: "flex", flexDirection: "column", gap: 0 }}>
+                <Divider sx={{ borderColor: "neutral.100", mb: 1 }} />
+
+                <Box sx={{ display: "flex", flexDirection: "column" }}>
                   {[
                     ["Course", question.course],
                     ["Subject", question.subject],
                     ["Year", question.year],
-                    ["Semester", question.semester],
+                    ["Semester", question.semester ? `Semester ${question.semester}` : ""],
                     ["Exam Type", question.examType],
                   ].map(([label, value], i, arr) => (
-                    <Box key={label}>
-                      <Box sx={{ display: "flex", justifyContent: "space-between", py: 1.25 }}>
-                        <Typography variant="body2" color="text.secondary">
-                          {label}
-                        </Typography>
-                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                          {value}
-                        </Typography>
+                    value && (
+                      <Box key={label}>
+                        <Box sx={{ display: "flex", justifyContent: "space-between", py: 1.5 }}>
+                          <Typography variant="body2" color="neutral.500" sx={{ fontWeight: 500 }}>
+                            {label}
+                          </Typography>
+                          <Typography variant="body2" sx={{ fontWeight: 600, color: "neutral.800" }}>
+                            {value}
+                          </Typography>
+                        </Box>
+                        {i < arr.length - 1 && <Divider sx={{ borderColor: "neutral.100" }} />}
                       </Box>
-                      {i < arr.length - 1 && <Divider />}
-                    </Box>
+                    )
                   ))}
                 </Box>
               </CardContent>
             </Card>
 
-            {/* Related Papers */}
-            <Card elevation={0} sx={{ border: "1px solid", borderColor: "divider", borderRadius: 2 }}>
-              <CardContent>
-                <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
+            {/* Related Papers Card */}
+            <Card
+              elevation={0}
+              sx={{
+                border: "1px solid",
+                borderColor: "neutral.200",
+                borderRadius: 4,
+                bgcolor: "neutral.0",
+                boxShadow: "none",
+                '&:hover': {
+                  transform: "none",
+                  boxShadow: "none",
+                }
+              }}
+            >
+              <CardContent sx={{ p: 3 }}>
+                <Typography variant="h6" sx={{ fontWeight: 700, color: "neutral.800", mb: 2.5 }}>
                   Related Papers
                 </Typography>
                 {related.length === 0 ? (
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant="body2" color="neutral.400" sx={{ py: 1, fontStyle: "italic" }}>
                     No related papers found for this course and subject.
                   </Typography>
                 ) : (
-                  <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
+                  <Box sx={{ display: "flex", flexDirection: "column" }}>
                     {related.map((r) => (
                       <RelatedPaperCard key={r._id} question={r} />
                     ))}
+                    
                     <Button
                       component={Link}
                       to={`/browse?course=${encodeURIComponent(question.course)}`}
                       endIcon={<ArrowForwardIcon />}
                       size="small"
-                      sx={{ color: "#16a34a", justifyContent: "flex-start", pl: 0, mt: 0.5 }}
+                      sx={{
+                        color: "primary.700",
+                        justifyContent: "flex-start",
+                        pl: 0,
+                        mt: 1,
+                        fontWeight: 600,
+                        backgroundColor: "transparent !important",
+                        "&:hover": { color: "primary.800" }
+                      }}
                     >
                       Browse all {question.course} papers
                     </Button>
@@ -363,7 +553,7 @@ function QuestionDetailPage() {
           </Box>
         </Grid>
       </Grid>
-    </Box>
+    </Container>
   );
 }
 

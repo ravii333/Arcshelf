@@ -4,7 +4,6 @@ import {
   Box,
   Typography,
   Button,
-  Grid,
   Alert,
   TextField,
   FormControl,
@@ -16,6 +15,9 @@ import {
   Paper,
   CircularProgress,
   Avatar,
+  Fade,
+  Collapse,
+  Container,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
@@ -24,22 +26,74 @@ import DescriptionIcon from "@mui/icons-material/Description";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import * as api from "../api";
 
-const UploadZone = styled(Box)(({ theme, hasfile }) => ({
-  border: `2px dashed ${hasfile === "true" ? "#16a34a" : theme.palette.grey[300]}`,
-  borderRadius: theme.spacing(2),
+const UploadZone = styled(Box, { shouldForwardProp: (prop) => prop !== 'hasfile' && prop !== 'isdragover' })(({ theme, hasfile, isdragover }) => ({
+  border: `2px dashed ${
+    isdragover === "true"
+      ? theme.palette.primary[400]
+      : hasfile === "true"
+      ? theme.palette.primary[500]
+      : theme.palette.neutral[300]
+  }`,
+  borderRadius: 16,
   padding: theme.spacing(4),
+  minHeight: 180,
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
   textAlign: "center",
   cursor: "pointer",
-  transition: "all 0.2s ease",
-  backgroundColor: hasfile === "true" ? "rgba(22, 163, 74, 0.05)" : theme.palette.grey[50],
+  transition: "all 200ms ease",
+  backgroundColor:
+    isdragover === "true" || hasfile === "true"
+      ? "rgba(5, 150, 105, 0.05)" // primary.50 at low opacity
+      : theme.palette.neutral[50],
   "&:hover": {
-    borderColor: "#16a34a",
-    backgroundColor: "rgba(22, 163, 74, 0.05)",
+    borderColor: theme.palette.primary[400],
+    backgroundColor: "rgba(5, 150, 105, 0.05)",
   },
 }));
 
 const CURRENT_YEAR = new Date().getFullYear();
 const YEARS = Array.from({ length: 10 }, (_, i) => CURRENT_YEAR - i);
+
+// Custom Step Progress bar
+function FormStepProgress() {
+  return (
+    <Box
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        flexWrap: "nowrap",
+        gap: { xs: 1, sm: 2.5 },
+        mb: 5,
+        userSelect: "none",
+      }}
+    >
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+        <Avatar sx={{ width: 24, height: 24, bgcolor: "primary.600", fontSize: "12px", fontWeight: 700 }}>1</Avatar>
+        <Typography variant="body2" sx={{ fontWeight: 600, color: "neutral.800", fontSize: { xs: "12px", sm: "14px" } }}>
+          Institution
+        </Typography>
+      </Box>
+      <Box sx={{ flexGrow: { xs: 0.1, sm: 0.3 }, height: "2px", bgcolor: "neutral.200", minWidth: { xs: 20, sm: 50 } }} />
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+        <Avatar sx={{ width: 24, height: 24, bgcolor: "primary.600", fontSize: "12px", fontWeight: 700 }}>2</Avatar>
+        <Typography variant="body2" sx={{ fontWeight: 600, color: "neutral.800", fontSize: { xs: "12px", sm: "14px" } }}>
+          Paper Details
+        </Typography>
+      </Box>
+      <Box sx={{ flexGrow: { xs: 0.1, sm: 0.3 }, height: "2px", bgcolor: "neutral.200", minWidth: { xs: 20, sm: 50 } }} />
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+        <Avatar sx={{ width: 24, height: 24, bgcolor: "primary.600", fontSize: "12px", fontWeight: 700 }}>3</Avatar>
+        <Typography variant="body2" sx={{ fontWeight: 600, color: "neutral.800", fontSize: { xs: "12px", sm: "14px" } }}>
+          Upload
+        </Typography>
+      </Box>
+    </Box>
+  );
+}
 
 function SubmitQuestionPage() {
   const [formData, setFormData] = useState({
@@ -54,11 +108,13 @@ function SubmitQuestionPage() {
   });
   const [paperFile, setPaperFile] = useState(null);
   const [isUniversityLevel, setIsUniversityLevel] = useState(false);
+  const [isDragOver, setIsDragOver] = useState(false);
   const [universities, setUniversities] = useState([]);
   const [colleges, setColleges] = useState([]);
   const [loadingUniversities, setLoadingUniversities] = useState(true);
   const [loadingColleges, setLoadingColleges] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
@@ -102,8 +158,18 @@ function SubmitQuestionPage() {
     if (file) setPaperFile(file);
   };
 
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    setIsDragOver(true);
+  };
+
+  const handleDragLeave = () => {
+    setIsDragOver(false);
+  };
+
   const handleDrop = (e) => {
     e.preventDefault();
+    setIsDragOver(false);
     const file = e.dataTransfer.files[0];
     if (file) setPaperFile(file);
   };
@@ -134,51 +200,75 @@ function SubmitQuestionPage() {
 
     try {
       const { data } = await api.createQuestion(fd);
-      navigate(`/questions/${data._id}`);
+      setSubmitSuccess(true);
+      setTimeout(() => {
+        navigate(`/questions/${data._id}`);
+      }, 800);
     } catch (err) {
       setError(err.response?.data?.message || "Failed to submit. Please try again.");
-    } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <Box sx={{ maxWidth: 800, mx: "auto", py: 2 }}>
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" sx={{ fontWeight: 700, mb: 0.5 }}>
+    <Container maxWidth="md" sx={{ px: { xs: 2, sm: 3, md: 4 }, py: 4 }}>
+      {/* Page Header */}
+      <Box sx={{ mb: 4, textAlign: "center" }}>
+        <Typography
+          variant="h4"
+          sx={{
+            fontWeight: 700,
+            fontSize: { xs: "1.75rem", md: "2.25rem" },
+            fontFamily: '"Plus Jakarta Sans", sans-serif',
+            color: "neutral.900",
+            mb: 0.5,
+          }}
+        >
           Contribute a Paper
         </Typography>
-        <Typography variant="body2" color="text.secondary">
+        <Typography variant="body2" color="neutral.500" sx={{ fontWeight: 500 }}>
           Help your peers by sharing an exam paper. All fields are required unless marked optional.
         </Typography>
       </Box>
 
+      {/* Steps Progress Indicator */}
+      <FormStepProgress />
+
       <Box component="form" onSubmit={handleSubmit}>
-        {error && (
-          <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }}>
+        {/* Animated Error Alert */}
+        <Collapse in={!!error}>
+          <Alert severity="error" sx={{ mb: 3, borderRadius: "12px" }}>
             {error}
           </Alert>
-        )}
+        </Collapse>
 
-        {/* Institution Section */}
+        {/* Section 1 — Institution */}
         <Paper
           elevation={0}
-          sx={{ p: 3, mb: 3, border: "1px solid", borderColor: "divider", borderRadius: 3 }}
+          sx={{
+            p: "28px",
+            mb: 3,
+            border: "1px solid",
+            borderColor: "neutral.200",
+            borderRadius: 5,
+            bgcolor: "neutral.0",
+          }}
         >
           <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 3 }}>
-            <Avatar sx={{ width: 36, height: 36, bgcolor: "rgba(22, 163, 74, 0.1)" }}>
-              <SchoolIcon sx={{ color: "#16a34a", fontSize: 20 }} />
+            <Avatar sx={{ width: 36, height: 36, bgcolor: "primary.50" }}>
+              <SchoolIcon sx={{ color: "primary.700", fontSize: 20 }} />
             </Avatar>
-            <Typography variant="h6" sx={{ fontWeight: 600 }}>
+            <Typography variant="h6" sx={{ fontWeight: 700, color: "neutral.800" }}>
               Institution
             </Typography>
           </Box>
 
-          <Grid container spacing={3}>
-            <Grid item xs={12} sm={6}>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+            <Box sx={{ width: "100%" }}>
               <FormControl fullWidth required>
-                <InputLabel>University</InputLabel>
+                <InputLabel id="select-university-label">University</InputLabel>
                 <Select
+                  labelId="select-university-label"
                   name="university"
                   value={formData.university}
                   label="University"
@@ -196,9 +286,9 @@ function SubmitQuestionPage() {
                   )}
                 </Select>
               </FormControl>
-            </Grid>
+            </Box>
 
-            <Grid item xs={12}>
+            <Box sx={{ width: "100%" }}>
               <FormControlLabel
                 control={
                   <Checkbox
@@ -208,27 +298,32 @@ function SubmitQuestionPage() {
                       if (e.target.checked)
                         setFormData((prev) => ({ ...prev, college: "" }));
                     }}
-                    sx={{ color: "#16a34a", "&.Mui-checked": { color: "#16a34a" } }}
+                    sx={{
+                      color: "neutral.300",
+                      "&.Mui-checked": { color: "primary.500" },
+                    }}
                   />
                 }
                 label={
-                  <Box>
-                    <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                  <Box sx={{ ml: 0.5 }}>
+                    <Typography variant="body2" sx={{ fontWeight: 600, color: "neutral.800" }}>
                       University-Level Exam
                     </Typography>
-                    <Typography variant="caption" color="text.secondary">
+                    <Typography variant="caption" color="neutral.500" sx={{ display: "block" }}>
                       Check if this paper applies to the entire university, not a specific college
                     </Typography>
                   </Box>
                 }
               />
-            </Grid>
+            </Box>
 
-            {!isUniversityLevel && (
-              <Grid item xs={12} sm={6}>
-                <FormControl fullWidth required>
-                  <InputLabel>College</InputLabel>
+            {/* Conditionally reveal college select with Fade transition */}
+            <Box sx={{ width: "100%", display: isUniversityLevel ? "none" : "block" }}>
+              <Fade in={!isUniversityLevel} timeout={300} mountOnEnter unmountOnExit>
+                <FormControl fullWidth required={!isUniversityLevel}>
+                  <InputLabel id="select-college-label">College</InputLabel>
                   <Select
+                    labelId="select-college-label"
                     name="college"
                     value={formData.college}
                     label="College"
@@ -248,27 +343,34 @@ function SubmitQuestionPage() {
                     )}
                   </Select>
                 </FormControl>
-              </Grid>
-            )}
-          </Grid>
+              </Fade>
+            </Box>
+          </Box>
         </Paper>
 
-        {/* Paper Details Section */}
+        {/* Section 2 — Paper Details */}
         <Paper
           elevation={0}
-          sx={{ p: 3, mb: 3, border: "1px solid", borderColor: "divider", borderRadius: 3 }}
+          sx={{
+            p: "28px",
+            mb: 3,
+            border: "1px solid",
+            borderColor: "neutral.200",
+            borderRadius: 5,
+            bgcolor: "neutral.0",
+          }}
         >
           <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 3 }}>
-            <Avatar sx={{ width: 36, height: 36, bgcolor: "rgba(22, 163, 74, 0.1)" }}>
-              <DescriptionIcon sx={{ color: "#16a34a", fontSize: 20 }} />
+            <Avatar sx={{ width: 36, height: 36, bgcolor: "primary.50" }}>
+              <DescriptionIcon sx={{ color: "primary.700", fontSize: 20 }} />
             </Avatar>
-            <Typography variant="h6" sx={{ fontWeight: 600 }}>
+            <Typography variant="h6" sx={{ fontWeight: 700, color: "neutral.800" }}>
               Paper Details
             </Typography>
           </Box>
 
-          <Grid container spacing={3}>
-            <Grid item xs={12} sm={6}>
+          <Box sx={{ display: "grid", gridTemplateColumns: "repeat(12, 1fr)", gap: 3 }}>
+            <Box sx={{ gridColumn: { xs: "span 12", sm: "span 6" } }}>
               <TextField
                 label="Course"
                 name="course"
@@ -278,8 +380,8 @@ function SubmitQuestionPage() {
                 required
                 fullWidth
               />
-            </Grid>
-            <Grid item xs={12} sm={6}>
+            </Box>
+            <Box sx={{ gridColumn: { xs: "span 12", sm: "span 6" } }}>
               <TextField
                 label="Subject"
                 name="subject"
@@ -289,11 +391,12 @@ function SubmitQuestionPage() {
                 required
                 fullWidth
               />
-            </Grid>
-            <Grid item xs={12} sm={4}>
+            </Box>
+            <Box sx={{ gridColumn: { xs: "span 12", sm: "span 4" } }}>
               <FormControl fullWidth required>
-                <InputLabel>Year</InputLabel>
+                <InputLabel id="select-year-label">Year</InputLabel>
                 <Select
+                  labelId="select-year-label"
                   name="year"
                   value={formData.year}
                   label="Year"
@@ -306,8 +409,8 @@ function SubmitQuestionPage() {
                   ))}
                 </Select>
               </FormControl>
-            </Grid>
-            <Grid item xs={12} sm={4}>
+            </Box>
+            <Box sx={{ gridColumn: { xs: "span 12", sm: "span 4" } }}>
               <TextField
                 label="Semester"
                 name="semester"
@@ -319,11 +422,12 @@ function SubmitQuestionPage() {
                 fullWidth
                 inputProps={{ min: 1, max: 12 }}
               />
-            </Grid>
-            <Grid item xs={12} sm={4}>
+            </Box>
+            <Box sx={{ gridColumn: { xs: "span 12", sm: "span 4" } }}>
               <FormControl fullWidth required>
-                <InputLabel>Exam Type</InputLabel>
+                <InputLabel id="select-examtype-label">Exam Type</InputLabel>
                 <Select
+                  labelId="select-examtype-label"
                   name="examType"
                   value={formData.examType}
                   label="Exam Type"
@@ -335,8 +439,8 @@ function SubmitQuestionPage() {
                   <MenuItem value="Assignment">Assignment</MenuItem>
                 </Select>
               </FormControl>
-            </Grid>
-            <Grid item xs={12}>
+            </Box>
+            <Box sx={{ gridColumn: "span 12" }}>
               <TextField
                 label="Topics / Notes (Optional)"
                 name="questionsText"
@@ -348,20 +452,27 @@ function SubmitQuestionPage() {
                 rows={3}
                 fullWidth
               />
-            </Grid>
-          </Grid>
+            </Box>
+          </Box>
         </Paper>
 
-        {/* File Upload Section */}
+        {/* Section 3 — Upload */}
         <Paper
           elevation={0}
-          sx={{ p: 3, mb: 4, border: "1px solid", borderColor: "divider", borderRadius: 3 }}
+          sx={{
+            p: "28px",
+            mb: 4,
+            border: "1px solid",
+            borderColor: "neutral.200",
+            borderRadius: 5,
+            bgcolor: "neutral.0",
+          }}
         >
           <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 3 }}>
-            <Avatar sx={{ width: 36, height: 36, bgcolor: "rgba(22, 163, 74, 0.1)" }}>
-              <CloudUploadIcon sx={{ color: "#16a34a", fontSize: 20 }} />
+            <Avatar sx={{ width: 36, height: 36, bgcolor: "primary.50" }}>
+              <CloudUploadIcon sx={{ color: "primary.700", fontSize: 20 }} />
             </Avatar>
-            <Typography variant="h6" sx={{ fontWeight: 600 }}>
+            <Typography variant="h6" sx={{ fontWeight: 700, color: "neutral.800" }}>
               Upload Paper
             </Typography>
           </Box>
@@ -376,27 +487,40 @@ function SubmitQuestionPage() {
           <label htmlFor="paperFileInput">
             <UploadZone
               hasfile={paperFile ? "true" : "false"}
-              onDragOver={(e) => e.preventDefault()}
+              isdragover={isDragOver ? "true" : "false"}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
               onDrop={handleDrop}
             >
               {paperFile ? (
-                <Box>
-                  <CheckCircleIcon sx={{ fontSize: 44, color: "#16a34a", mb: 1 }} />
-                  <Typography variant="body1" sx={{ fontWeight: 600, color: "#16a34a", mb: 0.5 }}>
+                <Box sx={{ p: 2 }}>
+                  <CheckCircleIcon sx={{ fontSize: 44, color: "primary.600", mb: 1.5 }} />
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      fontWeight: 700,
+                      color: "primary.700",
+                      mb: 0.5,
+                      maxWidth: "280px",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
                     {paperFile.name}
                   </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    {(paperFile.size / (1024 * 1024)).toFixed(2)} MB — click to change
+                  <Typography variant="caption" color="neutral.500" sx={{ fontWeight: 500 }}>
+                    {(paperFile.size / (1024 * 1024)).toFixed(2)} MB — click to change file
                   </Typography>
                 </Box>
               ) : (
-                <Box>
-                  <CloudUploadIcon sx={{ fontSize: 44, color: "text.secondary", mb: 1 }} />
-                  <Typography variant="body1" sx={{ fontWeight: 600, mb: 0.5 }}>
-                    Drop your file here, or click to browse
+                <Box sx={{ p: 2 }}>
+                  <CloudUploadIcon sx={{ fontSize: 48, color: "neutral.400", mb: 1.5 }} />
+                  <Typography variant="body1" sx={{ fontWeight: 700, color: "neutral.800", mb: 0.5 }}>
+                    Drop your file here or click to browse
                   </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    PDF, JPG, PNG — max 10 MB
+                  <Typography variant="caption" color="neutral.500" sx={{ fontWeight: 500 }}>
+                    PDF, JPG, PNG — Max 10 MB
                   </Typography>
                 </Box>
               )}
@@ -405,37 +529,57 @@ function SubmitQuestionPage() {
         </Paper>
 
         {/* Actions */}
-        <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
+        <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1.5 }}>
           <Button
-            variant="outlined"
+            variant="text"
             onClick={() => navigate(-1)}
-            sx={{ borderColor: "grey.300", color: "text.secondary" }}
+            sx={{
+              color: "neutral.500",
+              fontWeight: 600,
+              px: 3,
+              '&:hover': { bgcolor: "neutral.100" }
+            }}
           >
             Cancel
           </Button>
           <Button
             type="submit"
             variant="contained"
-            disabled={isSubmitting}
+            disabled={isSubmitting || submitSuccess}
             startIcon={
-              isSubmitting ? (
+              submitSuccess ? (
+                <CheckCircleIcon />
+              ) : isSubmitting ? (
                 <CircularProgress size={18} sx={{ color: "white" }} />
               ) : (
                 <CloudUploadIcon />
               )
             }
             sx={{
-              background: "linear-gradient(135deg, #16a34a 0%, #128c43 100%)",
-              "&:hover": { background: "linear-gradient(135deg, #128c43 0%, #0f7036 100%)" },
-              "&.Mui-disabled": { opacity: 0.7 },
+              backgroundImage: submitSuccess
+                ? "none"
+                : "linear-gradient(135deg, #059669 0%, #047857 100%)",
+              bgcolor: submitSuccess ? "success.main" : undefined,
+              "&:hover": {
+                backgroundImage: submitSuccess
+                  ? "none"
+                  : "linear-gradient(135deg, #047857 0%, #064e3b 100%)",
+              },
+              "&.Mui-disabled": {
+                bgcolor: submitSuccess ? "success.main" : "neutral.200",
+                color: submitSuccess ? "white" : "neutral.400",
+                opacity: 0.75,
+              },
               minWidth: 160,
+              px: 3.5,
+              py: 1.25,
             }}
           >
-            {isSubmitting ? "Submitting..." : "Submit Paper"}
+            {submitSuccess ? "Submitted!" : isSubmitting ? "Submitting..." : "Submit Paper"}
           </Button>
         </Box>
       </Box>
-    </Box>
+    </Container>
   );
 }
 

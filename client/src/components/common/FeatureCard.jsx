@@ -1,108 +1,161 @@
 import React from 'react';
-import { Card, CardContent, Typography, Box, Chip } from '@mui/material';
+import { Card, CardContent, Typography, Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
-const StyledCard = styled(Card)(({ theme }) => ({
+const StyledCard = styled(Card, { shouldForwardProp: (prop) => prop !== 'stepColor' })(({ theme, stepColor }) => ({
   position: 'relative',
-  borderRadius: theme.spacing(2),
-  border: `1px solid ${theme.palette.grey[200]}`,
-  transition: 'all 0.5s',
+  borderRadius: 20,
+  border: '1px solid',
+  borderColor: '#f1f5f9', // neutral.100
+  borderTop: `3px solid ${stepColor}`,
+  backgroundColor: '#ffffff',
+  boxShadow: 'none',
+  transition: 'all 250ms cubic-bezier(0.22, 1, 0.36, 1)',
+  aspectRatio: '1 / 1',
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'center',
   '&:hover': {
-    boxShadow: theme.shadows[8],
-    transform: 'translateY(-4px)',
+    boxShadow: '0 8px 24px rgba(0,0,0,0.06), 0 16px 40px rgba(0,0,0,0.08)', // shadow[4]
+    transform: 'translateY(-6px)',
     '& .feature-icon': {
-      transform: 'scale(1.1)',
+      transform: 'scale(1.08)',
     },
-    '& .feature-title': {
-      color: '#128c43',
+    '& .feature-arrow': {
+      transform: 'translateX(4px)',
     },
     '& .feature-accent': {
-      opacity: 1,
+      transform: 'scaleX(1)',
     },
   },
 }));
 
-const AccentLine = styled(Box)(({ theme }) => ({
+const AccentLine = styled(Box, { shouldForwardProp: (prop) => prop !== 'stepColor' })(({ stepColor }) => ({
   position: 'absolute',
   bottom: 0,
   left: 0,
   width: '100%',
   height: 4,
-  background: 'linear-gradient(135deg, #16a34a 0%, #128c43 100%)',
-  borderRadius: `0 0 ${theme.spacing(2)} ${theme.spacing(2)}`,
-  opacity: 0,
-  transition: 'opacity 0.3s',
+  backgroundColor: stepColor,
+  transform: 'scaleX(0)',
+  transformOrigin: 'left',
+  transition: 'transform 300ms cubic-bezier(0.22, 1, 0.36, 1)',
 }));
 
 const FeatureCard = ({
   icon,
   title,
   description,
-  badgeText,
-  iconBgColor,
-  gradient,
+  badgeText, // e.g. "01", "02", "03"
+  stepColor = "#059669", // step-specific color (blue, green, purple)
+  iconBgColor = "rgba(5, 150, 105, 0.08)",
 }) => {
   return (
-    <StyledCard>
-      {badgeText && (
-        <Chip
-          label={badgeText}
-          size="small"
-          sx={{
-            position: 'absolute',
-            top: -12,
-            right: 16,
-            background: gradient || 'linear-gradient(135deg, #16a34a 0%, #128c43 100%)',
-            color: 'white',
-            fontSize: '0.75rem',
-            fontWeight: 600,
-            height: 24,
-            boxShadow: 2,
-            zIndex: 1,
-          }}
-        />
-      )}
+    <StyledCard stepColor={stepColor}>
+      <CardContent
+        sx={{
+          p: { xs: 2.5, sm: 3, md: 3.5 },
+          '&:last-child': { pb: { xs: 2.5, sm: 3, md: 3.5 } },
+          position: 'relative',
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+        }}
+      >
+        {/* Top Section: Icon & Step Badge */}
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', width: '100%' }}>
+          {/* Icon Container */}
+          <Box
+            className="feature-icon"
+            sx={{
+              width: { xs: 44, md: 52 },
+              height: { xs: 44, md: 52 },
+              borderRadius: 3,
+              background: iconBgColor,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'transform 250ms var(--ease-out-quint)',
+              '& svg': {
+                fontSize: { xs: 22, md: 26 },
+                color: stepColor,
+              }
+            }}
+          >
+            {icon}
+          </Box>
 
-      <CardContent sx={{ p: 3 }}>
-        <Box
-          className="feature-icon"
-          sx={{
-            width: 56,
-            height: 56,
-            borderRadius: '50%',
-            background: iconBgColor || 'linear-gradient(135deg, #f1f8f4 0%, #e8f5e9 100%)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            mb: 2,
-            transition: 'transform 0.3s',
-          }}
-        >
-          {icon}
+          {/* Step Badge */}
+          {badgeText && (
+            <Typography
+              variant="overline"
+              sx={{
+                fontWeight: 700,
+                color: stepColor,
+                fontSize: { xs: '0.7rem', md: '0.75rem' },
+                letterSpacing: '0.05em',
+                lineHeight: 1,
+                mt: 0.5,
+              }}
+            >
+              {badgeText}
+            </Typography>
+          )}
         </Box>
 
-        <Typography
-          variant="h6"
-          className="feature-title"
+        {/* Middle Section: Title & Description */}
+        <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', my: { xs: 1.5, md: 2.5 } }}>
+          {/* Title */}
+          <Typography
+            variant="h5"
+            sx={{
+              fontWeight: 700,
+              mb: { xs: 0.75, md: 1.5 },
+              color: 'neutral.900',
+              fontSize: { xs: '1.1rem', md: '1.25rem' },
+              lineHeight: 1.3,
+            }}
+          >
+            {title}
+          </Typography>
+
+          {/* Description */}
+          <Typography
+            variant="body2"
+            sx={{
+              lineHeight: { xs: 1.5, md: 1.65 },
+              color: 'neutral.500',
+              fontSize: { xs: '0.8rem', md: '0.875rem' },
+            }}
+          >
+            {description}
+          </Typography>
+        </Box>
+
+        {/* Bottom Section: Arrow Indicator */}
+        <Box
           sx={{
+            display: 'flex',
+            alignItems: 'center',
+            color: stepColor,
             fontWeight: 600,
-            mb: 1,
-            transition: 'color 0.3s',
+            fontSize: '0.8125rem',
+            cursor: 'pointer',
           }}
         >
-          {title}
-        </Typography>
-
-        <Typography
-          variant="body2"
-          color="text.secondary"
-          sx={{ lineHeight: 1.7 }}
-        >
-          {description}
-        </Typography>
+          <ArrowForwardIcon
+            className="feature-arrow"
+            sx={{
+              fontSize: 16,
+              transition: 'transform 250ms var(--ease-out-quint)',
+            }}
+          />
+        </Box>
       </CardContent>
 
-      <AccentLine className="feature-accent" />
+      <AccentLine className="feature-accent" stepColor={stepColor} />
     </StyledCard>
   );
 };

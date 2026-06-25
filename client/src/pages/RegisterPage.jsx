@@ -19,18 +19,28 @@ import { styled } from "@mui/material/styles";
 import * as api from "../api";
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
-  padding: theme.spacing(4),
-  borderRadius: theme.spacing(3),
-  boxShadow: theme.shadows[8],
+  padding: '40px',
+  borderRadius: 24,
+  border: `1px solid ${theme.palette.divider}`,
+  boxShadow: '0 8px 40px rgba(0,0,0,0.08)',
+  backgroundColor: '#ffffff',
+  '&:hover': {
+    transform: "none",
+    boxShadow: '0 8px 40px rgba(0,0,0,0.08)',
+  }
 }));
 
-const GradientAvatar = styled(Avatar)(({ theme }) => ({
-  background: "linear-gradient(135deg, #0b1f17 0%, #15322d 50%, #128c43 100%)",
-  width: 64,
-  height: 64,
+const MonogramAvatar = styled(Avatar)({
+  background: "linear-gradient(135deg, #059669 0%, #047857 100%)",
+  width: 48,
+  height: 48,
   margin: "0 auto",
-  marginBottom: theme.spacing(3),
-}));
+  marginBottom: '16px',
+  fontFamily: '"Plus Jakarta Sans", sans-serif',
+  fontWeight: 800,
+  fontSize: "22px",
+  boxShadow: "0 4px 12px rgba(5, 150, 105, 0.25)",
+});
 
 function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -46,6 +56,25 @@ function RegisterPage() {
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+
+  const getPasswordStrength = (pass) => {
+    if (!pass) return { score: 0, label: "", color: "neutral.200" };
+    let score = 0;
+    if (pass.length >= 8) score++;
+    if (/[A-Z]/.test(pass)) score++;
+    if (/[0-9]/.test(pass)) score++;
+    if (/[^A-Za-z0-9]/.test(pass)) score++;
+
+    const labels = ["Very Weak", "Weak", "Medium", "Strong"];
+    const colors = ["#ef4444", "#f59e0b", "#34d399", "#059669"];
+    return {
+      score,
+      label: labels[score - 1] || "Very Weak",
+      color: colors[score - 1] || "#ef4444"
+    };
+  };
+
+  const strength = getPasswordStrength(formData.password);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -68,34 +97,40 @@ function RegisterPage() {
   return (
     <Box
       sx={{
-        minHeight: "100vh",
+        flex: 1,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        py: 4,
+        py: 6,
         px: 2,
-        background: "linear-gradient(135deg, #f1f8f4 0%, #ffffff 50%, #e8f5e9 100%)",
+        bgcolor: "neutral.50",
       }}
     >
-      <Container maxWidth="sm">
+      <Container maxWidth="xs" sx={{ p: 0 }}>
+        {/* Header Block */}
         <Box sx={{ textAlign: "center", mb: 4 }}>
-          <GradientAvatar>
-            <Typography variant="h4" sx={{ fontWeight: 700, color: "white" }}>
-              A
-            </Typography>
-          </GradientAvatar>
-          <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
+          <MonogramAvatar>A</MonogramAvatar>
+          <Typography
+            variant="h4"
+            sx={{
+              fontWeight: 700,
+              mb: 0.75,
+              fontFamily: '"Plus Jakarta Sans", sans-serif',
+              color: "neutral.900",
+            }}
+          >
             Join ArcShelf
           </Typography>
-          <Typography variant="body1" color="text.secondary">
+          <Typography variant="body2" color="neutral.500" sx={{ fontWeight: 500 }}>
             Create your free account and start contributing
           </Typography>
         </Box>
 
-        <StyledPaper>
-          <Box component="form" onSubmit={handleSubmit} sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+        {/* Form Card */}
+        <StyledPaper elevation={0}>
+          <Box component="form" onSubmit={handleSubmit} sx={{ display: "flex", flexDirection: "column", gap: 2.5 }}>
             {error && (
-              <Alert severity="error" sx={{ borderRadius: 2 }}>
+              <Alert severity="error" sx={{ borderRadius: "10px" }}>
                 {error}
               </Alert>
             )}
@@ -109,6 +144,9 @@ function RegisterPage() {
               autoComplete="name"
               required
               fullWidth
+              sx={{
+                '& .MuiOutlinedInput-root': { height: 48 }
+              }}
             />
 
             <TextField
@@ -120,18 +158,50 @@ function RegisterPage() {
               autoComplete="email"
               required
               fullWidth
+              sx={{
+                '& .MuiOutlinedInput-root': { height: 48 }
+              }}
             />
 
-            <TextField
-              label="Password"
-              name="password"
-              type="password"
-              value={formData.password}
-              onChange={handleChange}
-              autoComplete="new-password"
-              required
-              fullWidth
-            />
+            <Box>
+              <TextField
+                label="Password"
+                name="password"
+                type="password"
+                value={formData.password}
+                onChange={handleChange}
+                autoComplete="new-password"
+                required
+                fullWidth
+                sx={{
+                  '& .MuiOutlinedInput-root': { height: 48 },
+                  mb: 1
+                }}
+              />
+
+              {/* Password Strength Indicator */}
+              {formData.password && (
+                <Box sx={{ mt: 1, mb: 0.5 }}>
+                  <Box sx={{ display: "flex", gap: 0.5, mb: 0.75 }}>
+                    {[1, 2, 3, 4].map((seg) => (
+                      <Box
+                        key={seg}
+                        sx={{
+                          flex: 1,
+                          height: 4,
+                          borderRadius: 2,
+                          bgcolor: seg <= strength.score ? strength.color : "neutral.200",
+                          transition: "background-color 200ms ease",
+                        }}
+                      />
+                    ))}
+                  </Box>
+                  <Typography variant="caption" sx={{ fontWeight: 600, color: strength.color }}>
+                    Password strength: {strength.label}
+                  </Typography>
+                </Box>
+              )}
+            </Box>
 
             <TextField
               label="Confirm Password"
@@ -142,18 +212,29 @@ function RegisterPage() {
               autoComplete="new-password"
               required
               fullWidth
+              sx={{
+                '& .MuiOutlinedInput-root': { height: 48 }
+              }}
             />
 
             <FormControlLabel
-              control={<Checkbox required sx={{ color: "#16a34a" }} />}
+              control={
+                <Checkbox
+                  required
+                  sx={{
+                    color: "neutral.300",
+                    "&.Mui-checked": { color: "primary.500" }
+                  }}
+                />
+              }
               label={
-                <Typography variant="body2">
+                <Typography variant="body2" color="neutral.600">
                   I agree to the{" "}
-                  <MuiLink href="#" sx={{ color: "#128c43", fontWeight: 600 }}>
+                  <MuiLink href="#" sx={{ color: "primary.700", fontWeight: 600, textDecoration: "none", "&:hover": { textDecoration: "underline" } }}>
                     Terms of Service
                   </MuiLink>{" "}
                   and{" "}
-                  <MuiLink href="#" sx={{ color: "#128c43", fontWeight: 600 }}>
+                  <MuiLink href="#" sx={{ color: "primary.700", fontWeight: 600, textDecoration: "none", "&:hover": { textDecoration: "underline" } }}>
                     Privacy Policy
                   </MuiLink>
                 </Typography>
@@ -166,15 +247,15 @@ function RegisterPage() {
               fullWidth
               disabled={loading}
               sx={{
-                py: 1.5,
-                background: "linear-gradient(135deg, #16a34a 0%, #128c43 100%)",
+                height: 48,
+                backgroundImage: "linear-gradient(135deg, #059669 0%, #047857 100%)",
                 "&:hover": {
-                  background: "linear-gradient(135deg, #128c43 0%, #0f7a38 100%)",
-                  transform: "scale(1.02)",
+                  backgroundImage: "linear-gradient(135deg, #047857 0%, #064e3b 100%)",
+                  boxShadow: "var(--shadow-brand)",
                 },
-                "&:disabled": {
-                  background: "linear-gradient(135deg, #16a34a 0%, #128c43 100%)",
-                  opacity: 0.5,
+                "&.Mui-disabled": {
+                  backgroundImage: "linear-gradient(135deg, #059669 0%, #047857 100%)",
+                  opacity: 0.6,
                 },
               }}
             >
@@ -189,8 +270,8 @@ function RegisterPage() {
             </Button>
           </Box>
 
-          <Divider sx={{ my: 3 }}>
-            <Typography variant="body2" color="text.secondary">
+          <Divider sx={{ my: 3.5 }}>
+            <Typography variant="caption" color="neutral.400" sx={{ fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>
               Already have an account?
             </Typography>
           </Divider>
@@ -201,12 +282,13 @@ function RegisterPage() {
             variant="outlined"
             fullWidth
             sx={{
-              py: 1.5,
-              borderColor: "grey.300",
-              color: "text.primary",
+              height: 44,
+              borderColor: "neutral.200",
+              color: "neutral.700",
               "&:hover": {
-                borderColor: "grey.400",
-                backgroundColor: "grey.50",
+                borderColor: "primary.600",
+                bgcolor: "neutral.50",
+                color: "primary.700",
               },
             }}
           >

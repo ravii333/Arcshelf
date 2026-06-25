@@ -67,6 +67,18 @@ router.get("/:id/related", async (req, res) => {
   }
 });
 
+// GET /questions/my - fetch logged in user's contributions
+router.get("/my", authMiddleware, async (req, res) => {
+  try {
+    const questions = await Question.find({ createdBy: req.userId })
+      .sort({ createdAt: -1 })
+      .populate(populateOptions);
+    res.status(200).json(questions);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch your contributions." });
+  }
+});
+
 // GET /questions/:id
 router.get("/:id", async (req, res) => {
   try {
@@ -118,6 +130,23 @@ router.post("/", authMiddleware, upload.single("paperFile"), async (req, res) =>
   } catch (error) {
     console.error("Question submission error:", error);
     res.status(409).json({ message: "Failed to submit question.", error: error.message });
+  }
+});
+
+// DELETE /questions/:id - delete a question
+router.delete("/:id", authMiddleware, async (req, res) => {
+  try {
+    const question = await Question.findById(req.params.id);
+    if (!question) return res.status(404).json({ message: "Question not found." });
+
+    if (question.createdBy.toString() !== req.userId) {
+      return res.status(403).json({ message: "Unauthorized. You can only delete your own papers." });
+    }
+
+    await Question.findByIdAndDelete(req.params.id);
+    res.status(200).json({ message: "Question paper deleted successfully." });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to delete question." });
   }
 });
 

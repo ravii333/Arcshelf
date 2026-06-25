@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import { Box, Button, Typography, Paper, Alert, CircularProgress, IconButton, Tooltip } from '@mui/material';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
@@ -40,20 +40,47 @@ function PDFViewer({ fileUrl }) {
   const zoomOut = () => setScale((s) => Math.max(parseFloat((s - SCALE_STEP).toFixed(1)), MIN_SCALE));
   const resetZoom = () => setScale(DEFAULT_SCALE);
 
+  // Keyboard Shortcuts (Arrow Left/Right for pages, +/- for zoom, 0 to reset)
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (document.activeElement.tagName === "INPUT" || document.activeElement.tagName === "TEXTAREA") {
+        return;
+      }
+      if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        setPageNumber((p) => Math.max(p - 1, 1));
+      } else if (e.key === "ArrowRight") {
+        e.preventDefault();
+        setPageNumber((p) => (numPages ? Math.min(p + 1, numPages) : p));
+      } else if (e.key === "+" || e.key === "=") {
+        e.preventDefault();
+        zoomIn();
+      } else if (e.key === "-") {
+        e.preventDefault();
+        zoomOut();
+      } else if (e.key === "0") {
+        e.preventDefault();
+        resetZoom();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [numPages]);
+
   return (
     <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-      {/* Controls */}
+      {/* Controls Bar */}
       {!loadError && numPages && (
         <Box
           sx={{
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: 1,
-            p: 1,
-            mb: 2,
-            bgcolor: 'grey.100',
-            borderRadius: 2,
+            gap: 1.5,
+            p: "8px 12px",
+            mb: 3,
+            bgcolor: 'neutral.100', // f1f5f9
+            borderRadius: "10px",
             flexWrap: 'wrap',
           }}
         >
@@ -64,69 +91,127 @@ function PDFViewer({ fileUrl }) {
             variant="contained"
             size="small"
             startIcon={<NavigateBeforeIcon />}
-            sx={{ bgcolor: '#16a34a', '&:hover': { bgcolor: '#128c43' } }}
+            sx={{
+              bgcolor: 'primary.600',
+              minHeight: { xs: 48, md: 36 }, // Touch targets sizing (48px on mobile)
+              '&:hover': { bgcolor: 'primary.700' }
+            }}
           >
             Prev
           </Button>
-          <Typography variant="body2" sx={{ fontWeight: 600, minWidth: 80, textAlign: 'center' }}>
+
+          <Typography
+            variant="body2"
+            sx={{
+              fontWeight: 600,
+              minWidth: 80,
+              textAlign: 'center',
+              color: 'neutral.800'
+            }}
+          >
             {pageNumber} / {numPages}
           </Typography>
+
           <Button
             onClick={() => setPageNumber((p) => Math.min(p + 1, numPages))}
             disabled={pageNumber >= numPages}
             variant="contained"
             size="small"
             endIcon={<NavigateNextIcon />}
-            sx={{ bgcolor: '#16a34a', '&:hover': { bgcolor: '#128c43' } }}
+            sx={{
+              bgcolor: 'primary.600',
+              minHeight: { xs: 48, md: 36 }, // Touch targets sizing
+              '&:hover': { bgcolor: 'primary.700' }
+            }}
           >
             Next
           </Button>
 
-          <Box sx={{ width: 1, height: 24, bgcolor: 'grey.300', mx: 0.5 }} />
+          {/* Thin Vertical Divider */}
+          <Box sx={{ width: "1px", height: 20, bgcolor: 'neutral.300', mx: 1 }} />
 
           {/* Zoom Controls */}
-          <Tooltip title="Zoom out">
+          <Tooltip title="Zoom Out (-)">
             <span>
-              <IconButton onClick={zoomOut} disabled={scale <= MIN_SCALE} size="small">
+              <IconButton
+                onClick={zoomOut}
+                disabled={scale <= MIN_SCALE}
+                size="large"
+                sx={{
+                  color: 'neutral.600',
+                  width: { xs: 48, md: 40 },
+                  height: { xs: 48, md: 40 }
+                }}
+              >
                 <ZoomOutIcon fontSize="small" />
               </IconButton>
             </span>
           </Tooltip>
-          <Typography variant="body2" sx={{ fontWeight: 600, minWidth: 44, textAlign: 'center' }}>
+
+          <Typography
+            variant="body2"
+            sx={{
+              fontWeight: 600,
+              minWidth: 44,
+              textAlign: 'center',
+              color: 'neutral.800'
+            }}
+          >
             {Math.round(scale * 100)}%
           </Typography>
-          <Tooltip title="Zoom in">
+
+          <Tooltip title="Zoom In (+)">
             <span>
-              <IconButton onClick={zoomIn} disabled={scale >= MAX_SCALE} size="small">
+              <IconButton
+                onClick={zoomIn}
+                disabled={scale >= MAX_SCALE}
+                size="large"
+                sx={{
+                  color: 'neutral.600',
+                  width: { xs: 48, md: 40 },
+                  height: { xs: 48, md: 40 }
+                }}
+              >
                 <ZoomInIcon fontSize="small" />
               </IconButton>
             </span>
           </Tooltip>
-          <Tooltip title="Reset zoom">
-            <IconButton onClick={resetZoom} size="small" disabled={scale === DEFAULT_SCALE}>
-              <RestartAltIcon fontSize="small" />
-            </IconButton>
+
+          <Tooltip title="Reset Zoom (0)">
+            <span>
+              <IconButton
+                onClick={resetZoom}
+                size="large"
+                disabled={scale === DEFAULT_SCALE}
+                sx={{
+                  color: 'neutral.600',
+                  width: { xs: 48, md: 40 },
+                  height: { xs: 48, md: 40 }
+                }}
+              >
+                <RestartAltIcon fontSize="small" />
+              </IconButton>
+            </span>
           </Tooltip>
         </Box>
       )}
 
-      {/* PDF Display */}
+      {/* PDF Canvas Container */}
       <Paper
-        elevation={2}
+        elevation={0}
         sx={{
           width: '100%',
-          maxWidth: '56rem',
           display: 'flex',
           justifyContent: 'center',
           border: '1px solid',
-          borderColor: 'divider',
-          borderRadius: 2,
+          borderColor: 'neutral.200',
+          borderRadius: "10px",
           overflow: 'auto',
-          bgcolor: 'grey.50',
+          bgcolor: 'neutral.100',
         }}
       >
         {loadError ? (
-          <Alert severity="error" sx={{ width: '100%', m: 2 }}>
+          <Alert severity="error" sx={{ width: '100%', m: 2, borderRadius: "10px" }}>
             {loadError}
           </Alert>
         ) : (
@@ -136,12 +221,14 @@ function PDFViewer({ fileUrl }) {
             onLoadError={onDocumentLoadError}
             loading={
               <Box sx={{ p: 4, textAlign: 'center' }}>
-                <CircularProgress sx={{ mb: 2, color: '#16a34a' }} />
-                <Typography color="text.secondary">Loading PDF preview...</Typography>
+                <CircularProgress sx={{ mb: 2, color: 'primary.600' }} />
+                <Typography color="neutral.500" variant="body2" sx={{ fontWeight: 500 }}>
+                  Loading PDF...
+                </Typography>
               </Box>
             }
             error={
-              <Alert severity="error" sx={{ m: 2 }}>
+              <Alert severity="error" sx={{ m: 2, borderRadius: "10px" }}>
                 Failed to load PDF file.
               </Alert>
             }

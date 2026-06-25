@@ -9,6 +9,8 @@ import ProtectedRoute from './components/ProtectedRoute';
 import CollegesPage from './pages/CollegesPage';
 import UniversitiesPage from './pages/UniversitiesPage';
 import BrowsePage from './pages/BrowsePage';
+import DashboardPage from './pages/DashboardPage';
+import ProfilePage from './pages/ProfilePage';
 
 function App() {
   return (
@@ -23,6 +25,8 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/submit" element={<ProtectedRoute><SubmitQuestionPage /></ProtectedRoute>} />
+          <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+          <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
         </Routes>
       </Layout>
     </Router>

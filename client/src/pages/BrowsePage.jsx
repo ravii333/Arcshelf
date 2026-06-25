@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import {
   Box,
@@ -8,7 +8,6 @@ import {
   Button,
   Grid,
   Chip,
-  CircularProgress,
   FormControl,
   InputLabel,
   Select,
@@ -16,8 +15,8 @@ import {
   Paper,
   Divider,
   Pagination,
-  IconButton,
   Collapse,
+  Container,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import FilterListIcon from "@mui/icons-material/FilterList";
@@ -27,6 +26,9 @@ import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import * as api from "../api";
 import ContributionCard from "../components/common/ContributionCard";
+import LoadingCard from "../components/common/LoadingCard";
+import EmptyState from "../components/common/EmptyState";
+import useDebounce from "../hooks/useDebounce";
 
 const EXAM_TYPES = ["Mid Sem", "Final Sem", "Quiz", "Assignment"];
 const CURRENT_YEAR = new Date().getFullYear();
@@ -46,19 +48,27 @@ function BrowsePage() {
   const course = searchParams.get("course") || "";
 
   const [localSearch, setLocalSearch] = useState(search);
+  const debouncedSearch = useDebounce(localSearch, 300);
+  const isFirstRender = useRef(true);
 
-  const applySearch = useCallback(() => {
+  // Sync url search to local search input state on navigation / back buttons
+  useEffect(() => {
+    setLocalSearch(search);
+  }, [search]);
+
+  // Handle auto-searching when debounced input changes
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
     const params = {};
-    if (localSearch.trim()) params.search = localSearch.trim();
+    if (debouncedSearch.trim()) params.search = debouncedSearch.trim();
     if (examType) params.examType = examType;
     if (year) params.year = year;
     if (course) params.course = course;
     setSearchParams(params);
-  }, [localSearch, examType, year, course, setSearchParams]);
-
-  useEffect(() => {
-    setLocalSearch(search);
-  }, [search]);
+  }, [debouncedSearch, examType, year, course, setSearchParams]);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -104,17 +114,26 @@ function BrowsePage() {
   const totalPages = Math.ceil(questions.length / PER_PAGE);
 
   return (
-    <Box sx={{ py: 2 }}>
+    <Container maxWidth="xl" sx={{ px: { xs: 2, sm: 3, md: 4, lg: 5 }, py: 4 }}>
       {/* Page Header */}
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" sx={{ fontWeight: 700, mb: 0.5 }}>
+      <Box sx={{ mb: 4 }} className="animate-fadeInDown">
+        <Typography
+          variant="h4"
+          sx={{
+            fontWeight: 700,
+            fontSize: { xs: "1.75rem", md: "2.25rem" },
+            fontFamily: '"Plus Jakarta Sans", sans-serif',
+            color: "neutral.900",
+            mb: 0.5,
+          }}
+        >
           Browse Papers
         </Typography>
-        <Typography variant="body2" color="text.secondary">
+        <Typography variant="body2" color="neutral.500" sx={{ fontWeight: 500 }}>
           {loading
             ? "Searching..."
             : `${questions.length} paper${questions.length !== 1 ? "s" : ""} found`}
-          {activeFilterCount > 0 && ` — ${activeFilterCount} filter${activeFilterCount > 1 ? "s" : ""} active`}
+          {activeFilterCount > 0 && ` — ${activeFilterCount} active filter${activeFilterCount > 1 ? "s" : ""}`}
         </Typography>
       </Box>
 
@@ -122,72 +141,95 @@ function BrowsePage() {
       <Paper
         elevation={0}
         sx={{
-          p: 3,
+          p: "20px 24px",
           mb: 4,
           border: "1px solid",
-          borderColor: "divider",
-          borderRadius: 3,
+          borderColor: "neutral.200",
+          borderRadius: "16px",
+          bgcolor: "neutral.0",
         }}
       >
         {/* Search Row */}
-        <Box sx={{ display: "flex", gap: 1.5, mb: showFilters ? 3 : 0 }}>
+        <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, gap: 1.5, mb: showFilters ? 2.5 : 0 }}>
           <TextField
             fullWidth
             placeholder="Search by subject, course, topics..."
             value={localSearch}
             onChange={(e) => setLocalSearch(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && applySearch()}
-            size="small"
+            size="medium"
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                height: 44,
+                borderRadius: "10px",
+              }
+            }}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <SearchIcon sx={{ color: "text.secondary", fontSize: 20 }} />
+                  <SearchIcon sx={{ color: "neutral.400", fontSize: 20 }} />
                 </InputAdornment>
               ),
             }}
           />
-          <Button
-            variant="contained"
-            onClick={applySearch}
-            sx={{
-              minWidth: 100,
-              bgcolor: "#16a34a",
-              "&:hover": { bgcolor: "#128c43" },
-              flexShrink: 0,
-            }}
-          >
-            Search
-          </Button>
-          <Button
-            variant="outlined"
-            onClick={() => setShowFilters((v) => !v)}
-            endIcon={showFilters ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-            sx={{
-              borderColor: activeFilterCount > 0 ? "#16a34a" : "grey.300",
-              color: activeFilterCount > 0 ? "#16a34a" : "text.secondary",
-              flexShrink: 0,
-            }}
-          >
-            Filters
-            {activeFilterCount > 0 && (
-              <Chip
-                label={activeFilterCount}
-                size="small"
-                sx={{
-                  ml: 1,
-                  height: 18,
-                  fontSize: "0.65rem",
-                  bgcolor: "#16a34a",
-                  color: "white",
-                }}
-              />
-            )}
-          </Button>
+
+          <Box sx={{ display: "flex", gap: 1.5, flexShrink: 0 }}>
+            <Button
+              variant="contained"
+              onClick={() => {
+                const params = {};
+                if (localSearch.trim()) params.search = localSearch.trim();
+                if (examType) params.examType = examType;
+                if (year) params.year = year;
+                if (course) params.course = course;
+                setSearchParams(params);
+              }}
+              sx={{
+                height: 44,
+                minWidth: 110,
+                backgroundImage: "linear-gradient(135deg, #059669 0%, #047857 100%)",
+                '&:hover': {
+                  backgroundImage: "linear-gradient(135deg, #047857 0%, #064e3b 100%)",
+                },
+              }}
+            >
+              Search
+            </Button>
+            <Button
+              variant="outlined"
+              onClick={() => setShowFilters((v) => !v)}
+              endIcon={showFilters ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+              sx={{
+                height: 44,
+                borderColor: activeFilterCount > 0 ? "primary.600" : "neutral.200",
+                color: activeFilterCount > 0 ? "primary.700" : "neutral.600",
+                "&:hover": {
+                  borderColor: "primary.600",
+                  bgcolor: "rgba(5, 150, 105, 0.04)",
+                }
+              }}
+            >
+              Filters
+              {activeFilterCount > 0 && (
+                <Chip
+                  label={activeFilterCount}
+                  size="small"
+                  sx={{
+                    ml: 1.25,
+                    height: 18,
+                    fontSize: "0.65rem",
+                    bgcolor: "primary.600",
+                    color: "white",
+                    fontWeight: 700,
+                  }}
+                />
+              )}
+            </Button>
+          </Box>
         </Box>
 
         {/* Collapsible Filter Row */}
         <Collapse in={showFilters}>
-          <Divider sx={{ mb: 3 }} />
+          <Divider sx={{ my: 2.5, borderColor: "neutral.200" }} />
           <Box
             sx={{
               display: "flex",
@@ -196,19 +238,21 @@ function BrowsePage() {
               alignItems: "center",
             }}
           >
-            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-              <FilterListIcon sx={{ color: "text.secondary", fontSize: 18 }} />
-              <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, mr: 1 }}>
+              <FilterListIcon sx={{ color: "neutral.400", fontSize: 18 }} />
+              <Typography variant="body2" color="neutral.700" sx={{ fontWeight: 600 }}>
                 Filter by:
               </Typography>
             </Box>
 
             <FormControl size="small" sx={{ minWidth: 150 }}>
-              <InputLabel>Exam Type</InputLabel>
+              <InputLabel id="exam-type-filter-label">Exam Type</InputLabel>
               <Select
+                labelId="exam-type-filter-label"
                 value={examType}
                 label="Exam Type"
                 onChange={(e) => updateFilter("examType", e.target.value)}
+                sx={{ borderRadius: "10px", height: 38 }}
               >
                 <MenuItem value="">All Types</MenuItem>
                 {EXAM_TYPES.map((t) => (
@@ -219,12 +263,14 @@ function BrowsePage() {
               </Select>
             </FormControl>
 
-            <FormControl size="small" sx={{ minWidth: 110 }}>
-              <InputLabel>Year</InputLabel>
+            <FormControl size="small" sx={{ minWidth: 120 }}>
+              <InputLabel id="year-filter-label">Year</InputLabel>
               <Select
+                labelId="year-filter-label"
                 value={year}
                 label="Year"
                 onChange={(e) => updateFilter("year", e.target.value)}
+                sx={{ borderRadius: "10px", height: 38 }}
               >
                 <MenuItem value="">All Years</MenuItem>
                 {YEARS.map((y) => (
@@ -240,87 +286,128 @@ function BrowsePage() {
                 size="small"
                 onClick={clearAll}
                 startIcon={<ClearIcon />}
-                sx={{ color: "text.secondary", ml: "auto" }}
+                sx={{
+                  color: "neutral.500",
+                  ml: { xs: 0, sm: "auto" },
+                  fontWeight: 600,
+                  "&:hover": { color: "error.main", bgcolor: "transparent" }
+                }}
               >
                 Clear all
               </Button>
             )}
           </Box>
-
-          {/* Active Filter Chips */}
-          {(search || course) && (
-            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mt: 2 }}>
-              {search && (
-                <Chip
-                  label={`Search: "${search}"`}
-                  onDelete={() => {
-                    setLocalSearch("");
-                    updateFilter("search", "");
-                  }}
-                  size="small"
-                  sx={{ bgcolor: "rgba(22, 163, 74, 0.1)", color: "#128c43" }}
-                />
-              )}
-              {course && (
-                <Chip
-                  label={`Course: ${course}`}
-                  onDelete={() => updateFilter("course", "")}
-                  size="small"
-                  sx={{ bgcolor: "rgba(22, 163, 74, 0.1)", color: "#128c43" }}
-                />
-              )}
-            </Box>
-          )}
         </Collapse>
+
+        {/* Active Filter Chips Row */}
+        {activeFilterCount > 0 && (
+          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mt: showFilters ? 2 : 1.5 }}>
+            {search && (
+              <Chip
+                label={`Search: "${search}"`}
+                onDelete={() => {
+                  setLocalSearch("");
+                  updateFilter("search", "");
+                }}
+                size="small"
+                sx={{
+                  bgcolor: "primary.50",
+                  color: "primary.700",
+                  border: "1px solid",
+                  borderColor: "primary.200",
+                  height: 24,
+                  fontWeight: 600,
+                }}
+              />
+            )}
+            {examType && (
+              <Chip
+                label={`Exam: ${examType}`}
+                onDelete={() => updateFilter("examType", "")}
+                size="small"
+                sx={{
+                  bgcolor: "primary.50",
+                  color: "primary.700",
+                  border: "1px solid",
+                  borderColor: "primary.200",
+                  height: 24,
+                  fontWeight: 600,
+                }}
+              />
+            )}
+            {year && (
+              <Chip
+                label={`Year: ${year}`}
+                onDelete={() => updateFilter("year", "")}
+                size="small"
+                sx={{
+                  bgcolor: "primary.50",
+                  color: "primary.700",
+                  border: "1px solid",
+                  borderColor: "primary.200",
+                  height: 24,
+                  fontWeight: 600,
+                }}
+              />
+            )}
+            {course && (
+              <Chip
+                label={`Course: ${course}`}
+                onDelete={() => updateFilter("course", "")}
+                size="small"
+                sx={{
+                  bgcolor: "primary.50",
+                  color: "primary.700",
+                  border: "1px solid",
+                  borderColor: "primary.200",
+                  height: 24,
+                  fontWeight: 600,
+                }}
+              />
+            )}
+          </Box>
+        )}
       </Paper>
 
-      {/* Results */}
+      {/* Results grid */}
       {loading ? (
-        <Box sx={{ display: "flex", justifyContent: "center", py: 10 }}>
-          <Box sx={{ textAlign: "center" }}>
-            <CircularProgress sx={{ color: "#16a34a", mb: 2 }} />
-            <Typography variant="body2" color="text.secondary">
-              Searching papers...
-            </Typography>
-          </Box>
-        </Box>
+        <Grid container spacing={3}>
+          {Array.from({ length: 12 }).map((_, idx) => (
+            <Grid item xs={12} sm={6} md={4} lg={3} key={idx}>
+              <LoadingCard />
+            </Grid>
+          ))}
+        </Grid>
       ) : paginatedQuestions.length === 0 ? (
-        <Paper
-          elevation={0}
-          sx={{
-            textAlign: "center",
-            py: 10,
-            px: 4,
-            borderRadius: 3,
-            border: "1px solid",
-            borderColor: "divider",
+        <EmptyState
+          icon={<SearchIcon />}
+          title="No papers found"
+          description="Try adjusting your filters, searching for something else, or help the archive grow by contributing."
+          action={{
+            text: activeFilterCount > 0 ? "Clear Filters" : "Contribute a Paper",
+            onClick: activeFilterCount > 0 ? clearAll : undefined,
+            component: activeFilterCount > 0 ? undefined : Link,
+            to: activeFilterCount > 0 ? undefined : "/submit",
+            variant: "contained",
           }}
-        >
-          <Typography variant="h5" sx={{ fontWeight: 700, mb: 1 }}>
-            No papers found
-          </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-            Try different keywords or adjust your filters, or{" "}
-            <Link to="/submit" style={{ color: "#16a34a", fontWeight: 600 }}>
-              contribute the first one
-            </Link>
-            .
-          </Typography>
-          {activeFilterCount > 0 && (
-            <Button
-              onClick={clearAll}
-              variant="outlined"
-              sx={{ borderColor: "#16a34a", color: "#128c43" }}
-            >
-              Clear Filters
-            </Button>
-          )}
-        </Paper>
+        />
       ) : (
         <>
           <Grid container spacing={3}>
-            {paginatedQuestions.map((q) => (
-              <Grid item xs={12} sm={6} md={4} lg={3} key={q._id}>
+            {paginatedQuestions.map((q, index) => (
+              <Grid
+                item
+                xs={12}
+                sm={6}
+                md={4}
+                lg={3}
+                key={q._id}
+                sx={{
+                  animation: "fadeInUp 500ms var(--ease-out-quint) forwards",
+                  animationDelay: index < 8 ? `${index * 50}ms` : "0ms",
+                  opacity: 0,
+                }}
+              >
                 <ContributionCard question={q} />
               </Grid>
             ))}
@@ -336,11 +423,19 @@ function BrowsePage() {
                   window.scrollTo({ top: 0, behavior: "smooth" });
                 }}
                 sx={{
-                  "& .MuiPaginationItem-root.Mui-selected": {
-                    bgcolor: "#16a34a",
-                    color: "white",
-                    "&:hover": { bgcolor: "#128c43" },
+                  "& .MuiPaginationItem-root": {
+                    fontWeight: 600,
+                    color: "neutral.700",
                   },
+                  "& .MuiPaginationItem-root.Mui-selected": {
+                    bgcolor: "primary.600",
+                    color: "white",
+                    "&:hover": { bgcolor: "primary.700" },
+                  },
+                  "& .MuiPaginationItem-root:hover:not(.Mui-selected)": {
+                    bgcolor: "primary.50",
+                    color: "primary.700",
+                  }
                 }}
               />
             </Box>
@@ -350,9 +445,17 @@ function BrowsePage() {
 
       {/* Floating contribute CTA */}
       {!loading && questions.length > 0 && (
-        <Box sx={{ textAlign: "center", mt: 6, pt: 4, borderTop: "1px solid", borderColor: "divider" }}>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-            Can't find what you're looking for?
+        <Box
+          sx={{
+            textAlign: "center",
+            mt: 8,
+            pt: 5,
+            borderTop: "1px solid",
+            borderColor: "neutral.200",
+          }}
+        >
+          <Typography variant="body2" color="neutral.500" sx={{ mb: 2, fontWeight: 500 }}>
+            Can't find the paper you need?
           </Typography>
           <Button
             component={Link}
@@ -360,9 +463,10 @@ function BrowsePage() {
             variant="contained"
             startIcon={<CloudUploadIcon />}
             sx={{
-              background: "linear-gradient(135deg, #16a34a 0%, #128c43 100%)",
+              backgroundImage: "linear-gradient(135deg, #059669 0%, #047857 100%)",
               "&:hover": {
-                background: "linear-gradient(135deg, #128c43 0%, #0f7036 100%)",
+                backgroundImage: "linear-gradient(135deg, #047857 0%, #064e3b 100%)",
+                boxShadow: "var(--shadow-brand)",
               },
             }}
           >
@@ -370,7 +474,7 @@ function BrowsePage() {
           </Button>
         </Box>
       )}
-    </Box>
+    </Container>
   );
 }
 
