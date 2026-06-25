@@ -1,17 +1,25 @@
-// client/src/components/common/Card.jsx
 import React from 'react';
+import { Card as MuiCard } from '@mui/material';
+import { styled } from '@mui/material/styles';
 
-const Card = ({ children, className, hover = true, ...props }) => {
-  // Base styles with a subtle green accent for ArcShelf theme
-  const baseClasses = `
-    bg-white border border-gray-200 rounded-2xl shadow-lg transition-all duration-300
-    ${hover ? 'hover:shadow-[0_6px_20px_rgba(22,163,74,0.15)] hover:-translate-y-1 hover:border-[#16a34a]/60' : ''}
-  `;
+const StyledCard = styled(MuiCard)(({ theme, hover }) => ({
+  borderRadius: theme.spacing(2),
+  border: `1px solid ${theme.palette.grey[200]}`,
+  transition: 'all 0.3s',
+  ...(hover && {
+    '&:hover': {
+      boxShadow: '0 6px 20px rgba(22, 163, 74, 0.15)',
+      transform: 'translateY(-4px)',
+      borderColor: 'rgba(22, 163, 74, 0.6)',
+    },
+  }),
+}));
 
+const Card = ({ children, hover = true, ...props }) => {
   return (
-    <div className={`${baseClasses} ${className || ''}`} {...props}>
+    <StyledCard hover={hover} {...props}>
       {children}
-    </div>
+    </StyledCard>
   );
 };
 

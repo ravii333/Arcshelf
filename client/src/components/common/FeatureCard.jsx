@@ -1,4 +1,38 @@
 import React from 'react';
+import { Card, CardContent, Typography, Box, Chip } from '@mui/material';
+import { styled } from '@mui/material/styles';
+
+const StyledCard = styled(Card)(({ theme }) => ({
+  position: 'relative',
+  borderRadius: theme.spacing(2),
+  border: `1px solid ${theme.palette.grey[200]}`,
+  transition: 'all 0.5s',
+  '&:hover': {
+    boxShadow: theme.shadows[8],
+    transform: 'translateY(-4px)',
+    '& .feature-icon': {
+      transform: 'scale(1.1)',
+    },
+    '& .feature-title': {
+      color: '#128c43',
+    },
+    '& .feature-accent': {
+      opacity: 1,
+    },
+  },
+}));
+
+const AccentLine = styled(Box)(({ theme }) => ({
+  position: 'absolute',
+  bottom: 0,
+  left: 0,
+  width: '100%',
+  height: 4,
+  background: 'linear-gradient(135deg, #16a34a 0%, #128c43 100%)',
+  borderRadius: `0 0 ${theme.spacing(2)} ${theme.spacing(2)}`,
+  opacity: 0,
+  transition: 'opacity 0.3s',
+}));
 
 const FeatureCard = ({
   icon,
@@ -9,45 +43,67 @@ const FeatureCard = ({
   gradient,
 }) => {
   return (
-    <div className="group relative p-6 bg-white border border-gray-100 shadow-md rounded-2xl transition-all duration-500 hover:shadow-xl hover:-translate-y-1">
+    <StyledCard>
       {badgeText && (
-        <span
-          className={`absolute -top-3 right-4 px-3 py-1.5 text-xs font-semibold text-white rounded-full shadow-md bg-gradient-to-r ${
-            gradient || 'from-[#16a34a] to-[#128c43]'
-          }`}
-        >
-          {badgeText}
-        </span>
+        <Chip
+          label={badgeText}
+          size="small"
+          sx={{
+            position: 'absolute',
+            top: -12,
+            right: 16,
+            background: gradient || 'linear-gradient(135deg, #16a34a 0%, #128c43 100%)',
+            color: 'white',
+            fontSize: '0.75rem',
+            fontWeight: 600,
+            height: 24,
+            boxShadow: 2,
+            zIndex: 1,
+          }}
+        />
       )}
 
-      <div className="text-gray-900">
-        {/* --- Icon --- */}
-        <div
-          className={`w-14 h-14 ${
-            iconBgColor || 'bg-gradient-to-br from-green-50 to-emerald-100'
-          } rounded-xl flex items-center justify-center mb-4 group-hover:scale-105 transition-transform duration-300`}
+      <CardContent sx={{ p: 3 }}>
+        <Box
+          className="feature-icon"
+          sx={{
+            width: 56,
+            height: 56,
+            borderRadius: '50%',
+            background: iconBgColor || 'linear-gradient(135deg, #f1f8f4 0%, #e8f5e9 100%)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            mb: 2,
+            transition: 'transform 0.3s',
+          }}
         >
           {icon}
-        </div>
+        </Box>
 
-        {/* --- Title --- */}
-        <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-[#128c43] transition-colors duration-300">
+        <Typography
+          variant="h6"
+          className="feature-title"
+          sx={{
+            fontWeight: 600,
+            mb: 1,
+            transition: 'color 0.3s',
+          }}
+        >
           {title}
-        </h3>
+        </Typography>
 
-        {/* --- Description --- */}
-        <p className="text-gray-600 text-sm leading-relaxed">
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          sx={{ lineHeight: 1.7 }}
+        >
           {description}
-        </p>
+        </Typography>
+      </CardContent>
 
-        {/* --- Hover Accent Line --- */}
-        <div
-          className={`absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r ${
-            gradient || 'from-[#16a34a] to-[#128c43]'
-          } rounded-b-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
-        ></div>
-      </div>
-    </div>
+      <AccentLine className="feature-accent" />
+    </StyledCard>
   );
 };
 

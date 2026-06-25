@@ -5,9 +5,8 @@ export const proxyPDF = async (req, res) => {
     const { url } = req.query;
     if (!url) return res.status(400).json({ message: "Missing PDF URL" });
 
-    // Replace image with raw if missed
     const fixedUrl = url.replace("/image/upload/", "/raw/upload/");
-    console.log("🔗 Proxying fixed URL:", fixedUrl);
+    console.log("Proxying fixed URL:", fixedUrl);
 
     const response = await axios.get(fixedUrl, { responseType: "stream" });
 
@@ -19,7 +18,7 @@ export const proxyPDF = async (req, res) => {
     // Pipe PDF stream directly to client
     response.data.pipe(res);
   } catch (error) {
-    console.error("❌ PDF Proxy Error:", error.message);
+    console.error("PDF Proxy Error:", error.message);
     if (error.response) {
       console.error("Status:", error.response.status);
       res.status(error.response.status).json({ message: "Upstream Cloudinary Error" });

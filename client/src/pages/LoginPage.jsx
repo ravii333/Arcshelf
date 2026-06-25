@@ -1,7 +1,35 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import {
+  Box,
+  Container,
+  Paper,
+  Typography,
+  Avatar,
+  TextField,
+  Button,
+  Checkbox,
+  FormControlLabel,
+  Alert,
+  Divider,
+  CircularProgress,
+} from "@mui/material";
+import { styled } from "@mui/material/styles";
 import * as api from "../api";
-import { Input } from "../components/forms/Input";
+
+const StyledPaper = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(4),
+  borderRadius: theme.spacing(3),
+  boxShadow: theme.shadows[8],
+}));
+
+const GradientAvatar = styled(Avatar)(({ theme }) => ({
+  background: "linear-gradient(135deg, #0b1f17 0%, #15322d 50%, #128c43 100%)",
+  width: 64,
+  height: 64,
+  margin: "0 auto",
+  marginBottom: theme.spacing(3),
+}));
 
 function LoginPage() {
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -33,40 +61,41 @@ function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-green-50 via-white to-green-100">
-      <div className="max-w-md w-full space-y-8">
-        {/* Header */}
-        <div className="text-center">
-          <div className="mx-auto h-16 w-16 bg-gradient-to-br from-[#0b1f17] via-[#15322d] to-[#128c43] rounded-2xl flex items-center justify-center mb-6 shadow-md">
-            <span className="text-2xl font-bold text-white">A</span>
-          </div>
-          <h2 className="text-3xl font-bold text-gray-900">Welcome back</h2>
-          <p className="mt-2 text-gray-600">Sign in to your ArcShelf account</p>
-        </div>
+    <Box
+      sx={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        py: 4,
+        px: 2,
+        background: "linear-gradient(135deg, #f1f8f4 0%, #ffffff 50%, #e8f5e9 100%)",
+      }}
+    >
+      <Container maxWidth="sm">
+        <Box sx={{ textAlign: "center", mb: 4 }}>
+          <GradientAvatar>
+            <Typography variant="h4" sx={{ fontWeight: 700, color: "white" }}>
+              A
+            </Typography>
+          </GradientAvatar>
+          <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
+            Welcome back
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            Sign in to your ArcShelf account
+          </Typography>
+        </Box>
 
-        {/* Form */}
-        <div className="bg-white rounded-3xl shadow-2xl p-8 border border-green-100">
-          <form onSubmit={handleSubmit} className="space-y-6">
+        <StyledPaper>
+          <Box component="form" onSubmit={handleSubmit} sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
             {error && (
-              <div className="rounded-xl bg-red-50 p-4 border border-red-200">
-                <div className="flex">
-                  <svg
-                    className="w-5 h-5 text-red-400 mr-3 mt-0.5"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  <p className="text-sm font-medium text-red-800">{error}</p>
-                </div>
-              </div>
+              <Alert severity="error" sx={{ borderRadius: 2 }}>
+                {error}
+              </Alert>
             )}
 
-            <Input
+            <TextField
               label="Email address"
               name="email"
               type="email"
@@ -74,9 +103,10 @@ function LoginPage() {
               onChange={handleChange}
               autoComplete="email"
               required
+              fullWidth
             />
 
-            <Input
+            <TextField
               label="Password"
               name="password"
               type="password"
@@ -84,94 +114,86 @@ function LoginPage() {
               onChange={handleChange}
               autoComplete="current-password"
               required
+              fullWidth
             />
 
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <input
-                  id="remember-me"
-                  name="remember-me"
-                  type="checkbox"
-                  className="h-4 w-4 text-[#16a34a] focus:ring-[#128c43] border-gray-300 rounded"
-                />
-                <label
-                  htmlFor="remember-me"
-                  className="ml-2 block text-sm text-gray-700"
-                >
-                  Remember me
-                </label>
-              </div>
-
-              <div className="text-sm">
-                <a
-                  href="#"
-                  className="font-medium text-[#16a34a] hover:text-[#128c43] transition-all"
-                >
-                  Forgot your password?
-                </a>
-              </div>
-            </div>
-
-            <div>
-              <button
-                type="submit"
-                disabled={loading}
-                className="group relative w-full flex justify-center py-4 px-4 border border-transparent text-sm font-bold rounded-xl text-white bg-gradient-to-br from-[#16a34a] to-[#128c43] hover:from-[#128c43] hover:to-[#0f7036] focus:outline-none focus:ring-4 focus:ring-[#16a34a]/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-105"
+            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <FormControlLabel
+                control={<Checkbox sx={{ color: "#16a34a" }} />}
+                label="Remember me"
+              />
+              <Button
+                component="a"
+                href="#"
+                sx={{
+                  color: "#16a34a",
+                  textTransform: "none",
+                  "&:hover": {
+                    color: "#128c43",
+                    backgroundColor: "transparent",
+                  },
+                }}
               >
-                {loading ? (
-                  <div className="flex items-center">
-                    <svg
-                      className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      ></circle>
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      ></path>
-                    </svg>
-                    Signing in...
-                  </div>
-                ) : (
-                  "Sign in"
-                )}
-              </button>
-            </div>
-          </form>
+                Forgot password?
+              </Button>
+            </Box>
 
-          <div className="mt-8">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300" />
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">
-                  New to ArcShelf?
-                </span>
-              </div>
-            </div>
+            <Button
+              type="submit"
+              variant="contained"
+              fullWidth
+              disabled={loading}
+              sx={{
+                py: 1.5,
+                background: "linear-gradient(135deg, #16a34a 0%, #128c43 100%)",
+                "&:hover": {
+                  background: "linear-gradient(135deg, #128c43 0%, #0f7036 100%)",
+                  transform: "scale(1.02)",
+                },
+                "&:disabled": {
+                  background: "linear-gradient(135deg, #16a34a 0%, #128c43 100%)",
+                  opacity: 0.5,
+                },
+              }}
+            >
+              {loading ? (
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <CircularProgress size={20} sx={{ color: "white" }} />
+                  Signing in...
+                </Box>
+              ) : (
+                "Sign in"
+              )}
+            </Button>
+          </Box>
 
-            <div className="mt-6">
-              <Link
-                to="/register"
-                className="w-full flex justify-center py-3 px-4 border-2 border-[#16a34a] text-sm font-semibold text-[#128c43] bg-white rounded-xl hover:bg-[#16a34a] hover:text-white focus:outline-none focus:ring-4 focus:ring-[#16a34a]/20 transition-all duration-300"
-              >
-                Create your free account
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+          <Divider sx={{ my: 3 }}>
+            <Typography variant="body2" color="text.secondary">
+              New to ArcShelf?
+            </Typography>
+          </Divider>
+
+          <Button
+            component={Link}
+            to="/register"
+            variant="outlined"
+            fullWidth
+            sx={{
+              py: 1.5,
+              borderColor: "#16a34a",
+              color: "#128c43",
+              "&:hover": {
+                borderColor: "#16a34a",
+                backgroundColor: "#16a34a",
+                color: "white",
+              },
+            }}
+          >
+            Create your free account
+          </Button>
+        </StyledPaper>
+      </Container>
+    </Box>
   );
 }
 

@@ -1,68 +1,39 @@
-export const Select = ({ label, name, children, error, ...props }) => (
-  <div className="space-y-2">
-    <label htmlFor={name} className="block text-sm font-semibold text-gray-700">
-      {label}
-    </label>
-    <div className="relative">
-      <select
+import React from "react";
+import { FormControl, InputLabel, Select as MuiSelect, MenuItem, FormHelperText } from "@mui/material";
+
+export const Select = ({ label, name, children, error, ...props }) => {
+  // Convert option elements to MenuItem if needed (for backward compatibility)
+  const childrenArray = React.Children.toArray(children);
+  const menuItems = childrenArray.map((child, index) => {
+    // Check if it's an option element by checking the type name
+    if (React.isValidElement(child) && child.type === 'option') {
+      return (
+        <MenuItem 
+          key={child.props.value || index} 
+          value={child.props.value || ''} 
+          disabled={child.props.disabled}
+        >
+          {child.props.children}
+        </MenuItem>
+      );
+    }
+    // If it's already a MenuItem, return as is
+    return child;
+  });
+
+  return (
+    <FormControl fullWidth error={!!error}>
+      <InputLabel id={`${name}-label`}>{label}</InputLabel>
+      <MuiSelect
         id={name}
         name={name}
-        className={`block w-full px-4 py-3 bg-white border-1 rounded-xl text-gray-900 
-          focus:outline-none focus:ring-2 transition-all duration-300 sm:text-sm appearance-none
-          ${
-            error
-              ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20'
-              : 'border-gray-200 hover:border-[#128c43] focus:border-[#16a34a] focus:ring-[#16a34a]/20'
-          }`}
+        labelId={`${name}-label`}
+        label={label}
         {...props}
       >
-        {children}
-      </select>
-
-      {/* Dropdown icon */}
-      <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-        <svg
-          className="h-5 w-5 text-gray-400"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M19 9l-7 7-7-7"
-          />
-        </svg>
-      </div>
-    </div>
-
-    {/* Error message */}
-    {error && (
-      <p className="text-sm text-red-600 flex items-center">
-        <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-          <path
-            fillRule="evenodd"
-            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-            clipRule="evenodd"
-          />
-        </svg>
-        {error}
-      </p>
-    )}
-
-    {/* Inline <style> to style the option menu */}
-    <style jsx>{`
-      select option {
-        background-color: #ffffff;
-        color: #1f2937; /* gray-800 */
-      }
-      select option:hover,
-      select option:focus,
-      select option:checked {
-        background-color: #16a34a !important;
-        color: #ffffff !important;
-      }
-    `}</style>
-  </div>
-);
+        {menuItems}
+      </MuiSelect>
+      {error && <FormHelperText>{error}</FormHelperText>}
+    </FormControl>
+  );
+};

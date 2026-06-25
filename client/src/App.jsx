@@ -8,7 +8,7 @@ import QuestionDetailPage from './pages/QuestionDetailPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import CollegesPage from './pages/CollegesPage';
 import UniversitiesPage from './pages/UniversitiesPage';
-
+import BrowsePage from './pages/BrowsePage';
 
 function App() {
   return (
@@ -16,6 +16,7 @@ function App() {
       <Layout>
         <Routes>
           <Route path="/" element={<HomePage />} />
+          <Route path="/browse" element={<BrowsePage />} />
           <Route path="/manage/universities" element={<UniversitiesPage />} />
           <Route path="/manage/colleges" element={<CollegesPage />} />
           <Route path="/questions/:id" element={<QuestionDetailPage />} />

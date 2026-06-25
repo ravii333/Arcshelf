@@ -1,16 +1,37 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
-import { Bars3Icon } from "@heroicons/react/24/outline";
+import {
+  AppBar,
+  Toolbar,
+  IconButton,
+  Typography,
+  Button,
+  Box,
+  Avatar,
+  Menu,
+  MenuItem,
+  Container,
+  useTheme,
+  useMediaQuery,
+} from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import PersonIcon from "@mui/icons-material/Person";
+import LogoutIcon from "@mui/icons-material/Logout";
 
 function Navbar({ onMenuClick }) {
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("profile")));
+  const [anchorEl, setAnchorEl] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   const logout = () => {
     localStorage.removeItem("profile");
     setUser(null);
+    setAnchorEl(null);
     navigate("/login");
   };
 
@@ -27,108 +48,183 @@ function Navbar({ onMenuClick }) {
   }, [location, user, navigate]);
 
   const navLinks = [
-  { name: "Features", href: "#features" },
-  { name: "Resources", href: "#resources" },
-  { name: "Community", href: "#community" },
-];
+    { name: "Browse Papers", to: "/browse" },
+    { name: "Upload", to: "/submit" },
+    { name: "Colleges", to: "/manage/colleges" },
+  ];
+
+  const handleMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
 
   return (
-    <header className="sticky top-0 z-30 backdrop-blur-md bg-white/80 border-b border-gray-200/50 shadow-sm">
-      <div className="w-full mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-14">
+    <AppBar
+      position="sticky"
+      sx={{
+        backgroundColor: "rgba(255, 255, 255, 0.9)",
+        backdropFilter: "blur(10px)",
+        boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+        borderBottom: "1px solid rgba(0, 0, 0, 0.1)",
+      }}
+    >
+      <Container maxWidth="xl">
+        <Toolbar sx={{ justifyContent: "space-between", minHeight: "64px !important" }}>
           {/* Left Side */}
-          <div className="flex items-center space-x-4">
-            <button
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+            <IconButton
               onClick={onMenuClick}
-              className="p-2 -ml-2 rounded-xl text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-all duration-200"
+              sx={{ color: "text.primary" }}
               aria-label="Open sidebar"
             >
-              <Bars3Icon className="h-5 w-5" />
-            </button>
-            <Link
+              <MenuIcon />
+            </IconButton>
+            <Typography
+              component={Link}
               to="/"
-              className="text-xl font-bold tracking-tight bg-gradient-to-br from-[#0b1f17] via-[#15322d] to-[#128c43] text-transparent bg-clip-text"
+              variant="h5"
+              sx={{
+                fontWeight: 700,
+                background: "linear-gradient(135deg, #0b1f17 0%, #15322d 50%, #128c43 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                textDecoration: "none",
+                "&:hover": {
+                  opacity: 0.8,
+                },
+              }}
             >
               ArcShelf
-            </Link>
-          </div>
+            </Typography>
+          </Box>
 
-          <div className="hidden md:flex items-center gap-8">
+          {/* Center Navigation - Hidden on mobile */}
+          <Box sx={{ display: { xs: "none", md: "flex" }, gap: 4 }}>
             {navLinks.map((link) => (
-              <a
-               key={link.name}
-               href={link.href}
-               className="text-sm font-medium text-gray-500 hover:text-[#128c43] transition-colors"
+              <Button
+                key={link.name}
+                component={Link}
+                to={link.to}
+                sx={{
+                  color: "text.secondary",
+                  "&:hover": {
+                    color: "primary.main",
+                    backgroundColor: "transparent",
+                  },
+                }}
               >
                 {link.name}
-              </a>
+              </Button>
             ))}
-          </div>
+          </Box>
 
           {/* Right Side */}
-          <div className="flex items-center space-x-3">
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             {user ? (
               <>
-                {/* Contribute Button */}
-                <Link
+                <Button
+                  component={Link}
                   to="/submit"
-                  className="hidden sm:inline-flex items-center gap-x-2 px-3 py-2 text-sm font-normal text-white bg-[#16a34a] rounded-sm shadow-lg hover:bg-[#128c43] hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                  variant="contained"
+                  startIcon={<FavoriteIcon />}
+                  sx={{
+                    display: { xs: "none", sm: "flex" },
+                    backgroundColor: "#16a34a",
+                    "&:hover": {
+                      backgroundColor: "#128c43",
+                      transform: "scale(1.05)",
+                    },
+                  }}
                 >
-                ❤️  Contribute
-                </Link>
+                  Contribute
+                </Button>
 
-                {/* User Profile Dropdown */}
-                <div className="relative group">
-                  <button className="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-xl transition-all duration-200">
-                    <div className="w-8 h-8 bg-[#16a34a] rounded-full flex items-center justify-center text-white text-xs font-medium">
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <IconButton
+                    onClick={handleMenuOpen}
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 1,
+                      borderRadius: 1,
+                      px: 1,
+                      py: 0.5,
+                    }}
+                  >
+                    <Avatar
+                      sx={{
+                        width: 32,
+                        height: 32,
+                        bgcolor: "#16a34a",
+                        fontSize: "0.875rem",
+                      }}
+                    >
                       {user.result.name.charAt(0).toUpperCase()}
-                    </div>
-                    <span className="hidden sm:block">{user.result.name}</span>
-                    <svg
-                      className="h-4 w-4 text-gray-400"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  </button>
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg py-2 z-50 opacity-0 group-hover:opacity-100 transition-all duration-200 border border-gray-100">
-                    <button
-                      onClick={logout}
-                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-200"
-                    >
+                    </Avatar>
+                    {!isMobile && (
+                      <Typography variant="body2" sx={{ ml: 1 }}>
+                        {user.result.name}
+                      </Typography>
+                    )}
+                  </IconButton>
+                  <Menu
+                    anchorEl={anchorEl}
+                    open={Boolean(anchorEl)}
+                    onClose={handleMenuClose}
+                    anchorOrigin={{
+                      vertical: "bottom",
+                      horizontal: "right",
+                    }}
+                    transformOrigin={{
+                      vertical: "top",
+                      horizontal: "right",
+                    }}
+                  >
+                    <MenuItem onClick={logout}>
+                      <LogoutIcon sx={{ mr: 1 }} />
                       Logout
-                    </button>
-                  </div>
-                </div>
+                    </MenuItem>
+                  </Menu>
+                </Box>
               </>
             ) : (
               <>
-                {/* Login Button */}
-                <Link
+                <Button
+                  component={Link}
                   to="/login"
-                  className="text-sm font-normal text-gray-600 hover:text-gray-900 px-3 py-2 rounded-sm hover:bg-[#dcfce7] transition-all duration-200"
+                  sx={{
+                    color: "text.secondary",
+                    "&:hover": {
+                      backgroundColor: "#dcfce7",
+                    },
+                  }}
                 >
                   Login
-                </Link>
-
-                {/* Get Started Button */}
-                <Link
+                </Button>
+                <Button
+                  component={Link}
                   to="/register"
-                  className="hidden sm:inline-flex items-center px-4 py-2 text-sm font-normal text-white bg-[#16a34a] rounded-sm shadow-lg hover:bg-[#128c43] hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                  variant="contained"
+                  sx={{
+                    display: { xs: "none", sm: "flex" },
+                    backgroundColor: "#16a34a",
+                    "&:hover": {
+                      backgroundColor: "#128c43",
+                      transform: "scale(1.05)",
+                    },
+                  }}
                 >
                   Get Started
-                </Link>
+                </Button>
               </>
             )}
-          </div>
-        </div>
-      </div>
-    </header>
+          </Box>
+        </Toolbar>
+      </Container>
+    </AppBar>
   );
 }
 

@@ -1,4 +1,13 @@
-import { DocumentArrowUpIcon, CheckCircleIcon } from "@heroicons/react/24/solid";
+import {
+  Box,
+  Typography,
+  Button,
+  Paper,
+  FormHelperText,
+} from "@mui/material";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 
 export const FileUpload = ({
   label,
@@ -7,83 +16,108 @@ export const FileUpload = ({
   onChange,
   error,
   accept = ".pdf,.png,.jpg,.jpeg,.gif",
-}) => (
-  <div className="space-y-2">
-    <label className="block text-sm font-semibold text-gray-800">{label}</label>
-
-    <div
-      className={`relative flex justify-center rounded-2xl border-2 border-dashed px-6 py-12 transition-all duration-300 ${
-        error
-          ? "border-red-300 bg-red-50"
-          : file
-          ? "border-green-300 bg-green-50"
-          : "border-gray-300 bg-gray-50 hover:border-[#16a34a] hover:bg-green-50"
-      }`}
-    >
-      <div className="text-center">
+}) => {
+  return (
+    <Box>
+      <Typography variant="body2" fontWeight={600} sx={{ mb: 1 }}>
+        {label}
+      </Typography>
+      <Paper
+        variant="outlined"
+        sx={{
+          p: 4,
+          textAlign: "center",
+          border: "2px dashed",
+          borderColor: error
+            ? "error.main"
+            : file
+            ? "success.main"
+            : "grey.300",
+          bgcolor: error
+            ? "error.light"
+            : file
+            ? "success.light"
+            : "grey.50",
+          "&:hover": {
+            borderColor: error ? "error.main" : "primary.main",
+            bgcolor: error ? "error.light" : "primary.light",
+          },
+          transition: "all 0.3s",
+        }}
+      >
         {file ? (
           <CheckCircleIcon
-            className="mx-auto h-16 w-16 text-[#16a34a]"
-            aria-hidden="true"
+            sx={{ fontSize: 64, color: "success.main", mb: 2 }}
           />
         ) : (
-          <DocumentArrowUpIcon
-            className="mx-auto h-16 w-16 text-gray-400"
-            aria-hidden="true"
+          <CloudUploadIcon
+            sx={{ fontSize: 64, color: "text.secondary", mb: 2 }}
           />
         )}
 
-        <div className="mt-6">
-          <label
-            htmlFor={name}
-            className="relative cursor-pointer rounded-xl bg-[#16a34a] px-6 py-3 text-sm font-semibold text-white shadow-lg hover:bg-[#128c43] focus:outline-none focus:ring-4 focus:ring-[#16a34a]/30 transition-all duration-300 transform hover:scale-105"
+        <Box sx={{ mt: 2 }}>
+          <Button
+            component="label"
+            variant="contained"
+            startIcon={file ? <CheckCircleIcon /> : <CloudUploadIcon />}
+            sx={{
+              bgcolor: "#16a34a",
+              "&:hover": {
+                bgcolor: "#128c43",
+                transform: "scale(1.05)",
+              },
+            }}
           >
-            <span>{file ? "Change File" : "Upload a file"}</span>
+            {file ? "Change File" : "Upload a file"}
             <input
               id={name}
               name={name}
               type="file"
-              className="sr-only"
+              hidden
               onChange={onChange}
               accept={accept}
             />
-          </label>
-          <p className="mt-3 text-sm text-gray-600">or drag and drop</p>
-        </div>
-
-        <p className="text-xs text-gray-500 mt-2">
-          PDF, PNG, JPG, GIF up to 10MB
-        </p>
+          </Button>
+          <Typography variant="body2" sx={{ mt: 2, color: "text.secondary" }}>
+            or drag and drop
+          </Typography>
+          <Typography variant="caption" sx={{ mt: 1, color: "text.secondary" }}>
+            PDF, PNG, JPG, GIF up to 10MB
+          </Typography>
+        </Box>
 
         {file && (
-          <div className="mt-4 p-3 bg-white rounded-lg shadow-sm border border-green-200">
-            <p className="text-sm font-semibold text-[#128c43] flex items-center">
-              <CheckCircleIcon className="w-4 h-4 mr-2 text-[#16a34a]" />
+          <Paper
+            elevation={0}
+            sx={{
+              mt: 3,
+              p: 2,
+              bgcolor: "background.paper",
+              border: "1px solid",
+              borderColor: "success.main",
+            }}
+          >
+            <Typography
+              variant="body2"
+              fontWeight={600}
+              sx={{ color: "success.dark", display: "flex", alignItems: "center", gap: 1 }}
+            >
+              <CheckCircleIcon fontSize="small" />
               Selected: {file.name}
-            </p>
-            <p className="text-xs text-gray-500 mt-1">
+            </Typography>
+            <Typography variant="caption" sx={{ color: "text.secondary" }}>
               {(file.size / 1024 / 1024).toFixed(2)} MB
-            </p>
-          </div>
+            </Typography>
+          </Paper>
         )}
 
         {error && (
-          <p className="text-sm text-red-600 flex items-center justify-center mt-2">
-            <svg
-              className="w-4 h-4 mr-1"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
-              <path
-                fillRule="evenodd"
-                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                clipRule="evenodd"
-              />
-            </svg>
+          <FormHelperText error sx={{ mt: 2, display: "flex", alignItems: "center", justifyContent: "center", gap: 0.5 }}>
+            <ErrorOutlineIcon fontSize="small" />
             {error}
-          </p>
+          </FormHelperText>
         )}
-      </div>
-    </div>
-  </div>
-);
+      </Paper>
+    </Box>
+  );
+};

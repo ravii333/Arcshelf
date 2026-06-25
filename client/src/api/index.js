@@ -17,8 +17,9 @@ export const login = (formData) => API.post('/auth/login', formData);
 export const register = (formData) => API.post('/auth/register', formData);
 
 // Question routes
-export const fetchQuestions = () => API.get('/questions');
+export const fetchQuestions = (params) => API.get('/questions', { params });
 export const fetchQuestion = (id) => API.get(`/questions/${id}`);
+export const fetchRelatedQuestions = (id) => API.get(`/questions/${id}/related`);
 export const createQuestion = (newQuestion) => API.post('/questions', newQuestion);
 
 // Colleges Routes 
