@@ -187,7 +187,7 @@ function Sidebar({ isOpen, setIsOpen }) {
                 gap: 1.5,
                 border: "1px solid",
                 borderColor: "neutral.200",
-                borderRadius: 3.5,
+                borderRadius: '16px',
                 bgcolor: "neutral.50",
               }}
             >

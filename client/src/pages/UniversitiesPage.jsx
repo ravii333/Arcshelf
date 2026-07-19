@@ -100,14 +100,14 @@ const UniversitiesPage = () => {
 
       <Grid container spacing={4}>
         {/* --- Left Column: Add Form --- */}
-        <Grid item xs={12} lg={4}>
+        <Grid size={{ xs: 12, lg: 4 }}>
           <Paper
             elevation={0}
             sx={{
               p: "28px",
               border: "1px solid",
               borderColor: "neutral.200",
-              borderRadius: 5,
+              borderRadius: '16px',
               bgcolor: "neutral.0",
             }}
           >
@@ -172,7 +172,7 @@ const UniversitiesPage = () => {
         </Grid>
 
         {/* --- Right Column: List Section --- */}
-        <Grid item xs={12} lg={8}>
+        <Grid size={{ xs: 12, lg: 8 }}>
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2.5 }}>
             <Typography variant="h6" sx={{ fontWeight: 700, color: "neutral.800", mb: 0.5 }}>
               All Universities ({universities.length})
@@ -191,13 +191,13 @@ const UniversitiesPage = () => {
             ) : (
               <Grid container spacing={2.5}>
                 {universities.map((uni) => (
-                  <Grid item xs={12} sm={6} key={uni._id}>
+                  <Grid size={{ xs: 12, sm: 6 }} key={uni._id}>
                     <Card
                       elevation={0}
                       sx={{
                         border: "1px solid",
                         borderColor: "neutral.200",
-                        borderRadius: 3.5,
+                        borderRadius: '16px',
                         bgcolor: "neutral.0",
                         height: "100%",
                         '&:hover': {

@@ -373,7 +373,7 @@ function BrowsePage() {
       {loading ? (
         <Grid container spacing={3}>
           {Array.from({ length: 12 }).map((_, idx) => (
-            <Grid item xs={12} sm={6} md={4} lg={3} key={idx}>
+            <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={idx}>
               <LoadingCard />
             </Grid>
           ))}
@@ -396,11 +396,7 @@ function BrowsePage() {
           <Grid container spacing={3}>
             {paginatedQuestions.map((q, index) => (
               <Grid
-                item
-                xs={12}
-                sm={6}
-                md={4}
-                lg={3}
+                size={{ xs: 12, sm: 6, md: 4, lg: 3 }}
                 key={q._id}
                 sx={{
                   animation: "fadeInUp 500ms var(--ease-out-quint) forwards",

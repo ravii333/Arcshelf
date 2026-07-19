@@ -277,7 +277,7 @@ function Navbar({ onMenuClick }) {
                   PaperProps={{
                     sx: {
                       mt: 1.5,
-                      borderRadius: 3,
+                      borderRadius: '12px',
                       boxShadow: theme.shadows[4],
                       minWidth: 160,
                       border: "1px solid",

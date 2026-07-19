@@ -13,7 +13,7 @@ export default function Toast({ open, message, severity = "success", onClose }) 
         severity={severity}
         sx={{
           width: "100%",
-          borderRadius: 2.5,
+          borderRadius: '10px',
           fontWeight: 500,
           boxShadow: 4,
           border: '1px solid',

@@ -10,7 +10,7 @@ export default function LoadingCard() {
         pointerEvents: "none",
         border: "1px solid",
         borderColor: "neutral.200",
-        borderRadius: 4,
+        borderRadius: '16px',
         boxShadow: "none",
         bgcolor: "neutral.0",
         '&:hover': {

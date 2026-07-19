@@ -20,7 +20,7 @@ import * as api from "../api";
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: '40px',
-  borderRadius: 24,
+  borderRadius: 20,
   border: `1px solid ${theme.palette.divider}`,
   boxShadow: '0 8px 40px rgba(0,0,0,0.08)',
   backgroundColor: '#ffffff',

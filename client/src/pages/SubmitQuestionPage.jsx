@@ -237,7 +237,7 @@ function SubmitQuestionPage() {
       <Box component="form" onSubmit={handleSubmit}>
         {/* Animated Error Alert */}
         <Collapse in={!!error}>
-          <Alert severity="error" sx={{ mb: 3, borderRadius: "12px" }}>
+          <Alert severity="error" sx={{ mb: 3, borderRadius: "10px" }}>
             {error}
           </Alert>
         </Collapse>
@@ -250,7 +250,7 @@ function SubmitQuestionPage() {
             mb: 3,
             border: "1px solid",
             borderColor: "neutral.200",
-            borderRadius: 5,
+            borderRadius: '16px',
             bgcolor: "neutral.0",
           }}
         >
@@ -356,7 +356,7 @@ function SubmitQuestionPage() {
             mb: 3,
             border: "1px solid",
             borderColor: "neutral.200",
-            borderRadius: 5,
+            borderRadius: '16px',
             bgcolor: "neutral.0",
           }}
         >
@@ -464,7 +464,7 @@ function SubmitQuestionPage() {
             mb: 4,
             border: "1px solid",
             borderColor: "neutral.200",
-            borderRadius: 5,
+            borderRadius: '16px',
             bgcolor: "neutral.0",
           }}
         >

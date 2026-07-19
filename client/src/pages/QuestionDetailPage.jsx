@@ -63,7 +63,7 @@ function RelatedPaperCard({ question }) {
       component={Link}
       to={`/questions/${question._id}`}
       sx={{
-        borderRadius: 2.5,
+        borderRadius: '16px',
         display: "block",
         mb: 1.5,
         '&:hover .related-card': {
@@ -78,7 +78,7 @@ function RelatedPaperCard({ question }) {
         sx={{
           border: "1px solid",
           borderColor: "neutral.200",
-          borderRadius: 2.5,
+          borderRadius: '16px',
           transition: "all 200ms ease",
           bgcolor: "neutral.0",
           '&:hover': {
@@ -173,7 +173,7 @@ function QuestionDetailPage() {
 
         <Grid container spacing={3}>
           {/* Content Skeleton */}
-          <Grid item xs={12} lg={8}>
+          <Grid size={{ xs: 12, lg: 8 }}>
             <Skeleton
               variant="rectangular"
               height={300}
@@ -189,7 +189,7 @@ function QuestionDetailPage() {
           </Grid>
 
           {/* Sidebar Skeleton */}
-          <Grid item xs={12} lg={4}>
+          <Grid size={{ xs: 12, lg: 4 }}>
             <Skeleton
               variant="rectangular"
               height={260}
@@ -358,14 +358,14 @@ function QuestionDetailPage() {
 
       <Grid container spacing={4}>
         {/* Main Content (PDF viewer, Notes) */}
-        <Grid item xs={12} lg={8}>
+        <Grid size={{ xs: 12, lg: 8 }}>
           <Box sx={{ display: "flex", flexDirection: "column", gap: 4 }}>
             {/* Notes & Topics */}
             <Paper
               elevation={0}
               sx={{
                 p: 3,
-                borderRadius: 4,
+                borderRadius: '16px',
                 border: "1px solid",
                 borderColor: "neutral.200",
                 boxShadow: "none",
@@ -408,7 +408,7 @@ function QuestionDetailPage() {
                 elevation={0}
                 sx={{
                   p: 3,
-                  borderRadius: 4,
+                  borderRadius: '16px',
                   border: "1px solid",
                   borderColor: "neutral.200",
                   boxShadow: "none",
@@ -443,7 +443,7 @@ function QuestionDetailPage() {
         </Grid>
 
         {/* Sidebar (Quick Info, Related Papers) */}
-        <Grid item xs={12} lg={4}>
+        <Grid size={{ xs: 12, lg: 4 }}>
           <Box
             sx={{
               display: "flex",
@@ -459,7 +459,7 @@ function QuestionDetailPage() {
               sx={{
                 border: "1px solid",
                 borderColor: "neutral.200",
-                borderRadius: 4,
+                borderRadius: '16px',
                 bgcolor: "neutral.0",
                 boxShadow: "none",
                 '&:hover': {
@@ -506,7 +506,7 @@ function QuestionDetailPage() {
               sx={{
                 border: "1px solid",
                 borderColor: "neutral.200",
-                borderRadius: 4,
+                borderRadius: '16px',
                 bgcolor: "neutral.0",
                 boxShadow: "none",
                 '&:hover': {

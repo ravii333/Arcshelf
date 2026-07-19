@@ -133,7 +133,7 @@ function DashboardPage() {
           mb: 4,
           background: "linear-gradient(135deg, #064e3b 0%, #065f46 50%, #0f172a 100%)",
           color: "white",
-          borderRadius: 6,
+          borderRadius: '20px',
           position: "relative",
           overflow: "hidden",
           boxShadow: "0 12px 32px rgba(6, 78, 59, 0.15)",
@@ -241,7 +241,7 @@ function DashboardPage() {
           <CircularProgress color="primary" />
         </Box>
       ) : error ? (
-        <Alert severity="error" sx={{ borderRadius: "12px" }}>
+        <Alert severity="error" sx={{ borderRadius: "10px" }}>
           {error}
         </Alert>
       ) : contributions.length === 0 ? (
@@ -258,7 +258,7 @@ function DashboardPage() {
           sx={{
             border: "1px solid",
             borderColor: "neutral.200",
-            borderRadius: 4,
+            borderRadius: '16px',
             overflow: "hidden",
           }}
         >
@@ -353,7 +353,7 @@ function DashboardPage() {
         aria-labelledby="delete-confirmation-dialog-title"
         aria-describedby="delete-confirmation-dialog-description"
         PaperProps={{
-          sx: { borderRadius: 4, p: 1 }
+          sx: { borderRadius: '20px', p: 1 }
         }}
       >
         <DialogTitle id="delete-confirmation-dialog-title" sx={{ fontWeight: 700, pb: 1 }}>

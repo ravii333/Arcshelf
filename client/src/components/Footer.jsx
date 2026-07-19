@@ -73,10 +73,7 @@ export default function Footer() {
         <Grid container spacing={{ xs: 3.5, sm: 4, md: 5 }}>
           {/* COLUMN 1 — ABOUT */}
           <Grid
-            item
-            xs={12}
-            sm={6}
-            md={3}
+            size={{ xs: 12, sm: 6, md: 3 }}
             sx={{ display: "flex", flexDirection: "column" }}
           >
             {/* Brand Logo & Title */}
@@ -128,10 +125,7 @@ export default function Footer() {
 
           {/* COLUMN 2 — QUICK LINKS */}
           <Grid
-            item
-            xs={12}
-            sm={6}
-            md={2}
+            size={{ xs: 12, sm: 6, md: 2 }}
             sx={{ display: "flex", flexDirection: "column" }}
           >
             <FooterHeading variant="overline">Quick Links</FooterHeading>
@@ -145,10 +139,7 @@ export default function Footer() {
 
           {/* COLUMN 3 — CONTACT */}
           <Grid
-            item
-            xs={12}
-            sm={6}
-            md={3}
+            size={{ xs: 12, sm: 6, md: 3 }}
             sx={{ display: "flex", flexDirection: "column" }}
           >
             <FooterHeading variant="overline">Contact</FooterHeading>
@@ -180,10 +171,7 @@ export default function Footer() {
 
           {/* COLUMN 4 — NEWSLETTER & SOCIAL */}
           <Grid
-            item
-            xs={12}
-            sm={6}
-            md={4}
+            size={{ xs: 12, sm: 6, md: 4 }}
             sx={{ display: "flex", flexDirection: "column" }}
           >
             <FooterHeading variant="overline">Stay Updated</FooterHeading>

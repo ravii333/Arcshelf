@@ -178,7 +178,7 @@ function ProfilePage() {
 
       <Grid container spacing={4}>
         {/* Left Column - Summary Card */}
-        <Grid item xs={12} md={4}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <Paper
             elevation={0}
             sx={{
@@ -186,7 +186,7 @@ function ProfilePage() {
               textAlign: "center",
               border: "1px solid",
               borderColor: "neutral.200",
-              borderRadius: 5,
+              borderRadius: '16px',
               bgcolor: "neutral.0",
             }}
           >
@@ -219,14 +219,14 @@ function ProfilePage() {
         </Grid>
 
         {/* Right Column - Edit Form */}
-        <Grid item xs={12} md={8}>
+        <Grid size={{ xs: 12, md: 8 }}>
           <Paper
             elevation={0}
             sx={{
               p: 4,
               border: "1px solid",
               borderColor: "neutral.200",
-              borderRadius: 5,
+              borderRadius: '16px',
               bgcolor: "neutral.0",
             }}
           >
@@ -248,7 +248,7 @@ function ProfilePage() {
               </Box>
 
               <Grid container spacing={3} sx={{ mb: 4 }}>
-                <Grid item xs={12} sm={6}>
+                <Grid size={{ xs: 12, sm: 6 }}>
                   <TextField
                     label="Display Name"
                     name="name"
@@ -258,7 +258,7 @@ function ProfilePage() {
                     fullWidth
                   />
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid size={{ xs: 12, sm: 6 }}>
                   <TextField
                     label="Email Address"
                     value={profile?.result?.email}
@@ -282,7 +282,7 @@ function ProfilePage() {
               </Box>
 
               <Grid container spacing={3}>
-                <Grid item xs={12}>
+                <Grid size={{ xs: 12 }}>
                   <TextField
                     label="Current Password"
                     name="currentPassword"
@@ -293,7 +293,7 @@ function ProfilePage() {
                     fullWidth
                   />
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid size={{ xs: 12, sm: 6 }}>
                   <TextField
                     label="New Password"
                     name="newPassword"
@@ -326,7 +326,7 @@ function ProfilePage() {
                     </Box>
                   )}
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid size={{ xs: 12, sm: 6 }}>
                   <TextField
                     label="Confirm New Password"
                     name="confirmPassword"

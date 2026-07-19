@@ -13,7 +13,7 @@ export default function EmptyState({ icon, title, description, action }) {
         p: { xs: 4, md: 8 },
         border: "1px dashed",
         borderColor: "neutral.300",
-        borderRadius: 4,
+        borderRadius: '16px',
         bgcolor: "neutral.0",
         maxWidth: 580,
         mx: "auto",
