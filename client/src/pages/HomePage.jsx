@@ -284,6 +284,17 @@ function HeroSection({ searchQuery, onSearchChange, onSearch }) {
 
 // --- Stats Bar Component ---
 function StatsBar() {
+  const [stats, setStats] = useState(null);
+
+  useEffect(() => {
+    api
+      .fetchStats()
+      .then(({ data }) => setStats(data))
+      .catch(() => setStats(null));
+  }, []);
+
+  const fmt = (n) => (n == null ? "—" : n >= 1000 ? `${(n / 1000).toFixed(1)}K+` : `${n}`);
+
   return (
     <Box
       sx={{
@@ -315,7 +326,7 @@ function StatsBar() {
               alignItems: "center",
             }}
           >
-            <StatCard value="1K+" label="Students Registered" color="#3b82f6" />
+            <StatCard value={fmt(stats?.students)} label="Students Registered" color="#3b82f6" />
           </Box>
 
           {/* Stat 2 */}
@@ -329,7 +340,7 @@ function StatsBar() {
               alignItems: "center",
             }}
           >
-            <StatCard value="50+" label="Exam Papers" color="#059669" />
+            <StatCard value={fmt(stats?.papers)} label="Exam Papers" color="#059669" />
           </Box>
 
           {/* Stat 3 */}
@@ -343,7 +354,7 @@ function StatsBar() {
               alignItems: "center",
             }}
           >
-            <StatCard value="10+" label="Colleges Listed" color="#8b5cf6" />
+            <StatCard value={fmt(stats?.colleges)} label="Colleges Listed" color="#8b5cf6" />
           </Box>
 
           {/* Stat 4 */}
@@ -357,7 +368,7 @@ function StatsBar() {
               alignItems: "center",
             }}
           >
-            <StatCard value="98%" label="Satisfaction Rate" color="#14b8a6" />
+            <StatCard value={fmt(stats?.universities)} label="Universities" color="#14b8a6" />
           </Box>
         </Box>
       </Container>
@@ -657,8 +668,8 @@ function LandingPage() {
   useEffect(() => {
     const getRecentQuestions = async () => {
       try {
-        const { data } = await api.fetchQuestions();
-        setQuestions(data.slice(0, 6));
+        const { data } = await api.fetchQuestions({ limit: 6 });
+        setQuestions(data.items);
       } catch (error) {
         console.error("Error fetching questions:", error);
       } finally {

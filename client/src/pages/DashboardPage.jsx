@@ -28,6 +28,7 @@ import {
   Tabs,
   Tab,
   Grid,
+  Chip,
 } from "@mui/material";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
@@ -44,6 +45,37 @@ import EmptyState from "../components/common/EmptyState";
 import ContributionCard from "../components/common/ContributionCard";
 import { useSavedPapers } from "../context/SavedPapersContext";
 import { useToast } from "../context/ToastContext";
+
+// Moderation status shown to the uploader. Papers with no status (legacy) are live.
+function ContributionStatus({ status, note }) {
+  const styles = {
+    pending: { label: "Pending review", bg: "#fef3c7", color: "#b45309" },
+    approved: { label: "Approved", bg: "#d1fae5", color: "#047857" },
+    rejected: { label: "Rejected", bg: "#fee2e2", color: "#b91c1c" },
+  };
+  const s = styles[status] || styles.approved;
+  const chip = (
+    <Chip
+      label={s.label}
+      size="small"
+      sx={{ bgcolor: s.bg, color: s.color, fontWeight: 700, fontSize: "0.6875rem", height: 22 }}
+    />
+  );
+
+  if (status === "rejected" && note) {
+    return (
+      <Box>
+        <Tooltip title={note} arrow>
+          {chip}
+        </Tooltip>
+        <Typography variant="caption" sx={{ display: "block", color: "#b91c1c", mt: 0.5, maxWidth: 220 }}>
+          {note}
+        </Typography>
+      </Box>
+    );
+  }
+  return chip;
+}
 
 function DashboardPage() {
   const [profile, setProfile] = useState(() => JSON.parse(localStorage.getItem("profile")));
@@ -297,6 +329,7 @@ function DashboardPage() {
                 <TableCell sx={{ fontWeight: 700, color: "neutral.700" }}>Institution</TableCell>
                 <TableCell sx={{ fontWeight: 700, color: "neutral.700" }}>Semester / Year</TableCell>
                 <TableCell sx={{ fontWeight: 700, color: "neutral.700" }}>Exam Type</TableCell>
+                <TableCell sx={{ fontWeight: 700, color: "neutral.700" }}>Status</TableCell>
                 <TableCell sx={{ fontWeight: 700, color: "neutral.700" }} align="right">Actions</TableCell>
               </TableRow>
             </TableHead>
@@ -333,6 +366,9 @@ function DashboardPage() {
                   </TableCell>
                   <TableCell>
                     <PaperBadge type={row.examType} />
+                  </TableCell>
+                  <TableCell>
+                    <ContributionStatus status={row.status} note={row.moderationNote} />
                   </TableCell>
                   <TableCell align="right">
                     <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1 }}>

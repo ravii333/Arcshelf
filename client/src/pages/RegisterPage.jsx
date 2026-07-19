@@ -85,12 +85,19 @@ function RegisterPage() {
       toast.error("Passwords do not match.");
       return;
     }
+    if (formData.password.length < 8) {
+      setError("Password must be at least 8 characters long.");
+      toast.error("Password must be at least 8 characters long.");
+      return;
+    }
     setLoading(true);
     setError("");
     try {
-      await api.register(formData);
-      toast.success("Registration successful! Please sign in.");
-      navigate("/login", { state: { message: "Registration successful! Please sign in." } });
+      const { data } = await api.register(formData);
+      // Backend now returns a token — log the user straight in.
+      localStorage.setItem("profile", JSON.stringify(data));
+      toast.success(`Welcome to ArcShelf, ${data.result?.name || "student"}!`);
+      navigate("/");
     } catch (err) {
       const msg = err.response?.data?.message || "Registration failed. Please try again.";
       setError(msg);

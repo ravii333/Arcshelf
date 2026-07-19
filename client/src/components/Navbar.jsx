@@ -18,10 +18,11 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import MenuIcon from "@mui/icons-material/Menu";
-import AddIcon from "@mui/icons-material/Add";
+import AddCircleOutlineOutlinedIcon from "@mui/icons-material/AddCircleOutlineOutlined";
 import LogoutIcon from "@mui/icons-material/Logout";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import DashboardIcon from "@mui/icons-material/Dashboard";
+import ShieldOutlinedIcon from "@mui/icons-material/ShieldOutlined";
 import useScrollShadow from "../hooks/useScrollShadow";
 
 const NavLinkButton = styled(Button, { shouldForwardProp: (prop) => prop !== 'active' })(({ theme, active }) => ({
@@ -204,7 +205,7 @@ function Navbar({ onMenuClick }) {
                   to="/submit"
                   variant="contained"
                   color="primary"
-                  startIcon={<AddIcon />}
+                  startIcon={<AddCircleOutlineOutlinedIcon />}
                   sx={{
                     display: { xs: "none", sm: "flex" },
                     boxShadow: "none",

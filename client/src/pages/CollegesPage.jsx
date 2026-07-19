@@ -23,7 +23,7 @@ import {
   AccordionDetails,
   Divider,
 } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
+import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SchoolIcon from '@mui/icons-material/School';
@@ -231,7 +231,7 @@ const CollegesPage = () => {
               <Button
                 type="submit" variant="contained"
                 disabled={isSubmittingUniversity}
-                startIcon={isSubmittingUniversity ? <CircularProgress size={18} sx={{ color: 'white' }} /> : <AddIcon />}
+                startIcon={isSubmittingUniversity ? <CircularProgress size={18} sx={{ color: 'white' }} /> : <AddCircleOutlineOutlinedIcon />}
                 sx={submitBtnSx}
               >
                 {isSubmittingUniversity ? 'Adding...' : 'Add University'}
@@ -308,7 +308,7 @@ const CollegesPage = () => {
               <Button
                 type="submit" variant="contained"
                 disabled={isSubmittingCollege}
-                startIcon={isSubmittingCollege ? <CircularProgress size={18} sx={{ color: 'white' }} /> : <AddIcon />}
+                startIcon={isSubmittingCollege ? <CircularProgress size={18} sx={{ color: 'white' }} /> : <AddCircleOutlineOutlinedIcon />}
                 sx={submitBtnSx}
               >
                 {isSubmittingCollege ? 'Adding...' : 'Add College'}

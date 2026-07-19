@@ -38,6 +38,8 @@ const PER_PAGE = 12;
 function BrowsePage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [questions, setQuestions] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [showFilters, setShowFilters] = useState(false);
@@ -73,25 +75,33 @@ function BrowsePage() {
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      const params = {};
+      const params = { page, limit: PER_PAGE };
       if (search) params.search = search;
       if (examType) params.examType = examType;
       if (year) params.year = year;
       if (course) params.course = course;
       const { data } = await api.fetchQuestions(params);
-      setQuestions(data);
-      setPage(1);
+      setQuestions(data.items);
+      setTotal(data.total);
+      setTotalPages(data.pages);
     } catch (error) {
       console.error("Failed to fetch questions:", error);
       setQuestions([]);
+      setTotal(0);
+      setTotalPages(1);
     } finally {
       setLoading(false);
     }
-  }, [search, examType, year, course]);
+  }, [search, examType, year, course, page]);
 
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  // Reset to the first page whenever the active filters change.
+  useEffect(() => {
+    setPage(1);
+  }, [search, examType, year, course]);
 
   const updateFilter = (key, value) => {
     const params = {};
@@ -110,8 +120,6 @@ function BrowsePage() {
   };
 
   const activeFilterCount = [search, examType, year, course].filter(Boolean).length;
-  const paginatedQuestions = questions.slice((page - 1) * PER_PAGE, page * PER_PAGE);
-  const totalPages = Math.ceil(questions.length / PER_PAGE);
 
   return (
     <Container maxWidth="xl" sx={{ px: { xs: 2, sm: 3, md: 4, lg: 5 }, py: 4 }}>
@@ -132,7 +140,7 @@ function BrowsePage() {
         <Typography variant="body2" color="neutral.500" sx={{ fontWeight: 500 }}>
           {loading
             ? "Searching..."
-            : `${questions.length} paper${questions.length !== 1 ? "s" : ""} found`}
+            : `${total} paper${total !== 1 ? "s" : ""} found`}
           {activeFilterCount > 0 && ` — ${activeFilterCount} active filter${activeFilterCount > 1 ? "s" : ""}`}
         </Typography>
       </Box>
@@ -378,7 +386,7 @@ function BrowsePage() {
             </Grid>
           ))}
         </Grid>
-      ) : paginatedQuestions.length === 0 ? (
+      ) : questions.length === 0 ? (
         <EmptyState
           icon={<SearchIcon />}
           title="No papers found"
@@ -394,7 +402,7 @@ function BrowsePage() {
       ) : (
         <>
           <Grid container spacing={3}>
-            {paginatedQuestions.map((q, index) => (
+            {questions.map((q, index) => (
               <Grid
                 size={{ xs: 12, sm: 6, md: 4, lg: 3 }}
                 key={q._id}
@@ -440,7 +448,7 @@ function BrowsePage() {
       )}
 
       {/* Floating contribute CTA */}
-      {!loading && questions.length > 0 && (
+      {!loading && total > 0 && (
         <Box
           sx={{
             textAlign: "center",

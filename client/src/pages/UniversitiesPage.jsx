@@ -16,7 +16,7 @@ import {
   Avatar,
   Divider,
 } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
+import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SchoolIcon from '@mui/icons-material/School';
@@ -159,7 +159,7 @@ const UniversitiesPage = () => {
                 type="submit"
                 variant="contained"
                 disabled={isSubmitting}
-                startIcon={isSubmitting ? <CircularProgress size={18} sx={{ color: "white" }} /> : <AddIcon />}
+                startIcon={isSubmitting ? <CircularProgress size={18} sx={{ color: "white" }} /> : <AddCircleOutlineOutlinedIcon />}
                 sx={{
                   height: 44,
                   backgroundImage: "linear-gradient(135deg, #059669 0%, #047857 100%)",
