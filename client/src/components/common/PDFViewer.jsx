@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import { Box, Button, Typography, Paper, Alert, CircularProgress, IconButton, Tooltip } from '@mui/material';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
@@ -21,6 +21,14 @@ function PDFViewer({ fileUrl }) {
   const [pageNumber, setPageNumber] = useState(1);
   const [scale, setScale] = useState(DEFAULT_SCALE);
   const [loadError, setLoadError] = useState(null);
+  const scrollRef = useRef(null);
+
+  // On page change, scroll the viewer back to the top of the new page.
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTo({ top: 0, left: 0 });
+    }
+  }, [pageNumber]);
 
   const onDocumentLoadSuccess = ({ numPages: n }) => {
     setNumPages(n);
@@ -198,48 +206,56 @@ function PDFViewer({ fileUrl }) {
 
       {/* PDF Canvas Container */}
       <Paper
+        ref={scrollRef}
         elevation={0}
         sx={{
           width: '100%',
+          height: { xs: '60vh', sm: '70vh', md: '78vh' },
           display: 'flex',
-          justifyContent: 'center',
+          // Bounded height + auto overflow so the PDF scrolls *inside* the viewer.
+          // margin:auto on the child (below) centers it when it fits and keeps both
+          // edges reachable when zoomed — unlike justifyContent:center, which clips.
+          overflow: 'auto',
           border: '1px solid',
           borderColor: 'neutral.200',
           borderRadius: "10px",
-          overflow: 'auto',
           bgcolor: 'neutral.100',
+          // Smooth momentum scrolling on touch devices
+          WebkitOverflowScrolling: 'touch',
         }}
       >
         {loadError ? (
-          <Alert severity="error" sx={{ width: '100%', m: 2, borderRadius: "10px" }}>
+          <Alert severity="error" sx={{ width: '100%', m: 'auto', borderRadius: "10px" }}>
             {loadError}
           </Alert>
         ) : (
-          <Document
-            file={fileUrl}
-            onLoadSuccess={onDocumentLoadSuccess}
-            onLoadError={onDocumentLoadError}
-            loading={
-              <Box sx={{ p: 4, textAlign: 'center' }}>
-                <CircularProgress sx={{ mb: 2, color: 'primary.600' }} />
-                <Typography color="neutral.500" variant="body2" sx={{ fontWeight: 500 }}>
-                  Loading PDF...
-                </Typography>
-              </Box>
-            }
-            error={
-              <Alert severity="error" sx={{ m: 2, borderRadius: "10px" }}>
-                Failed to load PDF file.
-              </Alert>
-            }
-          >
-            <Page
-              pageNumber={pageNumber}
-              scale={scale}
-              renderAnnotationLayer={false}
-              renderTextLayer={false}
-            />
-          </Document>
+          <Box sx={{ m: 'auto', p: { xs: 1.5, md: 2 } }}>
+            <Document
+              file={fileUrl}
+              onLoadSuccess={onDocumentLoadSuccess}
+              onLoadError={onDocumentLoadError}
+              loading={
+                <Box sx={{ p: 4, textAlign: 'center' }}>
+                  <CircularProgress sx={{ mb: 2, color: 'primary.600' }} />
+                  <Typography color="neutral.500" variant="body2" sx={{ fontWeight: 500 }}>
+                    Loading PDF...
+                  </Typography>
+                </Box>
+              }
+              error={
+                <Alert severity="error" sx={{ m: 2, borderRadius: "10px" }}>
+                  Failed to load PDF file.
+                </Alert>
+              }
+            >
+              <Page
+                pageNumber={pageNumber}
+                scale={scale}
+                renderAnnotationLayer={false}
+                renderTextLayer={false}
+              />
+            </Document>
+          </Box>
         )}
       </Paper>
     </Box>

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Card, CardContent, Typography, Box, Chip } from '@mui/material';
+import { Card, Typography, Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import DescriptionIcon from '@mui/icons-material/Description';
@@ -9,12 +9,11 @@ import FunctionsIcon from '@mui/icons-material/Functions';
 import ScienceIcon from '@mui/icons-material/Science';
 import BookIcon from '@mui/icons-material/Book';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
-import PaperBadge from './PaperBadge';
 import SaveButton from './SaveButton';
 
 const GRADIENTS = [
   'linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%)',
-  'linear-gradient(135deg, #10b981 0%, #059669 100%)', // Option B emerald
+  'linear-gradient(135deg, #10b981 0%, #059669 100%)',
   'linear-gradient(135deg, #f59e0b 0%, #ef4444 100%)',
   'linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)',
   'linear-gradient(135deg, #0ea5e9 0%, #10b981 100%)',
@@ -23,101 +22,52 @@ const GRADIENTS = [
   'linear-gradient(135deg, #14b8a6 0%, #3b82f6 100%)',
 ];
 
-function getGradient(str = '') {
+// Solid accent colors paired with each gradient — used for the icon & footer on the white card.
+const ACCENTS = [
+  '#6366f1',
+  '#059669',
+  '#ef4444',
+  '#8b5cf6',
+  '#10b981',
+  '#f59e0b',
+  '#8b5cf6',
+  '#3b82f6',
+];
+
+function hashOf(str = '') {
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
     hash = str.charCodeAt(i) + ((hash << 5) - hash);
   }
-  return GRADIENTS[Math.abs(hash) % GRADIENTS.length];
+  return Math.abs(hash);
 }
 
-function getDesign(seed = '') {
-  let hash = 0;
-  for (let i = 0; i < seed.length; i++) {
-    hash = seed.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  const index = Math.abs(hash) % 5;
-  const patternId = `pattern-${Math.abs(hash)}`;
-  
-  switch (index) {
-    case 0: // Code/Grid
-      return (
-        <svg width="100%" height="100%" style={{ position: 'absolute', top: 0, left: 0, opacity: 0.2, pointerEvents: 'none', zIndex: 1 }}>
-          <defs>
-            <pattern id={patternId} width="20" height="20" patternUnits="userSpaceOnUse">
-              <path d="M 20 0 L 0 0 0 20" fill="none" stroke="white" strokeWidth="1.2" />
-              <circle cx="20" cy="0" r="1.5" fill="white" />
-              <circle cx="0" cy="20" r="1.5" fill="white" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill={`url(#${patternId})`} />
-        </svg>
-      );
-    case 1: // Waves/Flow
-      return (
-        <svg width="100%" height="100%" style={{ position: 'absolute', top: 0, left: 0, opacity: 0.3, pointerEvents: 'none', zIndex: 1 }} viewBox="0 0 100 100" preserveAspectRatio="none">
-          <path d="M0,30 Q25,70 50,30 T100,30 L100,100 L0,100 Z" fill="rgba(255,255,255,0.2)" />
-          <path d="M0,50 Q35,20 70,60 T100,40 L100,100 L0,100 Z" fill="rgba(255,255,255,0.15)" />
-        </svg>
-      );
-    case 2: // Orbits/Circles
-      return (
-        <svg width="100%" height="100%" style={{ position: 'absolute', top: 0, left: 0, opacity: 0.25, pointerEvents: 'none', zIndex: 1 }}>
-          <circle cx="30" cy="30" r="40" fill="none" stroke="white" strokeWidth="1.5" strokeDasharray="5,5" />
-          <circle cx="30" cy="30" r="25" fill="none" stroke="white" strokeWidth="1.2" />
-          <circle cx="30" cy="30" r="4" fill="white" />
-          <circle cx="85" cy="115" r="50" fill="none" stroke="white" strokeWidth="1.5" />
-          <circle cx="170" cy="40" r="35" fill="none" stroke="white" strokeWidth="1.2" strokeDasharray="4,4" />
-        </svg>
-      );
-    case 3: // Diagonal Stripes
-      return (
-        <svg width="100%" height="100%" style={{ position: 'absolute', top: 0, left: 0, opacity: 0.18, pointerEvents: 'none', zIndex: 1 }}>
-          <defs>
-            <pattern id={patternId} width="40" height="40" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
-              <line x1="0" y1="0" x2="0" y2="40" stroke="white" strokeWidth="8" />
-              <line x1="20" y1="0" x2="20" y2="40" stroke="white" strokeWidth="2.5" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill={`url(#${patternId})`} />
-        </svg>
-      );
-    default: // Hexagons
-      return (
-        <svg width="100%" height="100%" style={{ position: 'absolute', top: 0, left: 0, opacity: 0.2, pointerEvents: 'none', zIndex: 1 }}>
-          <defs>
-            <pattern id={patternId} width="28" height="48.5" patternUnits="userSpaceOnUse" patternTransform="scale(0.8)">
-              <path d="M 0 0 L 14 8 L 28 0 L 28 16 L 14 24 L 0 16 Z M 0 24 L 14 32 L 28 24 L 28 40 L 14 48 L 0 40 Z" 
-                    fill="none" stroke="white" strokeWidth="1.2" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill={`url(#${patternId})`} />
-        </svg>
-      );
-  }
+function getGradient(str = '') {
+  return GRADIENTS[hashOf(str) % GRADIENTS.length];
 }
 
-function getSubjectIcon(subject = '') {
+function getAccent(str = '') {
+  return ACCENTS[hashOf(str) % ACCENTS.length];
+}
+
+function getSubjectIcon(subject = '', color) {
   const s = subject.toLowerCase();
-  
+
   const iconStyle = {
-    color: 'rgba(255,255,255,0.7)',
+    color,
     fontSize: 48,
-    position: 'relative',
-    zIndex: 3,
-    filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.15))',
-    transition: 'transform 250ms cubic-bezier(0.22, 1, 0.36, 1)'
+    transition: 'transform 250ms cubic-bezier(0.22, 1, 0.36, 1)',
   };
 
   if (
-    s.includes('code') || 
-    s.includes('programm') || 
-    s.includes('data structure') || 
-    s.includes('algorithm') || 
-    s.includes('operating system') || 
+    s.includes('code') ||
+    s.includes('programm') ||
+    s.includes('data structure') ||
+    s.includes('algorithm') ||
+    s.includes('operating system') ||
     s.includes('os') ||
-    s.includes('network') || 
-    s.includes('software') || 
+    s.includes('network') ||
+    s.includes('software') ||
     s.includes('computer') ||
     s.includes('java') ||
     s.includes('python') ||
@@ -127,231 +77,201 @@ function getSubjectIcon(subject = '') {
   ) {
     return <CodeIcon sx={iconStyle} className="card-icon" />;
   }
-  
+
   if (
-    s.includes('math') || 
-    s.includes('calculus') || 
-    s.includes('algebra') || 
-    s.includes('stat') || 
+    s.includes('math') ||
+    s.includes('calculus') ||
+    s.includes('algebra') ||
+    s.includes('stat') ||
     s.includes('geometry') ||
     s.includes('discrete') ||
     s.includes('numerical')
   ) {
     return <FunctionsIcon sx={iconStyle} className="card-icon" />;
   }
-  
+
   if (
-    s.includes('physic') || 
-    s.includes('chemistry') || 
-    s.includes('science') || 
-    s.includes('mechanic') || 
+    s.includes('physic') ||
+    s.includes('chemistry') ||
+    s.includes('science') ||
+    s.includes('mechanic') ||
     s.includes('thermodynamic') ||
     s.includes('circuit') ||
     s.includes('electro')
   ) {
     return <ScienceIcon sx={iconStyle} className="card-icon" />;
   }
-  
+
   if (
-    s.includes('manage') || 
-    s.includes('business') || 
-    s.includes('econom') || 
-    s.includes('finance') || 
+    s.includes('manage') ||
+    s.includes('business') ||
+    s.includes('econom') ||
+    s.includes('finance') ||
     s.includes('marketing') ||
     s.includes('account')
   ) {
     return <TrendingUpIcon sx={iconStyle} className="card-icon" />;
   }
-  
+
   if (
-    s.includes('english') || 
-    s.includes('literature') || 
-    s.includes('history') || 
-    s.includes('civics') || 
+    s.includes('english') ||
+    s.includes('literature') ||
+    s.includes('history') ||
+    s.includes('civics') ||
     s.includes('sociolog') ||
     s.includes('law')
   ) {
     return <BookIcon sx={iconStyle} className="card-icon" />;
   }
-  
+
   return <DescriptionIcon sx={iconStyle} className="card-icon" />;
 }
 
-const StyledCard = styled(Card)(({ theme }) => ({
+const StyledCard = styled(Card)({
+  position: 'relative',
+  overflow: 'hidden',
   height: '100%',
   display: 'flex',
   flexDirection: 'column',
-  borderRadius: theme.spacing(2), // 16px
-  borderColor: theme.palette.divider,
-  transition: 'all 250ms cubic-bezier(0.22, 1, 0.36, 1)',
-  textDecoration: 'none',
+  borderRadius: 16, // original border radius preserved
+  border: 'none',
   backgroundColor: '#ffffff',
-  overflow: 'hidden',
+  boxShadow: '0px 0px 15px rgba(0,0,0,0.09)',
+  padding: 28,
+  textDecoration: 'none',
+  transition: 'all 250ms cubic-bezier(0.22, 1, 0.36, 1)',
   '&:hover': {
     transform: 'translateY(-6px)',
-    boxShadow: '0 12px 40px rgba(0,0,0,0.12)',
-    borderColor: theme.palette.primary[200],
-    '& .card-title': { color: theme.palette.primary[700] },
+    boxShadow: '0px 0px 20px rgba(0,0,0,0.13)',
+    '& .card-title': { color: 'inherit' },
     '& .card-arrow': { transform: 'translateX(4px)' },
-    '& .card-overlay': { opacity: 1 },
-    '& .card-icon': { transform: 'scale(1.15)' },
+    '& .card-corner': { transform: 'scale(1.06)' },
+    '& .card-icon': { transform: 'scale(1.1)' },
   },
-}));
-
-const Overlay = styled(Box)({
-  position: 'absolute',
-  inset: 0,
-  background: 'rgba(0, 0, 0, 0.3)',
-  opacity: 0,
-  transition: 'opacity 200ms ease',
-  zIndex: 2,
 });
 
+const CornerCircle = styled(Box, { shouldForwardProp: (prop) => prop !== 'gradient' })(({ gradient }) => ({
+  position: 'absolute',
+  width: 96,
+  height: 96,
+  right: -20,
+  top: -28,
+  borderRadius: '9999px',
+  background: gradient,
+  transition: 'transform 250ms cubic-bezier(0.22, 1, 0.36, 1)',
+  zIndex: 1,
+}));
+
 const ContributionCard = ({ question }) => {
-  const gradient = getGradient(question._id || question.subject);
-  const designPattern = getDesign(question._id || question.subject || '');
+  const seed = question._id || question.subject || '';
+  const gradient = getGradient(seed);
+  const accent = getAccent(seed);
 
   return (
     <StyledCard component={Link} to={`/questions/${question._id}`}>
-      {/* Thumbnail */}
+      {/* Corner circle with year */}
+      <CornerCircle className="card-corner" gradient={gradient}>
+        {question.year && (
+          <Typography
+            sx={{
+              position: 'absolute',
+              bottom: 26,
+              left: 18,
+              color: '#ffffff',
+              fontSize: '0.9375rem',
+              fontWeight: 700,
+              lineHeight: 1,
+              letterSpacing: '0.02em',
+            }}
+          >
+            {question.year}
+          </Typography>
+        )}
+      </CornerCircle>
+
+      {/* Save / wishlist toggle */}
+      <Box
+        sx={{ position: 'absolute', top: 14, left: 14, zIndex: 3 }}
+        onClick={(e) => e.preventDefault()}
+      >
+        <SaveButton paperId={question._id} />
+      </Box>
+
+      {/* Icon */}
+      <Box className="card-icon-wrap" sx={{ position: 'relative', width: 48, mb: 1.5, mt: 3 }}>
+        {getSubjectIcon(question.subject, accent)}
+      </Box>
+
+      {/* Title — subject */}
+      <Typography
+        className="card-title"
+        sx={{
+          position: 'relative',
+          fontWeight: 700,
+          fontSize: '1.0625rem',
+          color: 'neutral.900',
+          mb: 0.75,
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          display: '-webkit-box',
+          WebkitLineClamp: 2,
+          WebkitBoxOrient: 'vertical',
+          lineHeight: 1.35,
+          transition: 'color 200ms ease',
+        }}
+      >
+        {question.subject}
+      </Typography>
+
+      {/* Description — college / university */}
+      <Typography
+        sx={{
+          position: 'relative',
+          fontSize: '0.8125rem',
+          color: 'neutral.500',
+          lineHeight: 1.6,
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          display: '-webkit-box',
+          WebkitLineClamp: 2,
+          WebkitBoxOrient: 'vertical',
+          mb: 2,
+        }}
+      >
+        {question.college?.name}
+        {question.college?.university?.name && ` · ${question.college.university.name}`}
+      </Typography>
+
+      {/* Footer */}
       <Box
         sx={{
           position: 'relative',
-          height: 150,
-          background: gradient,
           display: 'flex',
-          flexDirection: 'column',
+          justifyContent: 'space-between',
           alignItems: 'center',
-          justifyContent: 'center',
-          gap: 1,
-          px: 2,
-          overflow: 'hidden',
+          mt: 'auto',
+          pt: 1.5,
+          borderTop: '1px solid',
+          borderColor: 'neutral.100',
         }}
       >
-        {designPattern}
-        <Overlay className="card-overlay" />
-
-        {getSubjectIcon(question.subject)}
-
-        {/* Save / wishlist toggle (bottom-right of thumbnail) */}
-        <Box sx={{ position: 'absolute', bottom: 10, right: 10, zIndex: 3 }}>
-          <SaveButton paperId={question._id} />
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+          <FiberManualRecordIcon sx={{ fontSize: 7, color: accent }} />
+          <Typography sx={{ fontSize: '0.6875rem', color: 'neutral.500', fontWeight: 600 }}>
+            {question.examType}
+          </Typography>
         </Box>
 
-        {/* Year Chip (top-right) */}
-        <Box
-          sx={{
-            position: 'absolute',
-            top: 12,
-            right: 12,
-            bgcolor: 'rgba(255,255,255,0.9)',
-            color: 'neutral.900',
-            fontSize: '11px',
-            fontWeight: 700,
-            px: 1,
-            py: 0.25,
-            borderRadius: '6px',
-            zIndex: 2,
-            lineHeight: 1.5,
-          }}
-        >
-          {question.year}
-        </Box>
-
-        {/* Course Chip (top-left) */}
-        <Box
-          sx={{
-            position: 'absolute',
-            top: 12,
-            left: 12,
-            bgcolor: 'rgba(0,0,0,0.35)',
-            color: '#ffffff',
-            fontSize: '11px',
-            fontWeight: 700,
-            px: 1.2,
-            py: 0.25,
-            borderRadius: '6px',
-            maxWidth: '55%',
-            zIndex: 2,
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-            lineHeight: 1.5,
-          }}
-        >
-          {question.course}
+        <Box sx={{ display: 'flex', alignItems: 'center', color: accent }}>
+          <Typography sx={{ fontWeight: 700, mr: 0.4, fontSize: '0.6875rem' }}>
+            View
+          </Typography>
+          <ArrowForwardIcon
+            className="card-arrow"
+            sx={{ fontSize: 13, transition: 'transform 250ms cubic-bezier(0.22, 1, 0.36, 1)' }}
+          />
         </Box>
       </Box>
-
-      {/* Card Content */}
-      <CardContent sx={{ p: '14px', flex: 1, display: 'flex', flexDirection: 'column' }}>
-        <Typography
-          variant="body2"
-          className="card-title"
-          sx={{
-            fontWeight: 600,
-            fontSize: '14px',
-            color: 'neutral.800',
-            mb: 0.75,
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            display: '-webkit-box',
-            WebkitLineClamp: 2,
-            WebkitBoxOrient: 'vertical',
-            transition: 'color 200ms ease',
-            lineHeight: 1.4,
-          }}
-        >
-          {question.subject}
-        </Typography>
-
-        <Typography
-          variant="caption"
-          sx={{
-            color: 'neutral.400',
-            fontSize: '12px',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            display: '-webkit-box',
-            WebkitLineClamp: 1,
-            WebkitBoxOrient: 'vertical',
-            mb: 2,
-          }}
-        >
-          {question.college?.name}
-          {question.college?.university?.name && ` · ${question.college.university.name}`}
-        </Typography>
-
-        {/* Card Footer Row */}
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            mt: 'auto',
-            pt: 1.25,
-            borderTop: '1px solid',
-            borderColor: 'neutral.100',
-          }}
-        >
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-            <FiberManualRecordIcon sx={{ fontSize: 7, color: 'primary.500' }} />
-            <Typography variant="caption" sx={{ fontSize: '11px', color: 'neutral.500', fontWeight: 500 }}>
-              {question.examType}
-            </Typography>
-          </Box>
-
-          <Box sx={{ display: 'flex', alignItems: 'center', color: 'primary.600', transition: 'color 200ms' }}>
-            <Typography variant="caption" sx={{ fontWeight: 600, mr: 0.4, fontSize: '11px' }}>
-              View
-            </Typography>
-            <ArrowForwardIcon
-              className="card-arrow"
-              sx={{ fontSize: 13, transition: 'transform 250ms var(--ease-out-quint)' }}
-            />
-          </Box>
-        </Box>
-      </CardContent>
     </StyledCard>
   );
 };

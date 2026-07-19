@@ -1,46 +1,38 @@
 import React from 'react';
-import { Card, CardContent, Typography, Box } from '@mui/material';
+import { Card, Typography, Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
-const StyledCard = styled(Card, { shouldForwardProp: (prop) => prop !== 'stepColor' })(({ theme, stepColor }) => ({
+const StyledCard = styled(Card, { shouldForwardProp: (prop) => prop !== 'stepColor' })(() => ({
   position: 'relative',
-  borderRadius: 20,
-  border: '1px solid',
-  borderColor: '#f1f5f9', // neutral.100
-  borderTop: `3px solid ${stepColor}`,
+  overflow: 'hidden',
+  borderRadius: 20, // original border radius preserved
+  border: 'none',
   backgroundColor: '#ffffff',
-  boxShadow: 'none',
+  boxShadow: '0px 0px 15px rgba(0,0,0,0.09)',
+  padding: 36, // p-9
+  height: '100%',
   transition: 'all 250ms cubic-bezier(0.22, 1, 0.36, 1)',
-  aspectRatio: '1 / 1',
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'center',
   '&:hover': {
-    boxShadow: '0 8px 24px rgba(0,0,0,0.06), 0 16px 40px rgba(0,0,0,0.08)', // shadow[4]
     transform: 'translateY(-6px)',
+    boxShadow: `0px 0px 20px rgba(0,0,0,0.12)`,
+    '& .feature-corner': {
+      transform: 'scale(1.06)',
+    },
     '& .feature-icon': {
       transform: 'scale(1.08)',
-    },
-    '& .feature-arrow': {
-      transform: 'translateX(4px)',
-    },
-    '& .feature-accent': {
-      transform: 'scaleX(1)',
     },
   },
 }));
 
-const AccentLine = styled(Box, { shouldForwardProp: (prop) => prop !== 'stepColor' })(({ stepColor }) => ({
+const CornerCircle = styled(Box, { shouldForwardProp: (prop) => prop !== 'stepColor' })(({ stepColor }) => ({
   position: 'absolute',
-  bottom: 0,
-  left: 0,
-  width: '100%',
-  height: 4,
+  width: 96, // w-24
+  height: 96, // h-24
+  right: -20, // -right-5
+  top: -28, // -top-7
+  borderRadius: '9999px',
   backgroundColor: stepColor,
-  transform: 'scaleX(0)',
-  transformOrigin: 'left',
-  transition: 'transform 300ms cubic-bezier(0.22, 1, 0.36, 1)',
+  transition: 'transform 250ms cubic-bezier(0.22, 1, 0.36, 1)',
 }));
 
 const FeatureCard = ({
@@ -48,114 +40,75 @@ const FeatureCard = ({
   title,
   description,
   badgeText, // e.g. "01", "02", "03"
-  stepColor = "#059669", // step-specific color (blue, green, purple)
-  iconBgColor = "rgba(5, 150, 105, 0.08)",
+  stepColor = "#059669",
 }) => {
   return (
     <StyledCard stepColor={stepColor}>
-      <CardContent
+      {/* Corner circle with step number */}
+      <CornerCircle className="feature-corner" stepColor={stepColor}>
+        {badgeText && (
+          <Typography
+            sx={{
+              position: 'absolute',
+              bottom: 24, // bottom-6
+              left: 28, // left-7
+              color: '#ffffff',
+              fontSize: '1.5rem', // text-2xl
+              fontWeight: 600,
+              lineHeight: 1,
+            }}
+          >
+            {badgeText}
+          </Typography>
+        )}
+      </CornerCircle>
+
+      {/* Icon */}
+      <Box
+        className="feature-icon"
         sx={{
-          p: { xs: 2.5, sm: 3, md: 3.5 },
-          '&:last-child': { pb: { xs: 2.5, sm: 3, md: 3.5 } },
           position: 'relative',
-          height: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
+          width: 48, // w-12
+          color: stepColor,
+          mb: 1.5,
+          transition: 'transform 250ms cubic-bezier(0.22, 1, 0.36, 1)',
+          '& svg': {
+            width: 48,
+            height: 48,
+            fontSize: 48,
+            color: stepColor,
+            fill: 'currentColor',
+          },
         }}
       >
-        {/* Top Section: Icon & Step Badge */}
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', width: '100%' }}>
-          {/* Icon Container */}
-          <Box
-            className="feature-icon"
-            sx={{
-              width: { xs: 44, md: 52 },
-              height: { xs: 44, md: 52 },
-              borderRadius: 3,
-              background: iconBgColor,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              transition: 'transform 250ms var(--ease-out-quint)',
-              '& svg': {
-                fontSize: { xs: 22, md: 26 },
-                color: stepColor,
-              }
-            }}
-          >
-            {icon}
-          </Box>
+        {icon}
+      </Box>
 
-          {/* Step Badge */}
-          {badgeText && (
-            <Typography
-              variant="overline"
-              sx={{
-                fontWeight: 700,
-                color: stepColor,
-                fontSize: { xs: '0.7rem', md: '0.75rem' },
-                letterSpacing: '0.05em',
-                lineHeight: 1,
-                mt: 0.5,
-              }}
-            >
-              {badgeText}
-            </Typography>
-          )}
-        </Box>
+      {/* Title */}
+      <Typography
+        sx={{
+          position: 'relative',
+          fontWeight: 700,
+          fontSize: '1.25rem', // text-xl
+          color: 'neutral.900',
+          mb: 1.5,
+          lineHeight: 1.3,
+        }}
+      >
+        {title}
+      </Typography>
 
-        {/* Middle Section: Title & Description */}
-        <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', my: { xs: 1.5, md: 2.5 } }}>
-          {/* Title */}
-          <Typography
-            variant="h5"
-            sx={{
-              fontWeight: 700,
-              mb: { xs: 0.75, md: 1.5 },
-              color: 'neutral.900',
-              fontSize: { xs: '1.1rem', md: '1.25rem' },
-              lineHeight: 1.3,
-            }}
-          >
-            {title}
-          </Typography>
-
-          {/* Description */}
-          <Typography
-            variant="body2"
-            sx={{
-              lineHeight: { xs: 1.5, md: 1.65 },
-              color: 'neutral.500',
-              fontSize: { xs: '0.8rem', md: '0.875rem' },
-            }}
-          >
-            {description}
-          </Typography>
-        </Box>
-
-        {/* Bottom Section: Arrow Indicator */}
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            color: stepColor,
-            fontWeight: 600,
-            fontSize: '0.8125rem',
-            cursor: 'pointer',
-          }}
-        >
-          <ArrowForwardIcon
-            className="feature-arrow"
-            sx={{
-              fontSize: 16,
-              transition: 'transform 250ms var(--ease-out-quint)',
-            }}
-          />
-        </Box>
-      </CardContent>
-
-      <AccentLine className="feature-accent" stepColor={stepColor} />
+      {/* Description */}
+      <Typography
+        sx={{
+          position: 'relative',
+          fontSize: '0.875rem', // text-sm
+          color: 'neutral.500', // zinc-500
+          lineHeight: 1.7, // leading-6
+        }}
+      >
+        {description}
+      </Typography>
     </StyledCard>
   );
 };

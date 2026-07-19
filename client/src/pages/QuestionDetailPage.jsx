@@ -50,87 +50,155 @@ const CARD_GRADIENTS = [
   "linear-gradient(135deg, #14b8a6 0%, #3b82f6 100%)",
 ];
 
-function cardGradient(str) {
+const CARD_ACCENTS = [
+  "#6366f1",
+  "#059669",
+  "#ef4444",
+  "#8b5cf6",
+  "#10b981",
+  "#f59e0b",
+  "#8b5cf6",
+  "#3b82f6",
+];
+
+function cardHash(str = "") {
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
     hash = str.charCodeAt(i) + ((hash << 5) - hash);
   }
-  return CARD_GRADIENTS[Math.abs(hash) % CARD_GRADIENTS.length];
+  return Math.abs(hash);
+}
+
+function cardGradient(str = "") {
+  return CARD_GRADIENTS[cardHash(str) % CARD_GRADIENTS.length];
+}
+
+function cardAccent(str = "") {
+  return CARD_ACCENTS[cardHash(str) % CARD_ACCENTS.length];
 }
 
 function RelatedPaperCard({ question }) {
+  const seed = question._id || question.subject || "";
+  const gradient = cardGradient(seed);
+  const accent = cardAccent(seed);
+
   return (
     <CardActionArea
       component={Link}
       to={`/questions/${question._id}`}
       sx={{
-        borderRadius: '16px',
+        borderRadius: "16px",
         display: "block",
         mb: 1.5,
-        '&:hover .related-card': {
-          borderColor: "primary.300",
-          bgcolor: "primary.50",
-        }
+        "&:hover .related-card": {
+          transform: "translateY(-4px)",
+          boxShadow: "0px 0px 20px rgba(0,0,0,0.13)",
+        },
+        "&:hover .related-corner": { transform: "scale(1.06)" },
+        "&:hover .related-icon": { transform: "scale(1.1)" },
       }}
     >
       <Card
         className="related-card"
         elevation={0}
         sx={{
-          border: "1px solid",
-          borderColor: "neutral.200",
-          borderRadius: '16px',
-          transition: "all 200ms ease",
-          bgcolor: "neutral.0",
-          '&:hover': {
-            transform: "none",
-            boxShadow: "none",
-          }
+          position: "relative",
+          overflow: "hidden",
+          border: "none",
+          borderRadius: "16px", // original border radius preserved
+          transition: "all 250ms cubic-bezier(0.22, 1, 0.36, 1)",
+          bgcolor: "#ffffff",
+          boxShadow: "0px 0px 15px rgba(0,0,0,0.09)",
+          p: 3,
         }}
       >
+        {/* Corner circle with year */}
         <Box
+          className="related-corner"
           sx={{
-            height: 5,
-            background: cardGradient(question._id || question.subject),
+            position: "absolute",
+            width: 96,
+            height: 96,
+            right: -20,
+            top: -28,
+            borderRadius: "9999px",
+            background: gradient,
+            transition: "transform 250ms cubic-bezier(0.22, 1, 0.36, 1)",
+            zIndex: 1,
           }}
-        />
-        <CardContent sx={{ p: 2 }}>
-          <Typography
-            variant="body2"
-            sx={{
-              fontWeight: 600,
-              mb: 0.5,
-              color: "neutral.800",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              display: "-webkit-box",
-              WebkitLineClamp: 2,
-              WebkitBoxOrient: "vertical",
-              lineHeight: 1.4,
-            }}
-          >
-            {question.subject}
-          </Typography>
-          <Typography variant="caption" color="neutral.400" sx={{ display: "block", mb: 1, fontWeight: 500 }}>
-            {question.course} — {question.year}
-          </Typography>
-          <Box sx={{ display: "flex", gap: 0.75, flexWrap: "wrap", alignItems: "center" }}>
-            <PaperBadge label={question.examType} size="small" />
-            {question.semester && (
-              <Chip
-                label={`Sem ${question.semester}`}
-                size="small"
-                sx={{
-                  fontSize: "0.6875rem",
-                  height: 20,
-                  bgcolor: "neutral.100",
-                  color: "neutral.600",
-                  fontWeight: 600,
-                }}
-              />
-            )}
-          </Box>
-        </CardContent>
+        >
+          {question.year && (
+            <Typography
+              sx={{
+                position: "absolute",
+                bottom: 26,
+                left: 18,
+                color: "#ffffff",
+                fontSize: "0.9375rem",
+                fontWeight: 700,
+                lineHeight: 1,
+                letterSpacing: "0.02em",
+              }}
+            >
+              {question.year}
+            </Typography>
+          )}
+        </Box>
+
+        {/* Icon */}
+        <Box className="related-icon" sx={{ position: "relative", width: 40, mb: 1.25, transition: "transform 250ms cubic-bezier(0.22, 1, 0.36, 1)" }}>
+          <DescriptionIcon sx={{ fontSize: 40, color: accent }} />
+        </Box>
+
+        {/* Title — subject */}
+        <Typography
+          variant="body2"
+          sx={{
+            position: "relative",
+            fontWeight: 700,
+            fontSize: "1rem",
+            mb: 0.5,
+            color: "neutral.900",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            display: "-webkit-box",
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: "vertical",
+            lineHeight: 1.35,
+          }}
+        >
+          {question.subject}
+        </Typography>
+
+        {/* Description — course */}
+        <Typography
+          sx={{
+            position: "relative",
+            fontSize: "0.8125rem",
+            color: "neutral.500",
+            lineHeight: 1.6,
+            mb: 1.5,
+          }}
+        >
+          {question.course}
+        </Typography>
+
+        <Box sx={{ position: "relative", display: "flex", gap: 0.75, flexWrap: "wrap", alignItems: "center" }}>
+          <PaperBadge label={question.examType} size="small" />
+          {question.semester && (
+            <Chip
+              label={`Sem ${question.semester}`}
+              size="small"
+              sx={{
+                fontSize: "0.6875rem",
+                height: 20,
+                bgcolor: "neutral.100",
+                color: "neutral.600",
+                fontWeight: 600,
+              }}
+            />
+          )}
+        </Box>
       </Card>
     </CardActionArea>
   );
