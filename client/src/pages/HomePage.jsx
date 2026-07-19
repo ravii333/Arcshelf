@@ -18,6 +18,7 @@ import VerifiedIcon from "@mui/icons-material/Verified";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import * as api from "../api";
+import heroImage from "../assets/hero-bookshelf.png";
 import ContributionCard from "../components/common/ContributionCard";
 import FeatureCard from "../components/common/FeatureCard";
 import StatCard from "../components/common/StatCard";
@@ -36,7 +37,11 @@ function HeroSection({ searchQuery, onSearchChange, onSearch }) {
         pt: { xs: 8, md: 12 },
         pb: { xs: 8, md: 12 },
         overflow: "hidden",
-        background: "linear-gradient(160deg, #ecfdf5 0%, #f8fafc 45%, #eff6ff 100%)",
+        backgroundImage: {
+          xs: "linear-gradient(160deg, #ecfdf5 0%, #f8fafc 45%, #eff6ff 100%)",
+          md: "linear-gradient(90deg, #ecfdf5 0%, #f8fafc 55%, rgba(239,246,255,0.6) 100%)",
+        },
+        backgroundRepeat: "no-repeat",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
@@ -77,206 +82,243 @@ function HeroSection({ searchQuery, onSearchChange, onSearch }) {
       />
 
       <Container maxWidth="xl" sx={{ px: { xs: 2, sm: 3, md: 4, lg: 5 }, position: "relative", zIndex: 1 }}>
-        <Box sx={{ maxWidth: 780, mx: "auto", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", width: "100%" }}>
-          {/* Announcement Chip */}
-          <Box
-            sx={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 1.25,
-              px: 2,
-              py: 0.75,
-              mb: 4,
-              background: "linear-gradient(135deg, rgba(5, 150, 105, 0.1) 0%, rgba(99, 102, 241, 0.08) 100%)",
-              border: "1px solid rgba(5, 150, 105, 0.2)",
-              borderRadius: "9999px",
-              color: "primary.700",
-              boxShadow: "0 2px 8px rgba(5, 150, 105, 0.05)",
-            }}
-          >
-            <Box
-              sx={{
-                width: 6,
-                height: 6,
-                borderRadius: "50%",
-                bgcolor: "primary.600",
-              }}
-              className="animate-pulse-dot"
-            />
-            <AutoAwesomeIcon sx={{ fontSize: 14 }} />
-            <Typography variant="caption" sx={{ fontWeight: 700, letterSpacing: "0.02em" }}>
-              Empowering 1000+ Students
-            </Typography>
-          </Box>
-
-          {/* H1 Title */}
-          <Typography
-            variant="h1"
-            align="center"
-            sx={{
-              fontSize: { xs: "2.5rem", sm: "3.5rem", md: "4rem" },
-              fontWeight: 800,
-              mb: 2.5,
-              lineHeight: 1.1,
-              letterSpacing: "-0.03em",
-              textAlign: "center",
-              width: "100%",
-            }}
-          >
-            <Box
-              component="span"
-              sx={{
-                background: "linear-gradient(135deg, #064e3b 0%, #059669 100%)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                display: "block",
-                mb: 0.5,
-                animation: "fadeInUp 500ms var(--ease-out-quint) forwards",
-                textAlign: "center",
-              }}
-            >
-              Learn, Grow, and
-            </Box>
-            <Box
-              component="span"
-              sx={{
-                color: "neutral.900",
-                animation: "fadeInUp 700ms var(--ease-out-quint) forwards",
-                display: "block",
-                textAlign: "center",
-              }}
-            >
-              Achieve Your Goals
-            </Box>
-          </Typography>
-
-          {/* Subtitle */}
-          <Typography
-            variant="body1"
-            align="center"
-            sx={{
-              maxWidth: 520,
-              mx: "auto",
-              mb: 5,
-              color: "neutral.500",
-              fontSize: { xs: "0.9375rem", md: "1rem" },
-              lineHeight: 1.65,
-              textAlign: "center",
-              width: "100%",
-            }}
-          >
-            ArcShelf is a collaborative open-source archive of previous years' university exam papers.{" "}
-            <Box component="span" sx={{ fontWeight: 600, color: "neutral.800" }}>
-              Search, prepare, and contribute
-            </Box>{" "}
-            to help students excel.
-          </Typography>
-
-          {/* Search Input Container */}
+        <Box
+          sx={{
+            position: "relative",
+            maxWidth: 840,
+            mx: "auto",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            textAlign: "center",
+          }}
+        >
+          {/* Text Column */}
           <Box
             sx={{
               width: "100%",
-              maxWidth: 600,
-              mx: "auto",
-              mb: 3,
+              maxWidth: 720,
               display: "flex",
-              flexDirection: { xs: "column", sm: "row" },
-              gap: 1.5,
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              textAlign: "center",
+              mx: "auto",
             }}
           >
-            <TextField
-              fullWidth
-              placeholder="Search subjects, courses, colleges..."
-              value={searchQuery}
-              onChange={(e) => onSearchChange(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && onSearch()}
+            {/* Announcement Chip */}
+            <Box
               sx={{
-                '& .MuiOutlinedInput-root': {
-                  height: 52,
-                  bgcolor: "neutral.0",
-                  borderRadius: "12px",
-                  boxShadow: "0 1px 3px rgba(0,0,0,0.06), 0 2px 6px rgba(0,0,0,0.08)",
-                  transition: "all 200ms ease",
-                  '& fieldset': { borderColor: "neutral.200", borderWidth: "1.5px" },
-                  '&:hover fieldset': { borderColor: "neutral.300" },
-                  '&.Mui-focused': {
-                    boxShadow: "0 0 0 4px rgba(5,150,105,0.15)",
-                    '& fieldset': { borderColor: "primary.500", borderWidth: "2px" },
-                  }
-                }
-              }}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon sx={{ color: "neutral.400", ml: 0.5 }} />
-                  </InputAdornment>
-                ),
-                endAdornment: (
-                  <InputAdornment position="end" sx={{ display: { xs: "none", sm: "flex" } }}>
-                    <Box
-                      sx={{
-                        border: "1px solid",
-                        borderColor: "neutral.200",
-                        bgcolor: "neutral.50",
-                        borderRadius: "6px",
-                        px: 1,
-                        py: 0.25,
-                        color: "neutral.400",
-                        fontSize: "11px",
-                        fontWeight: 700,
-                        userSelect: "none",
-                      }}
-                    >
-                      ⏎
-                    </Box>
-                  </InputAdornment>
-                ),
-              }}
-            />
-            <Button
-              variant="contained"
-              onClick={onSearch}
-              sx={{
-                height: 52,
-                px: 4,
-                borderRadius: "12px",
-                bgcolor: "primary.600",
-                fontWeight: 600,
-                fontSize: "0.9375rem",
-                backgroundImage: "linear-gradient(135deg, #059669 0%, #047857 100%)",
-                flexShrink: 0,
-                "&:hover": {
-                  backgroundImage: "linear-gradient(135deg, #047857 0%, #064e3b 100%)",
-                  transform: "translateY(-1px) scale(1.02)",
-                  boxShadow: "var(--shadow-brand)",
-                },
-              }}
-              endIcon={<ArrowForwardIcon />}
-            >
-              Search
-            </Button>
-          </Box>
-
-          <Box sx={{ display: "flex", justifyContent: "center", gap: 0.75, alignItems: "center", width: "100%" }}>
-            <Typography variant="body2" color="neutral.500" sx={{ fontSize: "13px" }}>
-              or
-            </Typography>
-            <Link
-              to="/browse"
-              style={{
-                color: "#047857",
-                fontWeight: 600,
-                fontSize: "13px",
-                textDecoration: "none",
                 display: "inline-flex",
                 alignItems: "center",
-                gap: 2,
+                gap: 1.25,
+                px: 2,
+                py: 0.75,
+                mb: 4,
+                background: "linear-gradient(135deg, rgba(5, 150, 105, 0.1) 0%, rgba(99, 102, 241, 0.08) 100%)",
+                border: "1px solid rgba(5, 150, 105, 0.2)",
+                borderRadius: "9999px",
+                color: "primary.700",
+                boxShadow: "0 2px 8px rgba(5, 150, 105, 0.05)",
               }}
             >
-              Browse all papers
-              <ArrowForwardIcon sx={{ fontSize: 13 }} />
-            </Link>
+              <Box
+                sx={{
+                  width: 6,
+                  height: 6,
+                  borderRadius: "50%",
+                  bgcolor: "primary.600",
+                }}
+                className="animate-pulse-dot"
+              />
+              <AutoAwesomeIcon sx={{ fontSize: 14 }} />
+              <Typography variant="caption" sx={{ fontWeight: 700, letterSpacing: "0.02em" }}>
+                Empowering 1000+ Students
+              </Typography>
+            </Box>
+
+            {/* H1 Title */}
+            <Typography
+              variant="h1"
+              sx={{
+                fontSize: { xs: "2.5rem", sm: "3.5rem", md: "4rem" },
+                fontWeight: 800,
+                mb: 2.5,
+                lineHeight: 1.1,
+                letterSpacing: "-0.03em",
+                textAlign: "center",
+                width: "100%",
+              }}
+            >
+              <Box
+                component="span"
+                sx={{
+                  background: "linear-gradient(135deg, #064e3b 0%, #059669 100%)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  display: "block",
+                  mb: 0.5,
+                  animation: "fadeInUp 500ms var(--ease-out-quint) forwards",
+                }}
+              >
+                Learn, Grow, and
+              </Box>
+              <Box
+                component="span"
+                sx={{
+                  color: "neutral.900",
+                  animation: "fadeInUp 700ms var(--ease-out-quint) forwards",
+                  display: "block",
+                }}
+              >
+                Achieve Your Goals
+              </Box>
+            </Typography>
+
+            {/* Subtitle */}
+            <Typography
+              variant="body1"
+              sx={{
+                maxWidth: 520,
+                mx: "auto",
+                mb: 5,
+                color: "neutral.500",
+                fontSize: { xs: "0.9375rem", md: "1rem" },
+                lineHeight: 1.65,
+                textAlign: "center",
+                width: "100%",
+              }}
+            >
+              ArcShelf is a collaborative open-source archive of previous years' university exam papers.{" "}
+              <Box component="span" sx={{ fontWeight: 600, color: "neutral.800" }}>
+                Search, prepare, and contribute
+              </Box>{" "}
+              to help students excel.
+            </Typography>
+
+            {/* Search Input Container */}
+            <Box
+              sx={{
+                width: "100%",
+                maxWidth: 600,
+                mx: "auto",
+                mb: 3,
+                display: "flex",
+                flexDirection: { xs: "column", sm: "row" },
+                gap: 1.5,
+                justifyContent: "center",
+              }}
+            >
+              <TextField
+                fullWidth
+                placeholder="Search subjects, courses, colleges..."
+                value={searchQuery}
+                onChange={(e) => onSearchChange(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && onSearch()}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    height: 52,
+                    bgcolor: "neutral.0",
+                    borderRadius: "12px",
+                    boxShadow: "0 1px 3px rgba(0,0,0,0.06), 0 2px 6px rgba(0,0,0,0.08)",
+                    transition: "all 200ms ease",
+                    '& fieldset': { borderColor: "neutral.200", borderWidth: "1.5px" },
+                    '&:hover fieldset': { borderColor: "neutral.300" },
+                    '&.Mui-focused': {
+                      boxShadow: "0 0 0 4px rgba(5,150,105,0.15)",
+                      '& fieldset': { borderColor: "primary.500", borderWidth: "2px" },
+                    }
+                  }
+                }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon sx={{ color: "neutral.400", ml: 0.5 }} />
+                    </InputAdornment>
+                  ),
+                  endAdornment: (
+                    <InputAdornment position="end" sx={{ display: { xs: "none", sm: "flex" } }}>
+                      <Box
+                        sx={{
+                          border: "1px solid",
+                          borderColor: "neutral.200",
+                          bgcolor: "neutral.50",
+                          borderRadius: "6px",
+                          px: 1,
+                          py: 0.25,
+                          color: "neutral.400",
+                          fontSize: "11px",
+                          fontWeight: 700,
+                          userSelect: "none",
+                        }}
+                      >
+                        ⏎
+                      </Box>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              <Button
+                variant="contained"
+                onClick={onSearch}
+                sx={{
+                  height: 52,
+                  px: 4,
+                  borderRadius: "12px",
+                  bgcolor: "primary.600",
+                  fontWeight: 600,
+                  fontSize: "0.9375rem",
+                  backgroundImage: "linear-gradient(135deg, #059669 0%, #047857 100%)",
+                  flexShrink: 0,
+                }}
+                endIcon={<ArrowForwardIcon />}
+              >
+                Search
+              </Button>
+            </Box>
+
+            <Box sx={{ display: "flex", justifyContent: "center", gap: 0.75, alignItems: "center", width: "100%" }}>
+              <Typography variant="body2" color="neutral.500" sx={{ fontSize: "13px" }}>
+                or
+              </Typography>
+              <Link
+                to="/browse"
+                style={{
+                  color: "#047857",
+                  fontWeight: 600,
+                  fontSize: "13px",
+                  textDecoration: "none",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 2,
+                }}
+              >
+                Browse all papers
+                <ArrowForwardIcon sx={{ fontSize: 13 }} />
+              </Link>
+            </Box>
           </Box>
+
+          <Box
+            component="img"
+            src={heroImage}
+            alt="ArcShelf hero illustration"
+            className="animate-float-1"
+            sx={{
+              display: { xs: "none", md: "block" },
+              position: "absolute",
+              right: { md: -240, lg: -300 },
+              top: { md: 72, lg: 64 },
+              transform: "none",
+              width: { md: 320, lg: 420 },
+              maxWidth: "42%",
+              height: "auto",
+              objectFit: "contain",
+              borderRadius: 3,
+              boxShadow: "0 24px 80px rgba(15, 23, 42, 0.12)",
+            }}
+          />
         </Box>
       </Container>
     </Box>
