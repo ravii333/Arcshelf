@@ -3,6 +3,7 @@ import multer from "multer";
 import { storage } from "../config/cloudinary.js";
 import Question from "../models/Question.js";
 import authMiddleware from "../middlewares/authMiddleware.js";
+import User from "../models/userModel.js";
 import { formatToMarkdown } from "../utils/markdownFormatter.js";
 
 const router = express.Router();
@@ -76,6 +77,50 @@ router.get("/my", authMiddleware, async (req, res) => {
     res.status(200).json(questions);
   } catch (error) {
     res.status(500).json({ message: "Failed to fetch your contributions." });
+  }
+});
+
+// GET /questions/saved - fetch logged in user's saved/wishlisted papers
+router.get("/saved", authMiddleware, async (req, res) => {
+  try {
+    const user = await User.findById(req.userId).populate({
+      path: "savedPapers",
+      populate: [{ path: "createdBy", select: "name" }, populateOptions],
+    });
+    if (!user) return res.status(404).json({ message: "User not found." });
+    // savedPapers can contain nulls if a saved paper was later deleted; filter them out
+    const saved = (user.savedPapers || []).filter(Boolean);
+    res.status(200).json(saved);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch saved papers." });
+  }
+});
+
+// POST /questions/:id/save - toggle save/unsave a paper for the logged in user
+router.post("/:id/save", authMiddleware, async (req, res) => {
+  try {
+    const paper = await Question.findById(req.params.id);
+    if (!paper) return res.status(404).json({ message: "Question not found." });
+
+    const user = await User.findById(req.userId);
+    if (!user) return res.status(404).json({ message: "User not found." });
+
+    const paperId = req.params.id;
+    const index = user.savedPapers.findIndex((p) => p.toString() === paperId);
+
+    let saved;
+    if (index === -1) {
+      user.savedPapers.push(paperId);
+      saved = true;
+    } else {
+      user.savedPapers.splice(index, 1);
+      saved = false;
+    }
+
+    await user.save();
+    res.status(200).json({ saved, message: saved ? "Paper saved." : "Paper removed from saved." });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to update saved papers." });
   }
 });
 

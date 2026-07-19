@@ -25,7 +25,11 @@ import {
   CircularProgress,
   Alert,
   Fade,
+  Tabs,
+  Tab,
+  Grid,
 } from "@mui/material";
+import BookmarkIcon from "@mui/icons-material/Bookmark";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import SearchIcon from "@mui/icons-material/Search";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -37,7 +41,9 @@ import DescriptionIcon from "@mui/icons-material/Description";
 import * as api from "../api";
 import PaperBadge from "../components/common/PaperBadge";
 import EmptyState from "../components/common/EmptyState";
+import ContributionCard from "../components/common/ContributionCard";
 import Toast from "../components/ui/Toast";
+import { useSavedPapers } from "../context/SavedPapersContext";
 
 function DashboardPage() {
   const [profile, setProfile] = useState(() => JSON.parse(localStorage.getItem("profile")));
@@ -45,6 +51,14 @@ function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [toast, setToast] = useState({ open: false, message: "", severity: "success" });
+
+  // Tabs: 0 = contributions, 1 = saved/wishlist
+  const [tab, setTab] = useState(0);
+  const { isSaved } = useSavedPapers();
+  const [savedPapers, setSavedPapers] = useState([]);
+  const [savedLoading, setSavedLoading] = useState(false);
+  const [savedError, setSavedError] = useState("");
+  const [savedLoaded, setSavedLoaded] = useState(false);
   
   // Delete Dialog state
   const [deleteId, setDeleteId] = useState(null);
@@ -71,6 +85,28 @@ function DashboardPage() {
     }
     loadDashboardData();
   }, [profile]);
+
+  const loadSavedPapers = async () => {
+    setSavedLoading(true);
+    setSavedError("");
+    try {
+      const { data } = await api.fetchSavedPapers();
+      setSavedPapers(data);
+      setSavedLoaded(true);
+    } catch (err) {
+      console.error("Saved papers load error:", err);
+      setSavedError("Failed to load your saved papers. Please try again.");
+    } finally {
+      setSavedLoading(false);
+    }
+  };
+
+  const handleTabChange = (_e, newTab) => {
+    setTab(newTab);
+    if (newTab === 1 && !savedLoaded) {
+      loadSavedPapers();
+    }
+  };
 
   const handleOpenDelete = (id) => {
     setDeleteId(id);
@@ -223,20 +259,31 @@ function DashboardPage() {
         </Card>
       </Box>
 
-      {/* Main Content Area: Contributions list */}
-      <Typography
-        variant="h5"
+      {/* Main Content Area: tabbed — contributions vs saved */}
+      <Tabs
+        value={tab}
+        onChange={handleTabChange}
         sx={{
-          fontWeight: 700,
-          fontFamily: '"Plus Jakarta Sans", sans-serif',
-          color: "neutral.800",
           mb: 3,
+          borderBottom: "1px solid",
+          borderColor: "neutral.200",
+          "& .MuiTab-root": {
+            textTransform: "none",
+            fontWeight: 700,
+            fontSize: "1rem",
+            fontFamily: '"Plus Jakarta Sans", sans-serif',
+          },
         }}
       >
-        Your Contributed Papers
-      </Typography>
+        <Tab label="Your Contributed Papers" />
+        <Tab
+          icon={<BookmarkIcon fontSize="small" />}
+          iconPosition="start"
+          label="Saved Papers"
+        />
+      </Tabs>
 
-      {loading ? (
+      {tab === 0 && (loading ? (
         <Box sx={{ display: "flex", justifyContent: "center", py: 8 }}>
           <CircularProgress color="primary" />
         </Box>
@@ -344,6 +391,37 @@ function DashboardPage() {
             </TableBody>
           </Table>
         </TableContainer>
+      ))}
+
+      {tab === 1 && (
+        savedLoading ? (
+          <Box sx={{ display: "flex", justifyContent: "center", py: 8 }}>
+            <CircularProgress color="primary" />
+          </Box>
+        ) : savedError ? (
+          <Alert severity="error" sx={{ borderRadius: "10px" }}>
+            {savedError}
+          </Alert>
+        ) : (() => {
+          // hide any paper unsaved this session via the card's bookmark toggle
+          const visibleSaved = savedPapers.filter((p) => isSaved(p._id));
+          return visibleSaved.length === 0 ? (
+            <EmptyState
+              title="No saved papers yet"
+              description="Bookmark papers while browsing to build your exam wishlist. Tap the bookmark icon on any paper to save it here for quick access later."
+              actionText="Browse Papers"
+              actionLink="/browse"
+            />
+          ) : (
+            <Grid container spacing={3}>
+              {visibleSaved.map((paper) => (
+                <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={paper._id}>
+                  <ContributionCard question={paper} />
+                </Grid>
+              ))}
+            </Grid>
+          );
+        })()
       )}
 
       {/* Delete Confirmation Dialog */}

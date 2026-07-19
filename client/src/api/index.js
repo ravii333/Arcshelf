@@ -32,6 +32,10 @@ export const createUniversity = (newUniversity) => API.post('/universities', new
 
 export const fetchCollegesByUniversity = (universityId) => API.get(`/colleges/by-university/${universityId}`);
 
+// Saved / Wishlist routes
+export const fetchSavedPapers = () => API.get('/questions/saved');
+export const toggleSavePaper = (id) => API.post(`/questions/${id}/save`);
+
 // User Dashboard & Profile routes
 export const fetchMyQuestions = () => API.get('/questions/my');
 export const deleteQuestion = (id) => API.delete(`/questions/${id}`);

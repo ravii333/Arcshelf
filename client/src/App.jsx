@@ -11,10 +11,12 @@ import UniversitiesPage from './pages/UniversitiesPage';
 import BrowsePage from './pages/BrowsePage';
 import DashboardPage from './pages/DashboardPage';
 import ProfilePage from './pages/ProfilePage';
+import { SavedPapersProvider } from './context/SavedPapersContext';
 
 function App() {
   return (
     <Router>
+      <SavedPapersProvider>
       <Layout>
         <Routes>
           <Route path="/" element={<HomePage />} />
@@ -29,6 +31,7 @@ function App() {
           <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
         </Routes>
       </Layout>
+      </SavedPapersProvider>
     </Router>
   );
 }

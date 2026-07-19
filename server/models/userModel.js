@@ -10,10 +10,14 @@ const UserSchema = new mongoose.Schema({
     required: true, 
     unique: true 
   },
-  password: { 
-    type: String, 
-    required: true 
+  password: {
+    type: String,
+    required: true
   },
+  savedPapers: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Question',
+  }],
 }, { timestamps: true });
 
 export default mongoose.model('User', UserSchema);

@@ -10,6 +10,7 @@ import ScienceIcon from '@mui/icons-material/Science';
 import BookIcon from '@mui/icons-material/Book';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import PaperBadge from './PaperBadge';
+import SaveButton from './SaveButton';
 
 const GRADIENTS = [
   'linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%)',
@@ -232,6 +233,10 @@ const ContributionCard = ({ question }) => {
 
         {getSubjectIcon(question.subject)}
 
+        {/* Save / wishlist toggle (bottom-right of thumbnail) */}
+        <Box sx={{ position: 'absolute', bottom: 10, right: 10, zIndex: 3 }}>
+          <SaveButton paperId={question._id} />
+        </Box>
 
         {/* Year Chip (top-right) */}
         <Box

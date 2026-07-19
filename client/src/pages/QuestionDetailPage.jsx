@@ -27,6 +27,7 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import * as api from "../api";
 import PDFViewer from "../components/common/PDFViewer";
 import PaperBadge from "../components/common/PaperBadge";
+import SaveButton from "../components/common/SaveButton";
 
 const GradientHeader = styled(Paper)(({ theme }) => ({
   background: 'linear-gradient(135deg, #064e3b 0%, #065f46 50%, #0f172a 100%)',
@@ -326,33 +327,36 @@ function QuestionDetailPage() {
             </Box>
           </Box>
 
-          {question.fileUrl && (
-            <Button
-              component="a"
-              href={question.fileUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              variant="contained"
-              startIcon={<DownloadIcon />}
-              sx={{
-                bgcolor: "#ffffff",
-                color: "primary.700",
-                fontWeight: 700,
-                borderRadius: "10px",
-                flexShrink: 0,
-                px: 3.5,
-                py: 1.25,
-                boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-                "&:hover": {
-                  bgcolor: "neutral.50",
-                  transform: "translateY(-1px)",
-                  boxShadow: "0 6px 16px rgba(0,0,0,0.15)",
-                },
-              }}
-            >
-              Download Paper
-            </Button>
-          )}
+          <Box sx={{ display: "flex", gap: 1.5, flexShrink: 0, alignItems: "center", flexWrap: "wrap" }}>
+            <SaveButton paperId={question._id} variant="button" />
+            {question.fileUrl && (
+              <Button
+                component="a"
+                href={question.fileUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                variant="contained"
+                startIcon={<DownloadIcon />}
+                sx={{
+                  bgcolor: "#ffffff",
+                  color: "primary.700",
+                  fontWeight: 700,
+                  borderRadius: "10px",
+                  flexShrink: 0,
+                  px: 3.5,
+                  py: 1.25,
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                  "&:hover": {
+                    bgcolor: "neutral.50",
+                    transform: "translateY(-1px)",
+                    boxShadow: "0 6px 16px rgba(0,0,0,0.15)",
+                  },
+                }}
+              >
+                Download Paper
+              </Button>
+            )}
+          </Box>
         </Box>
       </GradientHeader>
 
