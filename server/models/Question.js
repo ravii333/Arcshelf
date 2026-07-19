@@ -52,12 +52,13 @@ const QuestionSchema = new mongoose.Schema(
       enum: ["raw", "image"],
       default: "raw",
     },
-    // Moderation state. Defaults to "approved" so existing behaviour is unchanged;
-    // set the default to "pending" to enforce review-before-publish.
+    // Moderation state. Defaults to "pending" to enforce review-before-publish:
+    // a newly submitted paper stays hidden from public browse/search until an
+    // admin approves it.
     status: {
       type: String,
       enum: ["pending", "approved", "rejected"],
-      default: "approved",
+      default: "pending",
     },
     views: {
       type: Number,

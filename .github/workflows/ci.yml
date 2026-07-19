@@ -1,0 +1,46 @@
+name: CI
+
+# Runs on every PR to main (and on pushes to main). Branch protection can require
+# these checks to pass before a PR is allowed to merge.
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  client:
+    name: Client (lint + build)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: client
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: client/package-lock.json
+      - run: npm ci
+      # Lint is advisory for now (the codebase has pre-existing lint debt); it reports
+      # problems without blocking the merge. Remove continue-on-error once lint is clean.
+      - run: npm run lint
+        continue-on-error: true
+      - run: npm run build
+
+  server:
+    name: Server (install + syntax check)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: server
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: server/package-lock.json
+      - run: npm ci
+      - run: node --check server.js

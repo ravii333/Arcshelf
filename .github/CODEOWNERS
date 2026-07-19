@@ -1,0 +1,6 @@
+# Code owners are automatically requested for review on any Pull Request.
+# When "Require review from Code Owners" is enabled in branch protection,
+# the owner listed here must approve before a PR can be merged.
+
+# Owner of everything in the repo:
+* @ravii333

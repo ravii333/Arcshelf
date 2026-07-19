@@ -205,7 +205,7 @@ function SubmitQuestionPage() {
     try {
       const { data } = await api.createQuestion(fd);
       setSubmitSuccess(true);
-      toast.success("Question paper submitted successfully. Thank you for contributing!");
+      toast.success("Paper submitted for review! It'll appear publicly once a moderator approves it. Thank you for contributing!");
       setTimeout(() => {
         navigate(`/questions/${data._id}`);
       }, 800);

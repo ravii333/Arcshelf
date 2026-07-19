@@ -14,6 +14,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import BookIcon from "@mui/icons-material/Book";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import PeopleIcon from "@mui/icons-material/People";
+import VerifiedIcon from "@mui/icons-material/Verified";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import * as api from "../api";
@@ -398,11 +399,20 @@ function HowItWorksSection() {
       stepColor: "#059669",
     },
     {
+      icon: <VerifiedIcon />,
+      title: "Reviewed & Verified",
+      description:
+        "Every submission is reviewed by our moderators before it's published, so you always study from accurate, high-quality papers.",
+      badgeText: "03",
+      iconBgColor: "rgba(245, 158, 11, 0.08)", // accent.amber tint
+      stepColor: "#f59e0b",
+    },
+    {
       icon: <PeopleIcon />,
       title: "Community Powered",
       description:
         "ArcShelf is built by students, for students. The more we all contribute, the more powerful this resource becomes.",
-      badgeText: "03",
+      badgeText: "04",
       iconBgColor: "rgba(139, 92, 246, 0.08)", // accent.purple tint
       stepColor: "#8b5cf6",
     },

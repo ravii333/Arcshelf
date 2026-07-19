@@ -48,19 +48,21 @@ router.get("/", async (req, res) => {
     const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
     const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || 12, 1), 60);
 
-    // Show everything except explicitly rejected papers. Using $ne (rather than
-    // status:"approved") keeps legacy documents that predate the status field
-    // visible. To enforce strict pre-publish moderation, change the model default
-    // to "pending" and switch this to { status: "approved" }.
-    const query = { status: { $ne: "rejected" } };
+    // Review-before-publish: only show approved papers. Legacy documents that
+    // predate the status field are treated as approved so they stay visible.
+    const query = {
+      $and: [{ $or: [{ status: "approved" }, { status: { $exists: false } }] }],
+    };
 
     if (search) {
       const safe = escapeRegex(search);
-      query.$or = [
-        { subject: { $regex: safe, $options: "i" } },
-        { course: { $regex: safe, $options: "i" } },
-        { questionsText: { $regex: safe, $options: "i" } },
-      ];
+      query.$and.push({
+        $or: [
+          { subject: { $regex: safe, $options: "i" } },
+          { course: { $regex: safe, $options: "i" } },
+          { questionsText: { $regex: safe, $options: "i" } },
+        ],
+      });
     }
     if (examType) query.examType = examType;
     if (year) query.year = Number(year);
@@ -95,11 +97,15 @@ router.get("/:id/related", async (req, res) => {
 
     const related = await Question.find({
       _id: { $ne: question._id },
-      status: { $ne: "rejected" },
-      $or: [
-        { course: question.course },
-        { subject: { $regex: escapeRegex(question.subject), $options: "i" } },
-        { college: question.college },
+      $and: [
+        { $or: [{ status: "approved" }, { status: { $exists: false } }] },
+        {
+          $or: [
+            { course: question.course },
+            { subject: { $regex: escapeRegex(question.subject), $options: "i" } },
+            { college: question.college },
+          ],
+        },
       ],
     })
       .limit(4)
@@ -145,7 +151,7 @@ router.get("/saved", authMiddleware, async (req, res) => {
 router.get("/stats", async (req, res) => {
   try {
     const [papers, colleges, universities, students] = await Promise.all([
-      Question.countDocuments({ status: { $ne: "rejected" } }),
+      Question.countDocuments({ $or: [{ status: "approved" }, { status: { $exists: false } }] }),
       College.countDocuments(),
       University.countDocuments(),
       User.countDocuments(),

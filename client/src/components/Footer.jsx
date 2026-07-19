@@ -8,12 +8,10 @@ import {
   TextField,
   Button,
   Divider,
-  IconButton,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { Link as RouterLink } from "react-router-dom";
 import GitHubIcon from "@mui/icons-material/GitHub";
-import TwitterIcon from "@mui/icons-material/Twitter";
 import { useToast } from "../context/ToastContext";
 
 const StyledFooter = styled(Box)(({ theme }) => ({
@@ -121,6 +119,35 @@ export default function Footer() {
             >
               ArcShelf is a community-powered, open-source archive of previous-year university exam papers. Search, prepare, and contribute to help students excel.
             </Typography>
+
+            {/* Open-source GitHub link */}
+            <Button
+              component="a"
+              href="https://github.com/ravii333/Arcshelf"
+              target="_blank"
+              rel="noopener noreferrer"
+              startIcon={<GitHubIcon sx={{ fontSize: 18 }} />}
+              sx={{
+                alignSelf: "flex-start",
+                mt: "auto",
+                color: "rgba(255, 255, 255, 0.85)",
+                fontWeight: 600,
+                fontSize: "0.75rem",
+                textTransform: "none",
+                borderRadius: "8px",
+                px: 1.5,
+                py: 0.6,
+                border: "1.5px solid rgba(255, 255, 255, 0.12)",
+                transition: "all 150ms ease",
+                "&:hover": {
+                  color: "#10b981",
+                  borderColor: "#10b981",
+                  background: "rgba(16, 185, 129, 0.06)",
+                },
+              }}
+            >
+              View on GitHub
+            </Button>
           </Grid>
 
           {/* COLUMN 2 — QUICK LINKS */}
@@ -155,7 +182,7 @@ export default function Footer() {
               Have suggestions or questions? Get in touch with our team.
             </Typography>
             <Link
-              href="mailto:contact@arcshelf.com"
+              href="mailto:kumar.ravi.tech01@gmail.com"
               sx={{
                 color: "#10b981", // primary.500 highlight
                 fontWeight: 600,
@@ -165,7 +192,7 @@ export default function Footer() {
                 "&:hover": { textDecoration: "underline", color: "#34d399" },
               }}
             >
-              contact@arcshelf.com
+              kumar.ravi.tech01@gmail.com
             </Link>
           </Grid>
 
@@ -234,37 +261,6 @@ export default function Footer() {
               </Button>
             </Box>
 
-            {/* Social Icons Row */}
-            <Box sx={{ display: "flex", gap: 2, mt: 2.5 }}>
-              <IconButton
-                component="a"
-                href="https://github.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                sx={{
-                  color: "rgba(255,255,255,0.4)",
-                  p: 0,
-                  transition: "color 150ms ease",
-                  "&:hover": { color: "#10b981" },
-                }}
-              >
-                <GitHubIcon sx={{ fontSize: 18 }} />
-              </IconButton>
-              <IconButton
-                component="a"
-                href="https://x.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                sx={{
-                  color: "rgba(255,255,255,0.4)",
-                  p: 0,
-                  transition: "color 150ms ease",
-                  "&:hover": { color: "#10b981" },
-                }}
-              >
-                <TwitterIcon sx={{ fontSize: 18 }} />
-              </IconButton>
-            </Box>
           </Grid>
         </Grid>
 
