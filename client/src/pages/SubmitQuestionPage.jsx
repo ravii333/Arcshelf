@@ -441,7 +441,9 @@ function SubmitQuestionPage() {
                   onChange={handleChange}
                 >
                   <MenuItem value="Mid Sem">Mid Sem</MenuItem>
-                  <MenuItem value="Final Sem">Final Sem</MenuItem>
+                  <MenuItem value="End Sem">End Sem</MenuItem>
+                  <MenuItem value="Sessional">Sessional</MenuItem>
+                  <MenuItem value="Practical">Practical</MenuItem>
                   <MenuItem value="Quiz">Quiz</MenuItem>
                   <MenuItem value="Assignment">Assignment</MenuItem>
                 </Select>
