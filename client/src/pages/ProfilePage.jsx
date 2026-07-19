@@ -19,7 +19,7 @@ import SecurityIcon from "@mui/icons-material/Security";
 import SaveIcon from "@mui/icons-material/Save";
 import DescriptionIcon from "@mui/icons-material/Description";
 import * as api from "../api";
-import Toast from "../components/ui/Toast";
+import { useToast } from "../context/ToastContext";
 
 const ProfileAvatar = styled(Avatar)(({ theme }) => ({
   background: "linear-gradient(135deg, #064e3b 0%, #059669 100%)",
@@ -45,7 +45,7 @@ function ProfilePage() {
   const [stats, setStats] = useState({ count: 0, loading: true });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [toast, setToast] = useState({ open: false, message: "", severity: "success" });
+  const toast = useToast();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -130,34 +130,22 @@ function ProfilePage() {
         confirmPassword: "",
       }));
 
-      setToast({
-        open: true,
-        message: "Profile updated successfully.",
-        severity: "success",
-      });
+      toast.success("Profile updated successfully.");
 
       // Dispatch storage event so layout header updates name instantly
       window.dispatchEvent(new Event("storage"));
     } catch (err) {
       console.error("Profile update error:", err);
-      setError(err.response?.data?.message || "Failed to update profile details.");
+      const msg = err.response?.data?.message || "Failed to update profile details.";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleCloseToast = () => {
-    setToast((prev) => ({ ...prev, open: false }));
-  };
-
   return (
     <Container maxWidth="lg" sx={{ py: 6, px: { xs: 2, sm: 3, md: 4 } }}>
-      <Toast
-        open={toast.open}
-        message={toast.message}
-        severity={toast.severity}
-        onClose={handleCloseToast}
-      />
 
       <Box sx={{ mb: 4 }}>
         <Typography

@@ -25,6 +25,7 @@ import SchoolIcon from "@mui/icons-material/School";
 import DescriptionIcon from "@mui/icons-material/Description";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import * as api from "../api";
+import { useToast } from "../context/ToastContext";
 
 const UploadZone = styled(Box, { shouldForwardProp: (prop) => prop !== 'hasfile' && prop !== 'isdragover' })(({ theme, hasfile, isdragover }) => ({
   border: `2px dashed ${
@@ -117,6 +118,7 @@ function SubmitQuestionPage() {
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const toast = useToast();
 
   useEffect(() => {
     const loadUniversities = async () => {
@@ -180,10 +182,12 @@ function SubmitQuestionPage() {
 
     if (!paperFile) {
       setError("Please upload a question paper file (PDF or image).");
+      toast.error("Please upload a question paper file (PDF or image).");
       return;
     }
     if (!isUniversityLevel && !formData.college) {
       setError("Please select a college or check the university-level exam option.");
+      toast.error("Please select a college or check the university-level exam option.");
       return;
     }
 
@@ -201,11 +205,14 @@ function SubmitQuestionPage() {
     try {
       const { data } = await api.createQuestion(fd);
       setSubmitSuccess(true);
+      toast.success("Question paper submitted successfully. Thank you for contributing!");
       setTimeout(() => {
         navigate(`/questions/${data._id}`);
       }, 800);
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to submit. Please try again.");
+      const msg = err.response?.data?.message || "Failed to submit. Please try again.";
+      setError(msg);
+      toast.error(msg);
       setIsSubmitting(false);
     }
   };

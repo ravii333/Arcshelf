@@ -42,15 +42,15 @@ import * as api from "../api";
 import PaperBadge from "../components/common/PaperBadge";
 import EmptyState from "../components/common/EmptyState";
 import ContributionCard from "../components/common/ContributionCard";
-import Toast from "../components/ui/Toast";
 import { useSavedPapers } from "../context/SavedPapersContext";
+import { useToast } from "../context/ToastContext";
 
 function DashboardPage() {
   const [profile, setProfile] = useState(() => JSON.parse(localStorage.getItem("profile")));
   const [contributions, setContributions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [toast, setToast] = useState({ open: false, message: "", severity: "success" });
+  const toast = useToast();
 
   // Tabs: 0 = contributions, 1 = saved/wishlist
   const [tab, setTab] = useState(0);
@@ -121,27 +121,15 @@ function DashboardPage() {
     setIsDeleting(true);
     try {
       await api.deleteQuestion(deleteId);
-      setToast({
-        open: true,
-        message: "Question paper deleted successfully.",
-        severity: "success",
-      });
+      toast.success("Question paper deleted successfully.");
       setContributions((prev) => prev.filter((q) => q._id !== deleteId));
     } catch (err) {
       console.error("Delete error:", err);
-      setToast({
-        open: true,
-        message: err.response?.data?.message || "Failed to delete paper.",
-        severity: "error",
-      });
+      toast.error(err.response?.data?.message || "Failed to delete paper.");
     } finally {
       setIsDeleting(false);
       handleCloseDelete();
     }
-  };
-
-  const handleCloseToast = () => {
-    setToast((prev) => ({ ...prev, open: false }));
   };
 
   // Compute statistics
@@ -153,14 +141,6 @@ function DashboardPage() {
 
   return (
     <Container maxWidth="lg" sx={{ py: 6, px: { xs: 2, sm: 3, md: 4 } }}>
-      {/* Toast notifications */}
-      <Toast
-        open={toast.open}
-        message={toast.message}
-        severity={toast.severity}
-        onClose={handleCloseToast}
-      />
-
       {/* Top Banner section */}
       <Paper
         elevation={0}

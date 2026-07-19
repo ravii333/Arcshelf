@@ -23,6 +23,7 @@ import SchoolIcon from '@mui/icons-material/School';
 import PlaceIcon from '@mui/icons-material/Place';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import * as api from '../api';
+import { useToast } from '../context/ToastContext';
 import EmptyState from '../components/common/EmptyState';
 
 const UniversitiesPage = () => {
@@ -31,6 +32,7 @@ const UniversitiesPage = () => {
   const [formData, setFormData] = useState({ name: '', slug: '', location: '' });
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const toast = useToast();
 
   useEffect(() => {
     const loadUniversities = async () => {
@@ -64,8 +66,10 @@ const UniversitiesPage = () => {
       const { data: newUniversity } = await api.createUniversity(formData);
       setUniversities((prev) => [...prev, newUniversity].sort((a, b) => a.name.localeCompare(b.name)));
       setFormData({ name: '', slug: '', location: '' });
+      toast.success('University added successfully!');
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to add university.');
+      const msg = err.response?.data?.message || 'Failed to add university.';
+      setError(msg); toast.error(msg);
     } finally {
       setIsSubmitting(false);
     }

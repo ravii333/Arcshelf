@@ -14,7 +14,7 @@ import { styled } from "@mui/material/styles";
 import { Link as RouterLink } from "react-router-dom";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import TwitterIcon from "@mui/icons-material/Twitter";
-import Toast from "./ui/Toast";
+import { useToast } from "../context/ToastContext";
 
 const StyledFooter = styled(Box)(({ theme }) => ({
   background: 'linear-gradient(135deg, #064e3b 0%, #065f46 50%, #0f172a 100%)',
@@ -58,12 +58,12 @@ const FooterLink = ({ to, children }) => (
 
 export default function Footer() {
   const [email, setEmail] = useState("");
-  const [toastOpen, setToastOpen] = useState(false);
+  const toast = useToast();
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!email) return;
-    setToastOpen(true);
+    toast.success("Subscribed to newsletter successfully!");
     setEmail("");
   };
 
@@ -290,13 +290,6 @@ export default function Footer() {
           </Typography>
         </Box>
       </Container>
-
-      <Toast
-        open={toastOpen}
-        message="Subscribed to newsletter successfully!"
-        severity="success"
-        onClose={() => setToastOpen(false)}
-      />
     </StyledFooter>
   );
 }

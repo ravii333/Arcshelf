@@ -17,6 +17,7 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import * as api from "../api";
+import { useToast } from "../context/ToastContext";
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: '40px',
@@ -52,6 +53,7 @@ function RegisterPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const toast = useToast();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -80,15 +82,19 @@ function RegisterPage() {
     e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
       setError("Passwords do not match.");
+      toast.error("Passwords do not match.");
       return;
     }
     setLoading(true);
     setError("");
     try {
       await api.register(formData);
+      toast.success("Registration successful! Please sign in.");
       navigate("/login", { state: { message: "Registration successful! Please sign in." } });
     } catch (err) {
-      setError(err.response?.data?.message || "Registration failed. Please try again.");
+      const msg = err.response?.data?.message || "Registration failed. Please try again.";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setLoading(false);
     }

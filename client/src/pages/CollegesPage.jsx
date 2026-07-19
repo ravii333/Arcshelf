@@ -31,6 +31,7 @@ import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import PlaceIcon from '@mui/icons-material/Place';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import * as api from '../api';
+import { useToast } from '../context/ToastContext';
 import EmptyState from '../components/common/EmptyState';
 
 const fieldSx = { '& .MuiOutlinedInput-root': { borderRadius: '10px' } };
@@ -46,6 +47,7 @@ const CollegesPage = () => {
   const [universityForm, setUniversityForm] = useState({ name: '', slug: '', location: '' });
   const [isSubmittingCollege, setIsSubmittingCollege] = useState(false);
   const [isSubmittingUniversity, setIsSubmittingUniversity] = useState(false);
+  const toast = useToast();
 
   useEffect(() => {
     const load = async () => {
@@ -62,7 +64,7 @@ const CollegesPage = () => {
     load();
   }, []);
 
-  const flash = (msg) => { setSuccessMsg(msg); setTimeout(() => setSuccessMsg(''), 3000); };
+  const flash = (msg) => { setSuccessMsg(msg); setTimeout(() => setSuccessMsg(''), 3000); toast.success(msg); };
 
   const handleCollegeChange = (e) => {
     const { name, value } = e.target;
@@ -84,7 +86,7 @@ const CollegesPage = () => {
 
   const handleCollegeSubmit = async (e) => {
     e.preventDefault();
-    if (!collegeForm.university) { setError('Please select a university.'); return; }
+    if (!collegeForm.university) { setError('Please select a university.'); toast.error('Please select a university.'); return; }
     setError(''); setIsSubmittingCollege(true);
     try {
       const { data } = await api.createCollege(collegeForm);
@@ -92,7 +94,8 @@ const CollegesPage = () => {
       setCollegeForm({ name: '', slug: '', location: '', university: '' });
       flash('College added successfully!');
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to add college.');
+      const msg = err.response?.data?.message || 'Failed to add college.';
+      setError(msg); toast.error(msg);
     } finally { setIsSubmittingCollege(false); }
   };
 
@@ -105,7 +108,8 @@ const CollegesPage = () => {
       setUniversityForm({ name: '', slug: '', location: '' });
       flash('University added successfully!');
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to add university.');
+      const msg = err.response?.data?.message || 'Failed to add university.';
+      setError(msg); toast.error(msg);
     } finally { setIsSubmittingUniversity(false); }
   };
 

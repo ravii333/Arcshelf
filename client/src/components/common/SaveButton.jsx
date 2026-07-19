@@ -4,6 +4,7 @@ import { IconButton, Button, Tooltip, CircularProgress } from "@mui/material";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import { useSavedPapers } from "../../context/SavedPapersContext";
+import { useToast } from "../../context/ToastContext";
 
 /**
  * Save / wishlist toggle for a paper. Works for logged-out users too:
@@ -12,8 +13,9 @@ import { useSavedPapers } from "../../context/SavedPapersContext";
  * variant="icon" (default) renders a compact icon button (for cards).
  * variant="button" renders a labelled button (for the detail page header).
  */
-export default function SaveButton({ paperId, variant = "icon", onNotify, sx }) {
+export default function SaveButton({ paperId, variant = "icon", sx }) {
   const { isSaved, toggleSave } = useSavedPapers();
+  const toast = useToast();
   const [busy, setBusy] = useState(false);
   const navigate = useNavigate();
 
@@ -26,6 +28,7 @@ export default function SaveButton({ paperId, variant = "icon", onNotify, sx }) 
     e.stopPropagation();
 
     if (!loggedIn) {
+      toast.info("Please log in to save papers for later.");
       navigate("/login");
       return;
     }
@@ -34,9 +37,13 @@ export default function SaveButton({ paperId, variant = "icon", onNotify, sx }) 
     setBusy(true);
     try {
       const nowSaved = await toggleSave(paperId);
-      onNotify?.(nowSaved ? "Saved to your wishlist." : "Removed from your wishlist.", "success");
+      if (nowSaved) {
+        toast.success("Saved to your wishlist.");
+      } else {
+        toast.info("Removed from your wishlist.");
+      }
     } catch {
-      onNotify?.("Couldn't update saved papers. Try again.", "error");
+      toast.error("Couldn't update saved papers. Please try again.");
     } finally {
       setBusy(false);
     }

@@ -20,6 +20,7 @@ import { styled } from "@mui/material/styles";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import * as api from "../api";
+import { useToast } from "../context/ToastContext";
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: '40px',
@@ -51,6 +52,7 @@ function LoginPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const toast = useToast();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -65,10 +67,13 @@ function LoginPage() {
     try {
       const { data } = await api.login(formData);
       localStorage.setItem("profile", JSON.stringify(data));
+      toast.success(`Welcome back, ${data.result?.name || "student"}!`);
       navigate("/");
     } catch (err) {
       console.error("Login error:", err);
-      setError(err.response?.data?.message || "Login failed. Please check your credentials.");
+      const msg = err.response?.data?.message || "Login failed. Please check your credentials.";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
