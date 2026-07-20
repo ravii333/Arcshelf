@@ -737,7 +737,7 @@ function LandingPage() {
         onSearchChange={setSearchQuery}
         onSearch={handleSearch}
       />
-      <StatsBar />
+      {/*<StatsBar /> for temporarly*/}
       <HowItWorksSection />
       <RecentContributionsSection questions={questions} loading={loading} />
       <CtaBanner />
