@@ -614,7 +614,7 @@ function RecentContributionsSection({ questions, loading }) {
 function CtaBanner() {
   return (
     <Box component="section" sx={{ mb: { xs: 4, md: 8 } }}>
-      <Container maxWidth="xl" sx={{ px: { xs: { xs: 0, sm: 3, md: 4, lg: 5 } } }}>
+      <Container maxWidth="xl" sx={{ px: { xs: 0, sm: 3, md: 4, lg: 5 } }}>
         <Box
           sx={{
             py: { xs: 8, md: 10 },

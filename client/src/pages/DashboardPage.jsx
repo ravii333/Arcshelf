@@ -311,14 +311,89 @@ function DashboardPage() {
           actionLink="/submit"
         />
       ) : (
+        <>
+        {/* Mobile: stacked cards (the wide table is unusable on phones) */}
+        <Box sx={{ display: { xs: "flex", md: "none" }, flexDirection: "column", gap: 2 }}>
+          {contributions.map((row) => (
+            <Card
+              key={row._id}
+              elevation={0}
+              sx={{ border: "1px solid", borderColor: "neutral.200", borderRadius: "16px" }}
+            >
+              <CardContent sx={{ p: 2.5, "&:last-child": { pb: 2.5 } }}>
+                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 1.5, mb: 1.5 }}>
+                  <Box sx={{ minWidth: 0 }}>
+                    <Typography variant="body1" sx={{ fontWeight: 700, color: "neutral.900", lineHeight: 1.3 }}>
+                      {row.subject}
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: "neutral.500", fontWeight: 500 }}>
+                      {row.course}
+                    </Typography>
+                  </Box>
+                  <Box sx={{ flexShrink: 0 }}>
+                    <ContributionStatus status={row.status} note={row.moderationNote} />
+                  </Box>
+                </Box>
+
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap", mb: 1.5 }}>
+                  <PaperBadge type={row.examType} />
+                  <Typography variant="caption" sx={{ color: "neutral.500", fontWeight: 600 }}>
+                    Sem {row.semester} · {row.year}
+                  </Typography>
+                </Box>
+
+                <Typography variant="body2" sx={{ color: "neutral.600", fontWeight: 500 }}>
+                  {row.college ? row.college.name : "University-Level Exam"}
+                </Typography>
+                {row.college?.university?.name && (
+                  <Typography variant="caption" sx={{ color: "neutral.400", display: "block" }}>
+                    {row.college.university.name}
+                  </Typography>
+                )}
+
+                <Box
+                  sx={{
+                    display: "flex",
+                    gap: 1,
+                    mt: 2,
+                    pt: 1.5,
+                    borderTop: "1px solid",
+                    borderColor: "neutral.100",
+                  }}
+                >
+                  <Button
+                    component={Link}
+                    to={`/questions/${row._id}`}
+                    size="small"
+                    startIcon={<VisibilityIcon fontSize="small" />}
+                    sx={{ color: "primary.700", fontWeight: 600, bgcolor: "primary.50", "&:hover": { bgcolor: "primary.100" } }}
+                  >
+                    View
+                  </Button>
+                  <Button
+                    onClick={() => handleOpenDelete(row._id)}
+                    size="small"
+                    startIcon={<DeleteIcon fontSize="small" />}
+                    sx={{ color: "error.main", fontWeight: 600, ml: "auto", "&:hover": { bgcolor: "#fef2f2" } }}
+                  >
+                    Delete
+                  </Button>
+                </Box>
+              </CardContent>
+            </Card>
+          ))}
+        </Box>
+
+        {/* Desktop: full table */}
         <TableContainer
           component={Paper}
           elevation={0}
           sx={{
+            display: { xs: "none", md: "block" },
             border: "1px solid",
             borderColor: "neutral.200",
             borderRadius: '16px',
-            overflow: "hidden",
+            overflowX: "auto",
           }}
         >
           <Table sx={{ minWidth: 650 }} aria-label="user contributions table">
@@ -407,6 +482,7 @@ function DashboardPage() {
             </TableBody>
           </Table>
         </TableContainer>
+        </>
       ))}
 
       {tab === 1 && (
