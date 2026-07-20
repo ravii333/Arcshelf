@@ -147,6 +147,8 @@ const StyledCard = styled(Card)({
     '& .card-arrow': { transform: 'translateX(4px)' },
     '& .card-corner': { transform: 'scale(1.06)' },
     '& .card-icon': { transform: 'scale(1.1)' },
+    // Fill the "View" pill with the card's accent on hover for a clear CTA affordance.
+    '& .card-view-btn': { backgroundColor: 'var(--card-accent)', color: '#ffffff' },
   },
 });
 
@@ -168,7 +170,7 @@ const ContributionCard = ({ question }) => {
   const accent = getAccent(seed);
 
   return (
-    <StyledCard component={Link} to={`/questions/${question._id}`}>
+    <StyledCard component={Link} to={`/questions/${question._id}`} sx={{ '--card-accent': accent }}>
       {/* Corner circle with year */}
       <CornerCircle className="card-corner" gradient={gradient}>
         {question.year && (
@@ -262,13 +264,26 @@ const ContributionCard = ({ question }) => {
           </Typography>
         </Box>
 
-        <Box sx={{ display: 'flex', alignItems: 'center', color: accent }}>
-          <Typography sx={{ fontWeight: 700, mr: 0.4, fontSize: '0.6875rem' }}>
+        <Box
+          className="card-view-btn"
+          sx={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 0.4,
+            px: 1.25,
+            py: 0.5,
+            borderRadius: '6px',
+            bgcolor: 'neutral.100',
+            color: accent,
+            transition: 'background-color 200ms ease, color 200ms ease',
+          }}
+        >
+          <Typography component="span" sx={{ fontWeight: 700, fontSize: '0.6875rem', color: 'inherit', lineHeight: 1 }}>
             View
           </Typography>
           <ArrowForwardIcon
             className="card-arrow"
-            sx={{ fontSize: 13, transition: 'transform 250ms cubic-bezier(0.22, 1, 0.36, 1)' }}
+            sx={{ fontSize: 13, color: 'inherit', transition: 'transform 250ms cubic-bezier(0.22, 1, 0.36, 1)' }}
           />
         </Box>
       </Box>

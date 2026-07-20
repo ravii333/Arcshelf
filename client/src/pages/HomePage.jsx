@@ -38,8 +38,8 @@ function HeroSection({ searchQuery, onSearchChange, onSearch }) {
         pb: { xs: 8, md: 12 },
         overflow: "hidden",
         backgroundImage: {
-          xs: "linear-gradient(160deg, #ecfdf5 0%, #f8fafc 45%, #eff6ff 100%)",
-          md: "linear-gradient(90deg, #ecfdf5 0%, #f8fafc 55%, rgba(239,246,255,0.6) 100%)",
+          xs: "linear-gradient(160deg, #d1fae5 0%, #ecfdf5 35%, #eff6ff 70%, #e0e7ff 100%)",
+          md: "linear-gradient(120deg, #d1fae5 0%, #ecfdf5 32%, #eff6ff 68%, #dbeafe 100%)",
         },
         backgroundRepeat: "no-repeat",
         display: "flex",
@@ -49,38 +49,6 @@ function HeroSection({ searchQuery, onSearchChange, onSearch }) {
         width: "100%",
       }}
     >
-      {/* Decorative Blobs */}
-      <Box
-        sx={{
-          position: "absolute",
-          top: -100,
-          right: -100,
-          width: 500,
-          height: 500,
-          background: "rgba(16, 185, 129, 0.12)",
-          borderRadius: "50%",
-          filter: "blur(120px)",
-          pointerEvents: "none",
-          zIndex: 0,
-        }}
-        className="animate-float-1"
-      />
-      <Box
-        sx={{
-          position: "absolute",
-          bottom: -100,
-          left: -100,
-          width: 400,
-          height: 400,
-          background: "rgba(99, 102, 241, 0.08)",
-          borderRadius: "50%",
-          filter: "blur(100px)",
-          pointerEvents: "none",
-          zIndex: 0,
-        }}
-        className="animate-float-2"
-      />
-
       <Container maxWidth="xl" sx={{ px: { xs: 2, sm: 3, md: 4, lg: 5 }, position: "relative", zIndex: 1 }}>
         <Box
           sx={{
@@ -138,64 +106,87 @@ function HeroSection({ searchQuery, onSearchChange, onSearch }) {
               </Typography>
             </Box>
 
-            {/* H1 Title */}
-            <Typography
-              variant="h1"
+            {/* Title + Subtitle over a compact bookshelf backdrop */}
+            <Box
               sx={{
-                fontSize: { xs: "2.5rem", sm: "3.5rem", md: "4rem" },
-                fontWeight: 800,
-                mb: 2.5,
-                lineHeight: 1.1,
-                letterSpacing: "-0.03em",
-                textAlign: "center",
+                position: "relative",
                 width: "100%",
-              }}
-            >
-              <Box
-                component="span"
-                sx={{
-                  background: "linear-gradient(135deg, #064e3b 0%, #059669 100%)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  display: "block",
-                  mb: 0.5,
-                  animation: "fadeInUp 500ms var(--ease-out-quint) forwards",
-                }}
-              >
-                Learn, Grow, and
-              </Box>
-              <Box
-                component="span"
-                sx={{
-                  color: "neutral.900",
-                  animation: "fadeInUp 700ms var(--ease-out-quint) forwards",
-                  display: "block",
-                }}
-              >
-                Achieve Your Goals
-              </Box>
-            </Typography>
-
-            {/* Subtitle */}
-            <Typography
-              variant="body1"
-              sx={{
-                maxWidth: 520,
+                maxWidth: 600,
                 mx: "auto",
                 mb: 5,
-                color: "neutral.500",
-                fontSize: { xs: "0.9375rem", md: "1rem" },
-                lineHeight: 1.65,
-                textAlign: "center",
-                width: "100%",
+                // The panel height follows the text (plus this padding), so the
+                // headline/subtitle are NEVER clipped. The image fills behind as a
+                // snug backdrop — `py` controls how much shelf shows above/below.
+                px: { xs: 3, sm: 5 },
+                py: { xs: 5, md: 7 },
+                borderRadius: "28px",
+                overflow: "hidden",
+                // A light wash keeps the text readable while the shelves stay visible.
+                backgroundImage: `linear-gradient(180deg, rgba(248,250,252,0.42) 0%, rgba(248,250,252,0.26) 50%, rgba(248,250,252,0.50) 100%), url(${heroImage})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                backgroundRepeat: "no-repeat",
               }}
             >
-              ArcShelf is a collaborative open-source archive of previous years' university exam papers.{" "}
-              <Box component="span" sx={{ fontWeight: 600, color: "neutral.800" }}>
-                Search, prepare, and contribute
-              </Box>{" "}
-              to help students excel.
-            </Typography>
+              {/* H1 Title */}
+              <Typography
+                variant="h1"
+                sx={{
+                  fontSize: { xs: "2.5rem", sm: "3.5rem", md: "4rem" },
+                  fontWeight: 800,
+                  mb: 2.5,
+                  lineHeight: 1.1,
+                  letterSpacing: "-0.03em",
+                  textAlign: "center",
+                  width: "100%",
+                }}
+              >
+                <Box
+                  component="span"
+                  sx={{
+                    background: "linear-gradient(135deg, #064e3b 0%, #059669 100%)",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    display: "block",
+                    mb: 0.5,
+                    animation: "fadeInUp 500ms var(--ease-out-quint) forwards",
+                  }}
+                >
+                  Learn, Grow, and
+                </Box>
+                <Box
+                  component="span"
+                  sx={{
+                    color: "neutral.900",
+                    animation: "fadeInUp 700ms var(--ease-out-quint) forwards",
+                    display: "block",
+                  }}
+                >
+                  Achieve Your Goals
+                </Box>
+              </Typography>
+
+              {/* Subtitle */}
+              <Typography
+                variant="body1"
+                sx={{
+                  maxWidth: 520,
+                  mx: "auto",
+                  mb: 0,
+                  color: "neutral.600",
+                  fontSize: { xs: "0.9375rem", md: "1rem" },
+                  lineHeight: 1.65,
+                  textAlign: "center",
+                  width: "100%",
+                }}
+              >
+                ArcShelf is a collaborative open-source archive of previous years' university exam papers.{" "}
+                <Box component="span" sx={{ fontWeight: 700, color: "neutral.900" }}>
+                  Search, prepare, and contribute
+                </Box>{" "}
+                to help students excel.
+              </Typography>
+            </Box>
 
             {/* Search Input Container */}
             <Box
@@ -299,26 +290,6 @@ function HeroSection({ searchQuery, onSearchChange, onSearch }) {
               </Link>
             </Box>
           </Box>
-
-          <Box
-            component="img"
-            src={heroImage}
-            alt="ArcShelf hero illustration"
-            className="animate-float-1"
-            sx={{
-              display: { xs: "none", md: "block" },
-              position: "absolute",
-              right: { md: -240, lg: -300 },
-              top: { md: 72, lg: 64 },
-              transform: "none",
-              width: { md: 320, lg: 420 },
-              maxWidth: "42%",
-              height: "auto",
-              objectFit: "contain",
-              borderRadius: 3,
-              boxShadow: "0 24px 80px rgba(15, 23, 42, 0.12)",
-            }}
-          />
         </Box>
       </Container>
     </Box>
@@ -472,18 +443,22 @@ function HowItWorksSection() {
 
         <Box
           sx={{
+            // fit-content + maxWidth:100% + mx:auto → the row is centered when all
+            // cards fit, and becomes a horizontal scroller (from the first card)
+            // whenever they don't — at any breakpoint, no cards ever get clipped.
+            width: "fit-content",
+            maxWidth: "100%",
+            mx: "auto",
             display: "flex",
             gap: { xs: 2.5, md: 4 },
             flexDirection: "row",
-            justifyContent: { xs: "flex-start", md: "center" },
-            overflowX: { xs: "auto", md: "visible" },
+            overflowX: "auto",
             scrollbarWidth: "none",
             "&::-webkit-scrollbar": { display: "none" },
-            pb: { xs: 3, md: 0 },
+            pb: 3,
             pt: 1,
-            px: { xs: 2, md: 0 },
-            mx: { xs: -2, md: 0 },
-            scrollSnapType: { xs: "x mandatory", md: "none" },
+            px: 0.5,
+            scrollSnapType: "x mandatory",
             WebkitOverflowScrolling: "touch",
             mt: 4,
           }}
@@ -492,7 +467,9 @@ function HowItWorksSection() {
             <Box
               key={index}
               sx={{
-                width: { xs: 240, sm: 260, md: 280 },
+                // On phones each card fills the viewport (one card per swipe, with a
+                // small peek of the next); fixed widths kick in from sm upward.
+                width: { xs: "min(85vw, 340px)", sm: 260, md: 280 },
                 flexShrink: 0,
                 scrollSnapAlign: "start",
                 height: "auto",
@@ -509,6 +486,22 @@ function HowItWorksSection() {
             </Box>
           ))}
         </Box>
+
+        {/* Scroll affordance — only shown on narrow screens where the row scrolls */}
+        <Typography
+          variant="caption"
+          color="neutral.400"
+          sx={{
+            display: { xs: "flex", lg: "none" },
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 1,
+            mt: 1,
+            fontWeight: 500,
+          }}
+        >
+          ← Scroll to view more →
+        </Typography>
       </Container>
     </Box>
   );
@@ -577,7 +570,8 @@ function RecentContributionsSection({ questions, loading }) {
                     key={q._id}
                     sx={{
                       flexShrink: 0,
-                      width: 280,
+                      // One card per view on phones (matches the How It Works carousel).
+                      width: { xs: "min(85vw, 340px)", sm: 280 },
                       scrollSnapAlign: "start",
                     }}
                   >
