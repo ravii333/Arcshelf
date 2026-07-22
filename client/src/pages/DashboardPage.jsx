@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   Box,
@@ -43,6 +43,7 @@ import * as api from "../api";
 import PaperBadge from "../components/common/PaperBadge";
 import EmptyState from "../components/common/EmptyState";
 import ContributionCard from "../components/common/ContributionCard";
+import PaginationBar from "../components/common/PaginationBar";
 import { useSavedPapers } from "../context/SavedPapersContext";
 import { useToast } from "../context/ToastContext";
 
@@ -77,6 +78,10 @@ function ContributionStatus({ status, note }) {
   return chip;
 }
 
+// Both dashboard lists are fetched in full, so paging happens client-side.
+const CONTRIBUTIONS_PER_PAGE = 10;
+const SAVED_PER_PAGE = 8;
+
 function DashboardPage() {
   const [profile, setProfile] = useState(() => JSON.parse(localStorage.getItem("profile")));
   const [contributions, setContributions] = useState([]);
@@ -92,6 +97,10 @@ function DashboardPage() {
   const [savedError, setSavedError] = useState("");
   const [savedLoaded, setSavedLoaded] = useState(false);
   
+  // Pagination (client-side, one page counter per tab)
+  const [contribPage, setContribPage] = useState(1);
+  const [savedPage, setSavedPage] = useState(1);
+
   // Delete Dialog state
   const [deleteId, setDeleteId] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -170,6 +179,35 @@ function DashboardPage() {
   const uniqueColleges = new Set(
     contributions.map((c) => c.college?.name || "University-Level")
   ).size;
+
+  // --- Paging: contributions ---
+  const contribPageCount = Math.max(1, Math.ceil(totalContributions / CONTRIBUTIONS_PER_PAGE));
+  // A delete can shrink the list past the current page — pull back into range.
+  useEffect(() => {
+    if (contribPage > contribPageCount) setContribPage(contribPageCount);
+  }, [contribPage, contribPageCount]);
+  const pagedContributions = useMemo(
+    () =>
+      contributions.slice(
+        (contribPage - 1) * CONTRIBUTIONS_PER_PAGE,
+        contribPage * CONTRIBUTIONS_PER_PAGE
+      ),
+    [contributions, contribPage]
+  );
+
+  // --- Paging: saved papers (hide any unsaved this session via the card toggle) ---
+  const visibleSaved = useMemo(
+    () => savedPapers.filter((p) => isSaved(p._id)),
+    [savedPapers, isSaved]
+  );
+  const savedPageCount = Math.max(1, Math.ceil(visibleSaved.length / SAVED_PER_PAGE));
+  useEffect(() => {
+    if (savedPage > savedPageCount) setSavedPage(savedPageCount);
+  }, [savedPage, savedPageCount]);
+  const pagedSaved = useMemo(
+    () => visibleSaved.slice((savedPage - 1) * SAVED_PER_PAGE, savedPage * SAVED_PER_PAGE),
+    [visibleSaved, savedPage]
+  );
 
   return (
     <Container maxWidth="lg" sx={{ py: 6, px: { xs: 2, sm: 3, md: 4 } }}>
@@ -314,7 +352,7 @@ function DashboardPage() {
         <>
         {/* Mobile: stacked cards (the wide table is unusable on phones) */}
         <Box sx={{ display: { xs: "flex", md: "none" }, flexDirection: "column", gap: 2 }}>
-          {contributions.map((row) => (
+          {pagedContributions.map((row) => (
             <Card
               key={row._id}
               elevation={0}
@@ -336,7 +374,7 @@ function DashboardPage() {
                 </Box>
 
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap", mb: 1.5 }}>
-                  <PaperBadge type={row.examType} />
+                  <PaperBadge label={row.examType} />
                   <Typography variant="caption" sx={{ color: "neutral.500", fontWeight: 600 }}>
                     Sem {row.semester} · {row.year}
                   </Typography>
@@ -409,7 +447,7 @@ function DashboardPage() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {contributions.map((row) => (
+              {pagedContributions.map((row) => (
                 <TableRow
                   key={row._id}
                   sx={{
@@ -440,7 +478,7 @@ function DashboardPage() {
                     Sem {row.semester} ({row.year})
                   </TableCell>
                   <TableCell>
-                    <PaperBadge type={row.examType} />
+                    <PaperBadge label={row.examType} />
                   </TableCell>
                   <TableCell>
                     <ContributionStatus status={row.status} note={row.moderationNote} />
@@ -482,6 +520,16 @@ function DashboardPage() {
             </TableBody>
           </Table>
         </TableContainer>
+
+        <PaginationBar
+          page={contribPage}
+          count={contribPageCount}
+          total={totalContributions}
+          perPage={CONTRIBUTIONS_PER_PAGE}
+          label="papers"
+          scrollToTop={false}
+          onChange={(_, v) => setContribPage(v)}
+        />
         </>
       ))}
 
@@ -494,26 +542,34 @@ function DashboardPage() {
           <Alert severity="error" sx={{ borderRadius: "10px" }}>
             {savedError}
           </Alert>
-        ) : (() => {
-          // hide any paper unsaved this session via the card's bookmark toggle
-          const visibleSaved = savedPapers.filter((p) => isSaved(p._id));
-          return visibleSaved.length === 0 ? (
-            <EmptyState
-              title="No saved papers yet"
-              description="Bookmark papers while browsing to build your exam wishlist. Tap the bookmark icon on any paper to save it here for quick access later."
-              actionText="Browse Papers"
-              actionLink="/browse"
-            />
-          ) : (
+        ) : visibleSaved.length === 0 ? (
+          <EmptyState
+            title="No saved papers yet"
+            description="Bookmark papers while browsing to build your exam wishlist. Tap the bookmark icon on any paper to save it here for quick access later."
+            actionText="Browse Papers"
+            actionLink="/browse"
+          />
+        ) : (
+          <>
             <Grid container spacing={3}>
-              {visibleSaved.map((paper) => (
+              {pagedSaved.map((paper) => (
                 <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={paper._id}>
                   <ContributionCard question={paper} />
                 </Grid>
               ))}
             </Grid>
-          );
-        })()
+
+            <PaginationBar
+              page={savedPage}
+              count={savedPageCount}
+              total={visibleSaved.length}
+              perPage={SAVED_PER_PAGE}
+              label="saved papers"
+              scrollToTop={false}
+              onChange={(_, v) => setSavedPage(v)}
+            />
+          </>
+        )
       )}
 
       {/* Delete Confirmation Dialog */}

@@ -122,7 +122,7 @@ function HeroSection({ searchQuery, onSearchChange, onSearch }) {
                 borderRadius: "28px",
                 overflow: "hidden",
                 // A light wash keeps the text readable while the shelves stay visible.
-                backgroundImage: `linear-gradient(180deg, rgba(248,250,252,0.42) 0%, rgba(248,250,252,0.26) 50%, rgba(248,250,252,0.50) 100%), url(${heroImage})`,
+                backgroundImage: `linear-gradient(180deg, rgba(248,250,252,0.72) 0%, rgba(248,250,252,0.62) 45%, rgba(248,250,252,0.88) 100%), url(${heroImage})`,
                 backgroundSize: "cover",
                 backgroundPosition: "center",
                 backgroundRepeat: "no-repeat",
@@ -173,7 +173,7 @@ function HeroSection({ searchQuery, onSearchChange, onSearch }) {
                   maxWidth: 520,
                   mx: "auto",
                   mb: 0,
-                  color: "neutral.600",
+                  color: "neutral.700",
                   fontSize: { xs: "0.9375rem", md: "1rem" },
                   lineHeight: 1.65,
                   textAlign: "center",

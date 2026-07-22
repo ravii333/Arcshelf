@@ -14,7 +14,6 @@ import {
   MenuItem,
   Paper,
   Divider,
-  Pagination,
   Collapse,
   Container,
 } from "@mui/material";
@@ -28,6 +27,7 @@ import * as api from "../api";
 import ContributionCard from "../components/common/ContributionCard";
 import LoadingCard from "../components/common/LoadingCard";
 import EmptyState from "../components/common/EmptyState";
+import PaginationBar from "../components/common/PaginationBar";
 import useDebounce from "../hooks/useDebounce";
 
 const EXAM_TYPES = ["Mid Sem", "End Sem", "Sessional", "Practical", "Quiz", "Assignment"];
@@ -417,33 +417,14 @@ function BrowsePage() {
             ))}
           </Grid>
 
-          {totalPages > 1 && (
-            <Box sx={{ display: "flex", justifyContent: "center", mt: 6 }}>
-              <Pagination
-                count={totalPages}
-                page={page}
-                onChange={(_, v) => {
-                  setPage(v);
-                  window.scrollTo({ top: 0, behavior: "smooth" });
-                }}
-                sx={{
-                  "& .MuiPaginationItem-root": {
-                    fontWeight: 600,
-                    color: "neutral.700",
-                  },
-                  "& .MuiPaginationItem-root.Mui-selected": {
-                    bgcolor: "primary.600",
-                    color: "white",
-                    "&:hover": { bgcolor: "primary.700" },
-                  },
-                  "& .MuiPaginationItem-root:hover:not(.Mui-selected)": {
-                    bgcolor: "primary.50",
-                    color: "primary.700",
-                  }
-                }}
-              />
-            </Box>
-          )}
+          <PaginationBar
+            page={page}
+            count={totalPages}
+            total={total}
+            perPage={PER_PAGE}
+            label="papers"
+            onChange={(_, v) => setPage(v)}
+          />
         </>
       )}
 
