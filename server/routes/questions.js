@@ -315,6 +315,10 @@ router.post("/", authMiddleware, upload.single("paperFile"), async (req, res) =>
       return res.status(409).json({ message: "This paper already exists." });
     }
 
+    // Admin uploads skip the review queue and go live immediately.
+    const uploader = await User.findById(req.userId).select("role");
+    const isAdmin = uploader?.role === "admin";
+
     const fileUrl = req.file.path;
     const filePublicId = req.file.filename;
     const fileResourceType = resourceTypeFor(req.file);
@@ -332,6 +336,7 @@ router.post("/", authMiddleware, upload.single("paperFile"), async (req, res) =>
       fileUrl,
       filePublicId,
       fileResourceType,
+      status: isAdmin ? "approved" : "pending",
       createdBy: req.userId,
     });
 
