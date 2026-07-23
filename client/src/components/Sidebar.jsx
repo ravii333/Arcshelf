@@ -27,6 +27,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import SchoolIcon from "@mui/icons-material/School";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
+import ShieldOutlinedIcon from "@mui/icons-material/ShieldOutlined";
 import LogoutIcon from "@mui/icons-material/Logout";
 
 const LogoIcon = () => (
@@ -470,6 +471,32 @@ function Sidebar({ isOpen, setIsOpen }) {
                     />
                   </ListItemButton>
                 </ListItem>
+
+                {user.result?.role === "admin" && (
+                  <ListItem disablePadding sx={{ mb: 0.5 }}>
+                    <ListItemButton
+                      component={Link}
+                      to="/admin"
+                      onClick={() => setIsOpen(false)}
+                      sx={{
+                        borderRadius: 1.5,
+                        p: "8px 12px",
+                        color: "neutral.700",
+                        transition: "all 150ms ease",
+                        "&:hover": {
+                          bgcolor: "primary.50",
+                          color: "primary.700",
+                        },
+                      }}
+                    >
+                      <ShieldOutlinedIcon sx={{ mr: 2, fontSize: 18, color: "primary.600" }} />
+                      <ListItemText
+                        primary="Moderation"
+                        primaryTypographyProps={{ fontSize: "0.875rem", fontWeight: 500 }}
+                      />
+                    </ListItemButton>
+                  </ListItem>
+                )}
               </>
             )}
 

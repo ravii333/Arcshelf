@@ -303,6 +303,12 @@ function Navbar({ onMenuClick }) {
                     <PersonOutlineIcon sx={{ mr: 1.5, fontSize: 20, color: "neutral.500" }} />
                     My Profile
                   </MenuItem>
+                  {user.result?.role === "admin" && (
+                    <MenuItem component={Link} to="/admin" onClick={handleMenuClose} sx={{ color: "neutral.700", py: 1 }}>
+                      <ShieldOutlinedIcon sx={{ mr: 1.5, fontSize: 20, color: "primary.main" }} />
+                      Moderation
+                    </MenuItem>
+                  )}
                   <Divider sx={{ my: 0.5 }} />
                   <MenuItem onClick={logout} sx={{ color: "error.main", py: 1 }}>
                     <LogoutIcon sx={{ mr: 1.5, fontSize: 20 }} />
