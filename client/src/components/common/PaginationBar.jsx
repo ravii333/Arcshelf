@@ -1,12 +1,43 @@
-import { Box, Pagination, Typography } from "@mui/material";
+import { Box, IconButton, MenuItem, Select, Typography } from "@mui/material";
+import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
+import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 
-/**
- * Shared pagination footer used by Browse and the Dashboard lists.
- *
- * Renders a "Showing X–Y of Z" range on the left and the page control on the
- * right (stacked and centered on mobile). Hides itself when there is a single
- * page and nothing useful to say.
- */
+
+const labelSx = { color: "neutral.500", fontWeight: 500, whiteSpace: "nowrap", fontSize: "0.8125rem" };
+
+// A borderless select that sits inside one of the grouped "pill" containers.
+const innerSelectSx = {
+  fontSize: "0.8125rem",
+  fontWeight: 700,
+  color: "neutral.800",
+  "& .MuiSelect-select": { py: "5px", pl: 1, pr: "24px !important" },
+  "& .MuiOutlinedInput-notchedOutline": { border: "none" },
+  "& .MuiSelect-icon": { color: "neutral.500" },
+};
+
+const arrowSx = {
+  width: 30,
+  height: 30,
+  borderRadius: "8px",
+  color: "neutral.600",
+  transition: "all 150ms ease",
+  "&:hover:not(.Mui-disabled)": { bgcolor: "primary.50", color: "primary.700" },
+  "&.Mui-disabled": { color: "neutral.300" },
+};
+
+// Rounded, bordered container that groups a cluster of controls together.
+const pillSx = {
+  display: "flex",
+  alignItems: "center",
+  gap: 0.5,
+  p: "3px 6px",
+  border: "1px solid",
+  borderColor: "neutral.200",
+  borderRadius: "12px",
+  bgcolor: "neutral.0",
+  boxShadow: "0 1px 2px rgba(15, 23, 42, 0.04)",
+};
+
 function PaginationBar({
   page,
   count,
@@ -15,17 +46,26 @@ function PaginationBar({
   onChange,
   label = "items",
   scrollToTop = true,
+  perPageOptions,
+  onPerPageChange,
   sx,
 }) {
-  if (count <= 1) return null;
+  // Nothing to show when the list is empty.
+  if (!total) return null;
 
-  const from = total ? (page - 1) * perPage + 1 : 0;
+  const pageCount = Math.max(count || 1, 1);
+  const from = (page - 1) * perPage + 1;
   const to = Math.min(page * perPage, total);
+  const showPerPage = Boolean(perPageOptions && onPerPageChange);
+  const showNavigator = pageCount > 1;
 
-  const handleChange = (event, value) => {
+  const goTo = (event, value) => {
+    if (value < 1 || value > pageCount || value === page) return;
     onChange(event, value);
     if (scrollToTop) window.scrollTo({ top: 0, behavior: "smooth" });
   };
+
+  const menuProps = { PaperProps: { sx: { borderRadius: "10px", maxHeight: 280, mt: 0.5 } } };
 
   return (
     <Box
@@ -42,53 +82,87 @@ function PaginationBar({
         ...sx,
       }}
     >
-      <Typography variant="body2" sx={{ color: "neutral.500", fontWeight: 500 }}>
-        Showing <Box component="span" sx={{ fontWeight: 700, color: "neutral.700" }}>{from}–{to}</Box> of{" "}
-        <Box component="span" sx={{ fontWeight: 700, color: "neutral.700" }}>{total}</Box> {label}
+      <Typography variant="body2" sx={labelSx}>
+        Showing{" "}
+        <Box component="span" sx={{ fontWeight: 700, color: "neutral.700" }}>
+          {from}–{to}
+        </Box>{" "}
+        of{" "}
+        <Box component="span" sx={{ fontWeight: 700, color: "neutral.700" }}>
+          {total}
+        </Box>{" "}
+        {label}
       </Typography>
 
-      <Pagination
-        count={count}
-        page={page}
-        onChange={handleChange}
-        shape="rounded"
-        siblingCount={1}
-        boundaryCount={1}
-        sx={{
-          "& .MuiPagination-ul": { flexWrap: "nowrap" },
-          "& .MuiPaginationItem-root": {
-            fontWeight: 600,
-            color: "neutral.700",
-            borderRadius: "10px",
-            minWidth: 36,
-            height: 36,
-            border: "1px solid",
-            borderColor: "neutral.200",
-            transition: "all 150ms ease",
-          },
-          "& .MuiPaginationItem-ellipsis": {
-            border: "none",
-            lineHeight: "36px",
-          },
-          "& .MuiPaginationItem-root:hover:not(.Mui-selected)": {
-            bgcolor: "primary.50",
-            color: "primary.700",
-            borderColor: "primary.200",
-          },
-          "& .MuiPaginationItem-root.Mui-selected": {
-            backgroundImage: "linear-gradient(135deg, #059669 0%, #047857 100%)",
-            color: "white",
-            borderColor: "transparent",
-            boxShadow: "0 4px 12px rgba(5, 150, 105, 0.25)",
-            "&:hover": {
-              backgroundImage: "linear-gradient(135deg, #047857 0%, #064e3b 100%)",
-            },
-          },
-          "& .MuiPaginationItem-root.Mui-disabled": {
-            opacity: 0.4,
-          },
-        }}
-      />
+      {(showPerPage || showNavigator) && (
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: { xs: 1.5, sm: 2 },
+            flexWrap: "wrap",
+            justifyContent: "center",
+          }}
+        >
+          {showPerPage && (
+            <Box sx={pillSx}>
+              <Select
+                value={perPage}
+                onChange={onPerPageChange}
+                size="small"
+                sx={innerSelectSx}
+                MenuProps={menuProps}
+              >
+                {perPageOptions.map((opt) => (
+                  <MenuItem key={opt} value={opt} sx={{ fontSize: "0.8125rem" }}>
+                    {opt}
+                  </MenuItem>
+                ))}
+              </Select>
+              <Typography sx={{ ...labelSx, pr: 0.5 }}>per page</Typography>
+            </Box>
+          )}
+
+          {showNavigator && (
+            <Box sx={pillSx}>
+              <IconButton
+                size="small"
+                aria-label="Previous page"
+                disabled={page <= 1}
+                onClick={(e) => goTo(e, page - 1)}
+                sx={arrowSx}
+              >
+                <KeyboardArrowLeftIcon fontSize="small" />
+              </IconButton>
+
+              <Select
+                value={page}
+                onChange={(e) => goTo(e, Number(e.target.value))}
+                size="small"
+                sx={innerSelectSx}
+                MenuProps={menuProps}
+              >
+                {Array.from({ length: pageCount }, (_, i) => (
+                  <MenuItem key={i + 1} value={i + 1} sx={{ fontSize: "0.8125rem" }}>
+                    {i + 1}
+                  </MenuItem>
+                ))}
+              </Select>
+              <Typography sx={labelSx}>of {pageCount}</Typography>
+
+              <IconButton
+                size="small"
+                aria-label="Next page"
+                disabled={page >= pageCount}
+                onClick={(e) => goTo(e, page + 1)}
+                sx={arrowSx}
+              >
+                <KeyboardArrowRightIcon fontSize="small" />
+              </IconButton>
+            </Box>
+          )}
+        </Box>
+      )}
     </Box>
   );
 }

@@ -48,39 +48,25 @@ import { useSavedPapers } from "../context/SavedPapersContext";
 import { useToast } from "../context/ToastContext";
 
 // Moderation status shown to the uploader. Papers with no status (legacy) are live.
-function ContributionStatus({ status, note }) {
+function ContributionStatus({ status }) {
   const styles = {
     pending: { label: "Pending review", bg: "#fef3c7", color: "#b45309" },
     approved: { label: "Approved", bg: "#d1fae5", color: "#047857" },
     rejected: { label: "Rejected", bg: "#fee2e2", color: "#b91c1c" },
   };
   const s = styles[status] || styles.approved;
-  const chip = (
+  return (
     <Chip
       label={s.label}
       size="small"
       sx={{ bgcolor: s.bg, color: s.color, fontWeight: 700, fontSize: "0.6875rem", height: 22 }}
     />
   );
-
-  if (status === "rejected" && note) {
-    return (
-      <Box>
-        <Tooltip title={note} arrow>
-          {chip}
-        </Tooltip>
-        <Typography variant="caption" sx={{ display: "block", color: "#b91c1c", mt: 0.5, maxWidth: 220 }}>
-          {note}
-        </Typography>
-      </Box>
-    );
-  }
-  return chip;
 }
 
 // Both dashboard lists are fetched in full, so paging happens client-side.
-const CONTRIBUTIONS_PER_PAGE = 10;
-const SAVED_PER_PAGE = 8;
+// Users can pick how many items to show per page from these options.
+const PER_PAGE_OPTIONS = [5, 10, 25, 50];
 
 function DashboardPage() {
   const [profile, setProfile] = useState(() => JSON.parse(localStorage.getItem("profile")));
@@ -100,6 +86,15 @@ function DashboardPage() {
   // Pagination (client-side, one page counter per tab)
   const [contribPage, setContribPage] = useState(1);
   const [savedPage, setSavedPage] = useState(1);
+  // Adjustable page size shared by both dashboard lists.
+  const [perPage, setPerPage] = useState(PER_PAGE_OPTIONS[0]);
+
+  // Changing the page size can push the current page out of range — reset to 1.
+  const handlePerPageChange = (event) => {
+    setPerPage(Number(event.target.value));
+    setContribPage(1);
+    setSavedPage(1);
+  };
 
   // Delete Dialog state
   const [deleteId, setDeleteId] = useState(null);
@@ -181,7 +176,7 @@ function DashboardPage() {
   ).size;
 
   // --- Paging: contributions ---
-  const contribPageCount = Math.max(1, Math.ceil(totalContributions / CONTRIBUTIONS_PER_PAGE));
+  const contribPageCount = Math.max(1, Math.ceil(totalContributions / perPage));
   // A delete can shrink the list past the current page — pull back into range.
   useEffect(() => {
     if (contribPage > contribPageCount) setContribPage(contribPageCount);
@@ -189,10 +184,10 @@ function DashboardPage() {
   const pagedContributions = useMemo(
     () =>
       contributions.slice(
-        (contribPage - 1) * CONTRIBUTIONS_PER_PAGE,
-        contribPage * CONTRIBUTIONS_PER_PAGE
+        (contribPage - 1) * perPage,
+        contribPage * perPage
       ),
-    [contributions, contribPage]
+    [contributions, contribPage, perPage]
   );
 
   // --- Paging: saved papers (hide any unsaved this session via the card toggle) ---
@@ -200,13 +195,13 @@ function DashboardPage() {
     () => savedPapers.filter((p) => isSaved(p._id)),
     [savedPapers, isSaved]
   );
-  const savedPageCount = Math.max(1, Math.ceil(visibleSaved.length / SAVED_PER_PAGE));
+  const savedPageCount = Math.max(1, Math.ceil(visibleSaved.length / perPage));
   useEffect(() => {
     if (savedPage > savedPageCount) setSavedPage(savedPageCount);
   }, [savedPage, savedPageCount]);
   const pagedSaved = useMemo(
-    () => visibleSaved.slice((savedPage - 1) * SAVED_PER_PAGE, savedPage * SAVED_PER_PAGE),
-    [visibleSaved, savedPage]
+    () => visibleSaved.slice((savedPage - 1) * perPage, savedPage * perPage),
+    [visibleSaved, savedPage, perPage]
   );
 
   return (
@@ -369,7 +364,7 @@ function DashboardPage() {
                     </Typography>
                   </Box>
                   <Box sx={{ flexShrink: 0 }}>
-                    <ContributionStatus status={row.status} note={row.moderationNote} />
+                    <ContributionStatus status={row.status} />
                   </Box>
                 </Box>
 
@@ -387,6 +382,25 @@ function DashboardPage() {
                   <Typography variant="caption" sx={{ color: "neutral.400", display: "block" }}>
                     {row.college.university.name}
                   </Typography>
+                )}
+
+                {row.status === "rejected" && row.moderationNote && (
+                  <Box
+                    sx={{
+                      mt: 1.5,
+                      p: 1.5,
+                      bgcolor: "#fef2f2",
+                      border: "1px solid #fecaca",
+                      borderRadius: "10px",
+                    }}
+                  >
+                    <Typography variant="caption" sx={{ fontWeight: 700, color: "#b91c1c", display: "block", mb: 0.25 }}>
+                      Reason for rejection
+                    </Typography>
+                    <Typography variant="caption" sx={{ color: "#b91c1c" }}>
+                      {row.moderationNote}
+                    </Typography>
+                  </Box>
                 )}
 
                 <Box
@@ -443,6 +457,7 @@ function DashboardPage() {
                 <TableCell sx={{ fontWeight: 700, color: "neutral.700" }}>Semester / Year</TableCell>
                 <TableCell sx={{ fontWeight: 700, color: "neutral.700" }}>Exam Type</TableCell>
                 <TableCell sx={{ fontWeight: 700, color: "neutral.700" }}>Status</TableCell>
+                <TableCell sx={{ fontWeight: 700, color: "neutral.700" }}>Reason</TableCell>
                 <TableCell sx={{ fontWeight: 700, color: "neutral.700" }} align="right">Actions</TableCell>
               </TableRow>
             </TableHead>
@@ -481,7 +496,29 @@ function DashboardPage() {
                     <PaperBadge label={row.examType} />
                   </TableCell>
                   <TableCell>
-                    <ContributionStatus status={row.status} note={row.moderationNote} />
+                    <ContributionStatus status={row.status} />
+                  </TableCell>
+                  <TableCell sx={{ maxWidth: 260 }}>
+                    {row.status === "rejected" && row.moderationNote ? (
+                      <Tooltip title={row.moderationNote} arrow>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#b91c1c",
+                            display: "-webkit-box",
+                            WebkitLineClamp: 3,
+                            WebkitBoxOrient: "vertical",
+                            overflow: "hidden",
+                          }}
+                        >
+                          {row.moderationNote}
+                        </Typography>
+                      </Tooltip>
+                    ) : (
+                      <Typography variant="caption" sx={{ color: "neutral.400" }}>
+                        —
+                      </Typography>
+                    )}
                   </TableCell>
                   <TableCell align="right">
                     <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1 }}>
@@ -525,10 +562,12 @@ function DashboardPage() {
           page={contribPage}
           count={contribPageCount}
           total={totalContributions}
-          perPage={CONTRIBUTIONS_PER_PAGE}
+          perPage={perPage}
           label="papers"
           scrollToTop={false}
           onChange={(_, v) => setContribPage(v)}
+          perPageOptions={PER_PAGE_OPTIONS}
+          onPerPageChange={handlePerPageChange}
         />
         </>
       ))}
@@ -563,10 +602,12 @@ function DashboardPage() {
               page={savedPage}
               count={savedPageCount}
               total={visibleSaved.length}
-              perPage={SAVED_PER_PAGE}
+              perPage={perPage}
               label="saved papers"
               scrollToTop={false}
               onChange={(_, v) => setSavedPage(v)}
+              perPageOptions={PER_PAGE_OPTIONS}
+              onPerPageChange={handlePerPageChange}
             />
           </>
         )

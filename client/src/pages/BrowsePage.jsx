@@ -33,7 +33,7 @@ import useDebounce from "../hooks/useDebounce";
 const EXAM_TYPES = ["Mid Sem", "End Sem", "Sessional", "Practical", "Quiz", "Assignment"];
 const CURRENT_YEAR = new Date().getFullYear();
 const YEARS = Array.from({ length: 10 }, (_, i) => CURRENT_YEAR - i);
-const PER_PAGE = 12;
+const PER_PAGE = 10;
 
 function BrowsePage() {
   const [searchParams, setSearchParams] = useSearchParams();

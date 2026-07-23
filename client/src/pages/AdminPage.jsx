@@ -10,7 +10,6 @@ import {
   Button,
   Paper,
   CircularProgress,
-  Pagination,
   Divider,
   Dialog,
   DialogTitle,
@@ -25,6 +24,9 @@ import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import * as api from "../api";
 import { useToast } from "../context/ToastContext";
 import EmptyState from "../components/common/EmptyState";
+import PaginationBar from "../components/common/PaginationBar";
+
+const ADMIN_PER_PAGE = 10;
 
 const TABS = [
   { key: "pending", label: "Pending" },
@@ -63,7 +65,7 @@ function AdminPage() {
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      const { data: res } = await api.fetchAdminQuestions({ status: tab, page, limit: 20 });
+      const { data: res } = await api.fetchAdminQuestions({ status: tab, page, limit: ADMIN_PER_PAGE });
       setData(res);
     } catch (error) {
       console.error("Failed to load papers:", error);
@@ -257,25 +259,14 @@ function AdminPage() {
             ))}
           </Paper>
 
-          {data.pages > 1 && (
-            <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
-              <Pagination
-                count={data.pages}
-                page={page}
-                onChange={(_, v) => {
-                  setPage(v);
-                  window.scrollTo({ top: 0, behavior: "smooth" });
-                }}
-                sx={{
-                  "& .MuiPaginationItem-root.Mui-selected": {
-                    bgcolor: "primary.600",
-                    color: "white",
-                    "&:hover": { bgcolor: "primary.700" },
-                  },
-                }}
-              />
-            </Box>
-          )}
+          <PaginationBar
+            page={page}
+            count={data.pages}
+            total={data.total}
+            perPage={ADMIN_PER_PAGE}
+            label="papers"
+            onChange={(_, v) => setPage(v)}
+          />
         </>
       )}
 
